@@ -13,7 +13,7 @@
 <script type="text/javascript">
     
     function newSite(jour,mois,annee,obj) {
-        var site = "/companion/{{ guildid }}/iframearchive?data="+jour+"?"+mois+"?"+annee
+        var site = "/companion/{{ guildid }}/iframejour?data="+jour+"?"+mois+"?"+annee
         document.getElementById('iframeevol').src = site
         try {document.getElementById("elselect").id = NaN}
         catch {}
@@ -99,7 +99,7 @@
     
     <div class="stats">
         <table id="tableot">
-            <tr><th colspan="4">Statistiques évolution {{ mois }} {{ annee }}, {{ nom }}</th></tr>
+            <tr><th colspan="4">Classement jours {{ mois }} {{ annee }}</th></tr>
             <tr>
                 <th>Rang</th>
                 <th>Date</th>
@@ -108,15 +108,9 @@
             </tr>
             {% for i in rank %}
                 <tr onClick="newSite('{{ i.Jour }}','{{ i.Mois }}','{{ i.Annee }}',this)">
-                    {% if i.Evol > 0 %}
-                        <td style="background-color: green;">{{ i.Rank }}</td>
-                    {% elif i.Evol < 0 %}
-                        <td style="background-color: red;">{{ i.Rank }}</td>
-                    {% else %}
-                        <td>{{ i.Rank }}</td>
-                    {% endif %}
+                    <td>{{ i.Rank }}</td>
                     <td class="date">{{ i.Jour }} / {{ i.Mois }} / {{ i.Annee }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ color }}"></div></td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }})"></div></td>
                     <td>{{ i.Count }}</td>
                 </tr>
             {% endfor %}

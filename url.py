@@ -1,12 +1,18 @@
 from django.urls import path
-from . import views
+from .views.messages import guildMessages
+from .views.home import home
+from .iframes.archive import iFrameArchive
+from .iframes.blank import iFrameBlank
+from .iframes.evol import iFrameEvol
+from .iframes.rank import iFrameRank
+from .iframes.roles import iFrameRoles
 
 urlpatterns = [
-    path('', views.home, name="companion-home"),
-    path("<int:guild>/messages/<str:section>",views.guildMessages,name="companion-guild-home"),
-    path("<int:guild>/iframeevol",views.iFrameEvol,name="iframe-evol"),
-    path("<int:guild>/iframerank",views.iFrameRank,name="iframe-rank"),
-    path("<int:guild>/iframearchive",views.iFrameArchive,name="iframe-archive"),
-    path("<int:guild>/iframeroles",views.iFrameRoles,name="iframe-roles"),
-    path("iframeblank",views.iFrameBlank,name="iframe-blank")
+    path('', home, name="companion-home"),
+    path("<int:guild>/messages/<str:section>",guildMessages,name="companion-guild-home"),
+    path("<int:guild>/iframeevol",iFrameEvol,name="iframe-evol"),
+    path("<int:guild>/iframerank",iFrameRank,name="iframe-rank"),
+    path("<int:guild>/iframearchive",iFrameArchive,name="iframe-archive"),
+    path("<int:guild>/iframeroles",iFrameRoles,name="iframe-roles"),
+    path("iframeblank",iFrameBlank,name="iframe-blank")
 ]
