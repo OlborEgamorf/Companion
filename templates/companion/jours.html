@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://cdn.discordapp.com/avatars/699728606493933650/0859eb6e97dd8d92e6668c397bf4b311.webp?size=256">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
+    
+    <title>Olbor Track Companion</title>
+</head>
+
+<script type="text/javascript">
+    
+    function newSite(jour,mois,annee,obj) {
+        var site = "/companion/{{ guildid }}/iframearchive?data="+jour+"?"+mois+"?"+annee
+        document.getElementById('iframeevol').src = site
+        try {document.getElementById("elselect").id = NaN}
+        catch {}
+        obj.id = "elselect"
+        
+    }    
+
+    function resizeIframe(obj) {
+        if (obj.src != "http://localhost:8000/companion/iframeblank") {
+            obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+        }
+    }
+    </script>
+
+<header class="header-ot">
+    <span><img src="https://cdn.discordapp.com/avatars/699728606493933650/0859eb6e97dd8d92e6668c397bf4b311.webp?size=128"></span>
+
+    <span class="links">
+        <a href="../">Accueil</a>
+        <a href="/companion/">Companion</a>
+        <a href="../">Inviter OT</a>
+        <a href="../">Commandes</a>
+        <a href="../">Déconnexion</a>
+        <a href="../">Profil</a>
+    </span>
+    <span class="user-avatar"><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128" ></span>
+</header>
+
+<body>
+    <div class="guild-stats">
+        <img src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}.png?size=128">
+        <br>{{ guildname }}
+    </div>
+
+    <div class="navbar">
+        <a>Accueil</a>
+        <a class="select">Messages</a>
+        <a>Salons</a>
+        <a>Emotes</a>
+        <a>Vocal</a>
+        <a>Réactions</a>
+        <a>Mots</a>
+        <a>Fréquences</a>
+    </div>
+    <div class="navbar">
+        <a href="/companion/{{ guildid }}/messages/rank">Classements</a>
+        <a class="disabled">Perso</a>
+        <a href="/companion/{{ guildid }}/messages/periods">Périodes</a>
+        <a class="disabled">Serveur</a>
+        <a href="/companion/{{ guildid }}/messages/evol">Évolution</a>
+        <a href="/companion/{{ guildid }}/messages/roles">Rôles</a>
+        <a class="select">Jours</a>
+        <a>Rapport</a>
+    </div>
+    <div class="navbar">
+        <a class="select">Stats</a>
+        <a>Graphiques</a>
+        <a>Comparateur</a>
+    </div>
+    <form action="" method="get" class="form-example">
+        <div class="navbar">
+            <select name="mois">
+                {% for i in listeMois %}
+                    {% if i == mois %}
+                        <option selected>{{ i }}</option>
+                    {% else %}
+                        <option>{{ i }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <select name="annee">
+                {% for i in listeAnnee %}
+                    {% if i == annee %}
+                        <option selected>{{ i }}</option>
+                    {% else %}
+                        <option>{{ i }}</option>
+                    {% endif %}
+                    {% endfor %}
+            </select>
+            <input type="submit" value="Voyager dans le temps !">
+        </div>
+    </form>
+    
+    <div class="stats">
+        <table id="tableot">
+            <tr><th colspan="4">Statistiques évolution {{ mois }} {{ annee }}, {{ nom }}</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>Date</th>
+                <th id="leg-barre">Barre</th>
+                <th>Messages</th>
+            </tr>
+            {% for i in rank %}
+                <tr onClick="newSite('{{ i.Jour }}','{{ i.Mois }}','{{ i.Annee }}',this)">
+                    {% if i.Evol > 0 %}
+                        <td style="background-color: green;">{{ i.Rank }}</td>
+                    {% elif i.Evol < 0 %}
+                        <td style="background-color: red;">{{ i.Rank }}</td>
+                    {% else %}
+                        <td>{{ i.Rank }}</td>
+                    {% endif %}
+                    <td class="date">{{ i.Jour }} / {{ i.Mois }} / {{ i.Annee }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ color }}"></div></td>
+                    <td>{{ i.Count }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <iframe id="iframeevol" src="/companion/iframeblank" scrolling="no" onload="resizeIframe(this)"></iframe>
+    </div>
+    <div class="footer-ot">
+        <span class="footer-links">
+            <a href="../">Accueil</a>
+            <a href="../">Twitter</a>
+            <a href="../">Instagram</a>
+            <a href="../">GitHub</a>
+        </span>
+    </div>
+</body>
+
+
+</html>
