@@ -49,7 +49,7 @@ def guildMessages(request,guild,section):
                 stats.append({"Count":i["Count"],"Rank":i["Rank"],"Nom":user_search["user"]["username"],"Color":color,"Avatar":user_search["user"]["avatar"],"ID":i["ID"]})
         
         connexion.close()
-        ctx={"rank":stats,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"max":maxi,"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee}
+        ctx={"rank":stats,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"max":maxi,"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"guilds":getGuilds(user)}
         return render(request, "companion/ranks.html", ctx)
 
     elif section=="periods":
@@ -112,4 +112,23 @@ def guildMessages(request,guild,section):
         print(table)
         maxi=max(list(map(lambda x:x["Count"],table)))
         ctx={"rank":table,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"nom":user_full["user"]["username"],"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"]}
-        return render(request,"companion/evol.html",ctx)
+        return render(request,"companion/jours.html",ctx)
+
+
+def getGuilds(user):
+    bot_guilds=requests.get("https://discord.com/api/v9/users/@me/guilds",headers={"Authorization":"Bot Njk5NzI4NjA2NDkzOTMzNjUw.XpYnDA.ScdeM2sFekTRHY5hubkwg0HWDPU"})
+    bguild_json=bot_guilds.json()
+    bot_ids=list(map(lambda x:x["id"], bguild_json))
+    user_guild=requests.get("https://discord.com/api/v9/users/@me/guilds",headers={"Authorization":"Bearer {0}".format(user.token)})
+    uguild_json=user_guild.json()
+
+    common=list(filter(lambda x: x["id"] in bot_ids, uguild_json))
+    final_guilds=[]
+
+    for guild in common:
+        if guild["icon"]!=None:
+            end=avatarAnim(guild["icon"][0:2])
+        final_guilds.append({"ID":guild["id"],"Nom":guild["name"],"Icon":guild["icon"],"Anim":end})
+
+    final_guilds.sort(key=lambda x:x["Nom"])
+    return final_guilds

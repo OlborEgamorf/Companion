@@ -158,7 +158,7 @@ def getTableDay(curseur:sqlite3.Cursor,mois:str,annee:str) -> list:
     Sortie :
         la liste qui répond à nos critères, renvoyée par la requête SQL"""
     print(mois,annee)
-    if mois.lower()=="glob":
+    if mois.lower() in ("glob","gl"):
         return curseur.execute("SELECT *, Annee || '' || Mois || '' || Jour AS DateID FROM dayRank ORDER BY Count DESC").fetchall()
     elif mois.lower()=="to":
         return curseur.execute("SELECT *, Annee || '' || Mois || '' || Jour AS DateID FROM dayRank WHERE Annee='{0}' ORDER BY Count DESC".format(annee)).fetchall()

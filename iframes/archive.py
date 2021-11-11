@@ -14,8 +14,6 @@ def iFrameArchive(request,guild):
     user=request.user
 
     guild_full=getGuild(guild)
-
-    user_full=getUser(guild,user.id)
     
     roles_position,roles_color,roles_name=colorRoles(guild_full)
     

@@ -1,5 +1,5 @@
 .header-ot {
-    background: #6ec8fa;
+    background: #36F;
     height: 80px;
     width: 85%;
     margin: auto auto 40px auto;
@@ -10,8 +10,6 @@
 }
 
 .links {
-    justify-content: flex-end;
-    display:flex;
     flex: 1 1 auto;
 }
 .links a {
@@ -24,7 +22,7 @@
 }
 
 .links a:hover {
-    color:#6ec8fa;
+    color:#36F;
     background-color: white;
     border-radius: 10px;
     transition:all 0.5s;
@@ -38,15 +36,13 @@
 }
 
 .user-avatar {
-    justify-content: flex-end;
     flex: 1 1 auto;
-    display:flex
 }
 
 
 
 body {
-    background: #2b2b30;
+    background: #2f4078;
     margin:10px;
 }
 
@@ -75,7 +71,7 @@ h1 {
 
 
 .card-guild {
-    background: #484855;
+    background: #23254a;
     margin: 20px 15px;
     width: 120px;
     height: 200px;
@@ -122,7 +118,7 @@ h1 {
 }
 
 .footer-ot {
-    background: #6ec8fa;
+    background: #36F;
     height: 40px;
     width: 50%;
     border-radius: 10px;
@@ -155,7 +151,7 @@ table {
     border-radius: 10px;
     font-family:Roboto, Verdana, Tahoma, sans-serif;
     color:white;
-    background-color: #484855;
+    background-color: #23254a;
     font-size: 20px;
     text-align: center;
     
@@ -163,8 +159,6 @@ table {
 
 td {
     border: none;
-    border-bottom:1px solid #2b2b30;
-    border-top:1px solid #2b2b30;
     padding: 5px 3px;
 }
 
@@ -177,7 +171,7 @@ td {
 .barre {
     background-color:#37be96;
     height:40px;
-    border-radius: 10px;
+    border-radius: 25px;
 }
 
 table img {
@@ -193,7 +187,7 @@ table img {
     border-radius: 10px;
     font-family:Roboto, Verdana, Tahoma, sans-serif;
     color:white;
-    background-color: #484855;
+    background-color: #23254a;
     font-size: 20px;
     text-align: center;
     vertical-align:middle;
@@ -209,12 +203,12 @@ table img {
 }
 
 .navbar a:hover {
-    background-color:#6ec8fa ;
+    background-color:#36F ;
     transition: 0.5s;
 }
 
 .select {
-    background-color: #6ec8fa;
+    background-color: #36F;
     border-radius: 10px;
 }
 
@@ -228,7 +222,7 @@ table img {
     border-radius: 10px;
     font-family:Roboto, Verdana, Tahoma, sans-serif;
     color:white;
-    background-color: #484855;
+    background-color: #23254a;
     font-size: 20px;
     text-align: center;
     vertical-align:middle;
@@ -243,7 +237,7 @@ select {
     border-radius: 10px;
     color:white;
     font-family:Roboto, Verdana, Tahoma, sans-serif;
-    background-color:#6ec8fa ;
+    background-color:#36F ;
     font-size: 20px;
     text-align: center;
     border: none;
@@ -255,16 +249,18 @@ input {
     border-radius: 10px;
     color:white;
     font-family:Roboto, Verdana, Tahoma, sans-serif;
-    background-color:#484855 ;
+    background-color:#23254a ;
     font-size: 20px;
     text-align: center;
     cursor: pointer;
     border: none;
     padding: 0 2%;
+    transition: 0.5s;
 }
 
 input:hover {
-    background-color:#6ec8fa ;
+    background-color:#23254a ;
+    transition: 0.5s;
 }
 
 iframe {
@@ -357,4 +353,70 @@ tr:hover {
     display: flex;
     flex-flow: wrap;
     margin: auto;
+}
+
+
+
+
+
+
+
+
+
+.sidenav {
+    height: 100%; /* Full-height: remove this if you want "auto" height */
+    width: 70px; /* Set the width of the sidebar */
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    z-index: 1; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    background-color: #111; /* Black */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 20px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    transition: all 0.5s;
+  }
+  
+.sidenav:hover {
+    transition: all 0.5s;
+    width: auto;
+}
+
+.sidenav a {
+    padding: 5px 10px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+  }
+  
+
+.sidenav a:hover {
+    color: #f1f1f1;
+  }
+  
+
+.main {
+    margin-left: 160px; /* Same as the width of the sidebar */
+    padding: 0px 10px;
+  }
+  
+
+@media screen and (max-height: 450px) {
+    .sidenav a {display: none;}
+  } 
+
+
+.little-icon-guild img {
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    transition: all 0.5s;
+}
+
+.text-bar {
+    display:none;
+    font-family:Roboto, Verdana, Tahoma, sans-serif;
+    transition: all 0.5s;
 }

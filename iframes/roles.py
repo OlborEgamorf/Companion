@@ -8,14 +8,10 @@ from ..outils import getMoisAnnee, getGuild, getUser, colorRoles, connectSQL, ta
 def iFrameRoles(request,guild):
     all=request.GET.get("data")
     mois,annee,role=all.split("?")
-    print(mois,annee,role)
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
-    print(moisDB,anneeDB)
     user=request.user
 
     guild_full=getGuild(guild)
-
-    user_full=getUser(guild,user.id)
     
     roles_position,roles_color,roles_name=colorRoles(guild_full)
     
@@ -43,5 +39,5 @@ def iFrameRoles(request,guild):
     
     stats.sort(key=lambda x:x["Rank"])
     connexion.close()
-    ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee}
+    ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"role":roles_name[role]}
     return render(request, "companion/rankIFrame.html", ctx)

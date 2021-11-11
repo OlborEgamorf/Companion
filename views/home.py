@@ -16,7 +16,7 @@ def home(request):
 
     user_avatar=requests.get("https://discord.com/api/v9/users/@me",headers={"Authorization":"Bearer {0}".format(user.token)})
     if user_avatar.status_code==401:
-        request.user.token=refresh(user.token)
+        user.token=refresh(user.refresh)
         return home(request)
     user_avatar=user_avatar.json()
     
