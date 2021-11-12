@@ -143,35 +143,13 @@
     
 
     
-    <div class="stats">
-        
-        <table id="tableot">
-            <tr><th colspan="5">Classement {{ mois }} {{ annee }}</th></tr>
-            <tr>
-                <th>Rang</th>
-                <th colspan="2">Membre</th>
-                <th id="leg-barre">Barre</th>
-                <th>Messages</th>
-            </tr>
-            {% for i in rank %}
-                {% if i.ID == id %}
-                    <tr class="user" onClick="newSite('{{ i.ID }}',this)">
-                {% else %}
-                    <tr onClick="newSite('{{ i.ID }}',this)">
-                {% endif %}
-                    <td>{{ i.Rank }}</td>
-                    <td>
-                    {% if i.Avatar %}
-                        <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
-                    {% endif %}
-                    </td>
-                    <td style="text-align: start;">{{ i.Nom }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
-                    <td>{{ i.Count }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-        <iframe id="iframeevol" src="/companion/iframeblank" scrolling="no" onload="resizeIframe(this)"></iframe>
+    <div class="stats" style="justify-content: center;">
+        {% autoescape off %}
+        {{ fig }}
+        {% endautoescape %}
+        {% autoescape off %}
+        {{ fig2 }}
+        {% endautoescape %}
     </div>
     <div class="footer-ot">
         <span class="footer-links">

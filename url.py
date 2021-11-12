@@ -1,4 +1,6 @@
 from django.urls import path
+
+from .views.graphiques import guildGraph
 from .views.messages import guildMessages
 from .views.home import home
 from .iframes.archive import iFrameArchive
@@ -16,5 +18,6 @@ urlpatterns = [
     path("<int:guild>/iframearchive",iFrameArchive,name="iframe-archive"),
     path("<int:guild>/iframeroles",iFrameRoles,name="iframe-roles"),
     path("<int:guild>/iframejour",iFrameJour,name="iframe-roles"),
-    path("iframeblank",iFrameBlank,name="iframe-blank")
+    path("iframeblank",iFrameBlank,name="iframe-blank"),
+    path("<int:guild>/graphs/messages/<str:section>",guildGraph,name="companion-guild-home"),
 ]

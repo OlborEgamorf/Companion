@@ -39,24 +39,6 @@
 
 <body>
 
-    <div class="sidenav" id="side">
-        <a href="/companion/">
-            <span class="little-icon-guild"><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
-        </a>
-        {% for guild in guilds %}
-            <a href="/companion/{{ guild.ID }}/messages/rank" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')">
-                {% if guild.Icon != None %}
-                    <span class="little-icon-guild">
-                        <img src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}.{{ guild.Anim }}?size=128" alt="Icone du serveur {{ guild.Nom }}">
-                        <span id="{{ guild.ID }}" class="text-bar">{{ guild.Nom }}</span>
-                    </span>
-                    
-                {% endif %}
-                
-            </a>
-        {% endfor %}
-    </div>
-
     <h1>Choisissez votre serveur</h1>
     <div class="all-guilds">
         {% for guild in guilds %}
