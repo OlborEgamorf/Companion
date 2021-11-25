@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://cdn.discordapp.com/avatars/699728606493933650/0859eb6e97dd8d92e6668c397bf4b311.webp?size=256">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
+    
+    <title>{{ guildname }} - OT Companion</title>
+</head>
+
+<script type="text/javascript">
+
+    function sleep (time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+    }
+    
+
+    function resizeIframe(obj) {
+        if (obj.src != "http://localhost:8000/companion/iframeblank") {
+            obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+        }
+    }
+
+    function showBar(id) {
+        console.log("on")
+        console.log(document.getElementById(id))
+        document.getElementById(id).style.opacity = 100;
+        sleep(500).then(() => {document.getElementById(id).style.fontSize = "20px"})
+    }    
+
+    function hideBar(id) {
+        console.log("off")
+        document.getElementById(id).style.opacity = 0;
+        sleep(1000).then(() => {document.getElementById(id).style.fontSize = "0"})
+    }  
+
+    function clickServ(obj) {
+        obj.style.backgroundColor = "#36F";
+    }
+</script>
+
+{% block script %} {% endblock %}
+
+<header class="header-ot">
+
+    <span class="user-avatar"><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128" ></span>
+    <span class="links">
+        <a href="../">Accueil</a>
+        <a href="/">Companion</a>
+        <a href="../">Inviter OT</a>
+        <a href="../">Commandes</a>
+        <a href="../">Déconnexion</a>
+        <a href="../">Profil</a>
+    </span>
+    
+</header>
+
+<body>
+    <div class="sidenav" id="side">
+        <a href="/companion/" class="ot-logo" onmouseenter="showBar('OT')" onmouseleave="hideBar('OT')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
+            <span id="OT" class="text-bar">Olbor Track</span>
+        </a>
+        <a href="/companion/" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png"></span>
+            <span id="0" class="text-bar">Classements jeux</span>
+        </a>
+        {% for guild in guilds %}
+            {% if guild.Icon != None %}
+                {% if guild.ID == guildid %}
+                    <a href="/companion/{{ guild.ID }}/messages/rank" style="background-color: #696969;" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')">
+                {% else %}
+                    <a href="/companion/{{ guild.ID }}/messages/rank" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')" onclick="clickServ(this)">
+                {% endif %}
+                    
+                        <img src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}.{{ guild.Anim }}?size=128" alt="Icone du serveur {{ guild.Nom }}" >
+                        <span id="{{ guild.ID }}" class="text-bar">{{ guild.Nom }}</span>
+                    </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="guild-stats">
+        <img src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}.png?size=128">
+        <br>{{ guildname }}
+    </div>
+
+    <div class="navbar">
+        <a>Accueil</a>
+        <a class="select">Messages</a>
+        <a>Salons</a>
+        <a>Emotes</a>
+        <a>Vocal</a>
+        <a>Réactions</a>
+        <a>Mots</a>
+        <a>Fréquences</a>
+    </div>
+    <div class="navbar">
+        <a class="select">Classements</a>
+        <a class="disabled">Perso</a>
+        <a href="/companion/{{ guildid }}/messages/periods">Périodes</a>
+        <a class="disabled">Serveur</a>
+        <a href="/companion/{{ guildid }}/messages/evol">Évolution</a>
+        <a href="/companion/{{ guildid }}/messages/roles">Rôles</a>
+        <a href="/companion/{{ guildid }}/messages/jours">Jours</a>
+        <a>Rapport</a>
+    </div>
+    <div class="navbar">
+        <a class="select">Stats</a>
+        <a href="/companion/{{ guildid }}/graphs/messages/rank">Graphiques</a>
+        <a>Comparateur</a>
+    </div>
+    <form action="" method="get" class="form-example">
+        <div class="navbar">
+            <select name="mois">
+                {% for i in listeMois %}
+                    {% if i == mois %}
+                        <option selected>{{ i }}</option>
+                    {% else %}
+                        <option>{{ i }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <select name="annee">
+                {% for i in listeAnnee %}
+                    {% if i == annee %}
+                        <option selected>{{ i }}</option>
+                    {% else %}
+                        <option>{{ i }}</option>
+                    {% endif %}
+                    {% endfor %}
+            </select>
+            <input type="submit" value="Voyager dans le temps !">
+        </div>
+    </form>
+
+    {% block stats %} {% endblock %}
+
+    <div class="footer-ot">
+        <span class="footer-links">
+            <a href="../">Accueil</a>
+            <a href="../">Twitter</a>
+            <a href="../">Instagram</a>
+            <a href="../">GitHub</a>
+        </span>
+    </div>
+
+</body>
+</html>

@@ -68,7 +68,7 @@ def guildMessages(request,guild,section):
         maxiA=max(list(map(lambda x:x["Count"],statsAnnee)))
         
         connexion.close()
-        ctx={"rankMois":statsMois,"rankAnnee":statsAnnee,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"maxM":maxiM,"maxA":maxiA,"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"color":color}
+        ctx={"rankMois":statsMois,"rankAnnee":statsAnnee,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"maxM":maxiM,"maxA":maxiA,"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"color":color,"guilds":getGuilds(user)}
         return render(request, "companion/periods.html", ctx)
 
     elif section=="evol":
@@ -85,7 +85,7 @@ def guildMessages(request,guild,section):
 
         maxi=max(list(map(lambda x:x["Count"],table)))
 
-        ctx={"rank":table,"id":user.id,"color":color,"max":maxi,"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"nom":user_full["user"]["username"],"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"]}
+        ctx={"rank":table,"id":user.id,"color":color,"max":maxi,"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"nom":user_full["user"]["username"],"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":getGuilds(user)}
         connexion.close()
         return render(request,"companion/evol.html",ctx)
 
@@ -103,7 +103,7 @@ def guildMessages(request,guild,section):
 
         maxi=max(list(map(lambda x:x["Count"],tableRoles)))
         connexion.close()
-        ctx={"rank":tableRoles,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"nom":user_full["user"]["username"],"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"]}
+        ctx={"rank":tableRoles,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"nom":user_full["user"]["username"],"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":getGuilds(user)}
         return render(request,"companion/roles.html",ctx)
     
     elif section=="jours":
@@ -111,7 +111,7 @@ def guildMessages(request,guild,section):
         table=getTableDay(curseur,tableauMois[moisDB],anneeDB)
         print(table)
         maxi=max(list(map(lambda x:x["Count"],table)))
-        ctx={"rank":table,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"nom":user_full["user"]["username"],"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"]}
+        ctx={"rank":table,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"nom":user_full["user"]["username"],"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":getGuilds(user)}
         return render(request,"companion/jours.html",ctx)
 
 
@@ -132,3 +132,5 @@ def getGuilds(user):
 
     final_guilds.sort(key=lambda x:x["Nom"])
     return final_guilds
+
+    

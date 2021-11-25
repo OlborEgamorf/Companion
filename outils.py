@@ -35,11 +35,11 @@ def connectSQL(guild,db,option,mois,annee):
         pathDir="SQL/OT/{0}".format(option)
         path="SQL/OT/{0}/{1}.db".format(option,db)
     elif mois in ("GL","glob") or annee in ("GL","glob"):
-        pathDir="G:/IFNO/OlborTrack/SQL/{0}/GL".format(guild)
-        path="G:/IFNO/OlborTrack/SQL/{0}/GL/{1}.db".format(guild,db)
+        pathDir="E:/IFNO/OlborTrack/SQL/{0}/GL".format(guild)
+        path="E:/IFNO/OlborTrack/SQL/{0}/GL/{1}.db".format(guild,db)
     else:
-        pathDir="G:/IFNO/OlborTrack/SQL/{0}/{1}/{2}".format(guild,annee,mois.upper())
-        path="G:/IFNO/OlborTrack/SQL/{0}/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
+        pathDir="E:/IFNO/OlborTrack/SQL/{0}/{1}/{2}".format(guild,annee,mois.upper())
+        path="E:/IFNO/OlborTrack/SQL/{0}/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
 
     if not os.path.exists(pathDir):
         os.makedirs(pathDir)

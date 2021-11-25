@@ -34,7 +34,7 @@ def guildGraph(request,guild,section):
         connexion,curseur=connectSQL(guild,"Messages","Stats",tableauMois[moisDB],anneeDB)
         flag=False
 
-        for i in curseur.execute("SELECT * FROM {0}{1} ORDER BY Rank ASC LIMIT 25".format(moisDB,anneeDB)).fetchall():
+        for i in curseur.execute("SELECT * FROM {0}{1} ORDER BY Rank ASC".format(moisDB,anneeDB)).fetchall():
             if i["ID"]==user.id:
                 flag=True
 
@@ -56,7 +56,7 @@ def guildGraph(request,guild,section):
                 else:
                     names.append(user_search["user"]["username"][0:15]+"...")
             else:
-                names.append("Ancien membre {0}".format(old))
+                names.append("Anciens membres".format(old))
                 colors.append("rgb(110,200,250)")
                 old+=1
             counts.append(i["Count"])
@@ -73,17 +73,33 @@ def guildGraph(request,guild,section):
         
         
         fig=go.Figure(data=go.Bar(x=names,y=counts,marker_color=colors,text=counts,textposition="auto"))
+        
         fig.update_layout(
+            margin=dict(l=20, r=20, t=20, b=20),
+            paper_bgcolor="rgb(47,64,120)",
+            font_family="Roboto",
+            font_color="white",
+            xaxis={'categoryorder':'total descending'}
+        )
+        fig.update_yaxes(automargin=True)
+        div=plot(fig,output_type='div')
+
+        if len(names)>10:
+            names=names[0:10]+["Autres membres"]
+            counts=counts[0:10]+[sum(counts[10:])]
+            colors=colors[0:10]+["rgb(110,200,250)"]
+
+        fig3=go.Figure(data=go.Pie(labels=names,values=counts))
+        fig3.update_layout(
             margin=dict(l=20, r=20, t=20, b=20),
             paper_bgcolor="rgb(47,64,120)",
             font_family="Roboto",
             font_color="white"
         )
-        fig.update_yaxes(automargin=True)
-        div=plot(fig,output_type='div')
-
+        fig3.update_traces(marker_colors=colors)
+        fig3.update_yaxes(automargin=True)
+        div3=plot(fig3,output_type='div')
         
-
         membres=["@everyone"]
         roles=[""]
         ids=["@everyone"]
@@ -141,7 +157,7 @@ def guildGraph(request,guild,section):
         div2=plot(fig2,output_type='div')
 
         connexion.close()
-        ctx={"fig":div,"fig2":div2,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"max":maxi,"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"guilds":getGuilds(user)}
+        ctx={"fig":div,"fig2":div2,"fig3":div3,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"max":maxi,"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"guilds":getGuilds(user)}
         return render(request, "companion/graph.html", ctx)
 
     elif section=="periods":

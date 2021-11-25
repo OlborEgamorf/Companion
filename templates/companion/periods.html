@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="https://cdn.discordapp.com/avatars/699728606493933650/0859eb6e97dd8d92e6668c397bf4b311.webp?size=256">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
-    
-    <title>Olbor Track Companion</title>
-</head>
+{% extends "companion/BASE.html" %}
 
+{% block script %}
 <script type="text/javascript">
     
     function newSite(mois,annee,obj) {
@@ -20,103 +11,43 @@
         obj.id = "elselect"
     }    
 
-    function resizeIframe(obj) {
-        if (obj.src != "http://localhost:8000/companion/iframeblank") {
-            obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
-        }
-    }
-    </script>
+</script>
+{% endblock script %}
 
-<header class="header-ot">
-    <span><img src="https://cdn.discordapp.com/avatars/699728606493933650/0859eb6e97dd8d92e6668c397bf4b311.webp?size=128"></span>
-
-    <span class="links">
-        <a href="../">Accueil</a>
-        <a href="/companion/">Companion</a>
-        <a href="../">Inviter OT</a>
-        <a href="../">Commandes</a>
-        <a href="../">Déconnexion</a>
-        <a href="../">Profil</a>
-    </span>
-    <span class="user-avatar"><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128" ></span>
-</header>
-
-<body>
-    <div class="guild-stats">
-        <img src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}.png?size=128">
-        <br>{{ guildname }}
-    </div>
-
-    <div class="navbar">
-        <a>Accueil</a>
-        <a class="select">Messages</a>
-        <a>Salons</a>
-        <a>Emotes</a>
-        <a>Vocal</a>
-        <a>Réactions</a>
-        <a>Mots</a>
-        <a>Fréquences</a>
-    </div>
-    <div class="navbar">
-        <a href="/companion/{{ guildid }}/messages/rank">Classements</a>
-        <a class="disabled">Perso</a>
-        <a class="select">Périodes</a>
-        <a class="disabled">Serveur</a>
-        <a href="/companion/{{ guildid }}/messages/evol">Évolution</a>
-        <a href="/companion/{{ guildid }}/messages/roles">Rôles</a>
-        <a>Jours</a>
-        <a>Rapport</a>
-    </div>
-    <div class="navbar">
-        <a class="select">Stats</a>
-        <a>Graphiques</a>
-        <a>Comparateur</a>
-    </div>
-    
-    <div class="stats">
-        <table id="tableot">
-            <tr><th colspan="4">Périodes mensuelles</th></tr>
-            <tr>
-                <th>Rang</th>
-                <th>Date</th>
-                <th id="leg-barre">Barre</th>
-                <th>Messages</th>
+{% block stats %}
+<div class="stats">
+    <table id="tableot">
+        <tr><th colspan="4">Périodes mensuelles</th></tr>
+        <tr>
+            <th>Rang</th>
+            <th>Date</th>
+            <th id="leg-barre">Barre</th>
+            <th>Messages</th>
+        </tr>
+        {% for i in rankMois %}
+            <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
+                <td>{{ i.Rank }}</td>
+                <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ color }}"></div></td>
+                <td>{{ i.Count }}</td>
             </tr>
-            {% for i in rankMois %}
-                <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
-                    <td>{{ i.Rank }}</td>
-                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ color }}"></div></td>
-                    <td>{{ i.Count }}</td>
-                </tr>
-            {% endfor %}
-            <tr><th colspan="4">Périodes annuelles</th></tr>
-            <tr>
-                <th>Rang</th>
-                <th>Date</th>
-                <th id="leg-barre">Barre</th>
-                <th>Messages</th>
+        {% endfor %}
+        <tr><th colspan="4">Périodes annuelles</th></tr>
+        <tr>
+            <th>Rang</th>
+            <th>Date</th>
+            <th id="leg-barre">Barre</th>
+            <th>Messages</th>
+        </tr>
+        {% for i in rankAnnee %}
+            <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
+                <td>{{ i.Rank }}</td>
+                <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ color }}"></div></td>
+                <td>{{ i.Count }}</td>
             </tr>
-            {% for i in rankAnnee %}
-                <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
-                    <td>{{ i.Rank }}</td>
-                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ color }}"></div></td>
-                    <td>{{ i.Count }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-        <iframe id="iframeevol" src="/companion/iframeblank" scrolling="no" onload="resizeIframe(this)"></iframe>
-    </div>
-    <div class="footer-ot">
-        <span class="footer-links">
-            <a href="../">Accueil</a>
-            <a href="../">Twitter</a>
-            <a href="../">Instagram</a>
-            <a href="../">GitHub</a>
-        </span>
-    </div>
-</body>
-
-
-</html>
+        {% endfor %}
+    </table>
+    <iframe id="iframeevol" src="/companion/iframeblank" scrolling="no" onload="resizeIframe(this)"></iframe>
+</div>
+{% endblock stats %}
