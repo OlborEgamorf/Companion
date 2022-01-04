@@ -21,16 +21,12 @@
                 <th>Messages</th>
             </tr>
             {% for i in rank %}
-                {% if i.ID == id %}
-                    <tr style="background-color: #696969; border-color: #696969;">
-                {% else %}
-                    <tr>
-                {% endif %}
+                <tr>
                     <td>{{ i.Rank }}</td>
                     <td>
-                    {% if i.Avatar %}
-                        <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
-                    {% endif %}
+                        {% if i.Icon != False %}
+                            <img src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}.png?size=128">
+                        {% endif %}
                     </td>
                     <td style="text-align: start;">{{ i.Nom }}</td>
                     <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>

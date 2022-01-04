@@ -3,7 +3,7 @@
 <script type="text/javascript">
     
     function newSite(id,obj) {
-        var site = "/companion/{{ guildid }}/iframeevol?data={{ mois }}?{{ annee }}?"+id
+        var site = "/companion/{{ guildid }}/{{ option }}/iframeranks?data={{ mois }}?{{ annee }}?"+id
         document.getElementById('iframeevol').src = site;
         try {document.getElementById("elselect").id = NaN}
         catch {}
@@ -15,6 +15,10 @@
 
 
 {% block stats %}
+<div class="searchTable">
+    <input type="text" id="searchTable" onkeyup="searchName(2)" placeholder="Recherchez une emote">
+</div>
+
 <div class="stats">
     <table id="tableot">
         <tr><th colspan="5">Classement {{ mois }} {{ annee }}</th></tr>

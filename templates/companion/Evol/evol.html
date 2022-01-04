@@ -3,8 +3,8 @@
 {% block script %}
 <script type="text/javascript">
     
-    function newSite(jour,mois,annee,obj) {
-        var site = "/companion/{{ guildid }}/iframearchive?data="+jour+"?"+mois+"?"+annee
+    function newSite(jour,mois,annee,obj,id) {
+        var site = "/companion/{{ guildid }}/{{ option }}/iframeevol?data="+jour+"?"+mois+"?"+annee+"?{{ obj }}"
         document.getElementById('iframeevol').src = site
         try {document.getElementById("elselect").id = NaN}
         catch {}
@@ -16,6 +16,9 @@
 {% endblock script %}
 
 {% block stats %}
+<div class="searchTable">
+    <input type="text" id="searchTable" onkeyup="searchName(2)" placeholder="Recherchez une date">
+</div>
 <div class="stats">
     <table id="tableot">
         <tr><th colspan="4">Statistiques évolution {{ mois }} {{ annee }}, {{ nom }}</th></tr>

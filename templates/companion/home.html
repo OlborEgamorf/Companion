@@ -11,38 +11,52 @@
 </head>
 <header class="header-ot">
 
-    <span class="user-avatar"><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128" ></span>
-    <span class="links">
-        <a href="../">Accueil</a>
-        <a href="/">Companion</a>
-        <a href="../">Inviter OT</a>
-        <a href="../">Commandes</a>
-        <a href="../">Déconnexion</a>
-        <a href="../">Profil</a>
-    </span>
+    <span class="user-avatar"><img  src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
+    <h1>Olbor Track Companion</h1></span>
     
 </header>
 
 <script type="text/javascript">
     
+    function sleep (time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
     function showBar(id) {
         console.log("on")
         console.log(document.getElementById(id))
-        document.getElementById(id).style.display = "contents";
+        document.getElementById(id).style.opacity = 100;
+        sleep(500).then(() => {document.getElementById(id).style.fontSize = "20px"})
     }    
 
     function hideBar(id) {
         console.log("off")
-        document.getElementById(id).style.display = "none";
+        document.getElementById(id).style.opacity = 0;
+        sleep(1000).then(() => {document.getElementById(id).style.fontSize = "0"})
     }  
     </script>
 
 <body>
+    <div class="sidenav" id="side">
+        <a href="/companion/" class="ot-logo" onmouseenter="showBar('OT')" onmouseleave="hideBar('OT')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
+            <span id="OT" class="text-bar">Olbor Track - Accueil</span>
+        </a>
+        <a href="/companion/focus" class="focus-logo" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128"></span>
+            <span id="Focus" class="text-bar">Focus et profil</span>
+        </a>
+        <a href="/companion/" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png"></span>
+            <span id="0" class="text-bar">Classements jeux</span>
+        </a>
+    </div>
 
     <h1>Choisissez votre serveur</h1>
+
     <div class="all-guilds">
         {% for guild in guilds %}
-            <a href="/companion/{{ guild.ID }}/messages/rank">
+            <a href="/companion/{{ guild.ID }}/messages/ranks">
                 <div class="card-guild">
                     {% if guild.Icon != None %}
                         <span class="icon-guild">

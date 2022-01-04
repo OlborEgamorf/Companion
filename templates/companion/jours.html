@@ -4,7 +4,7 @@
 <script type="text/javascript">
     
     function newSite(jour,mois,annee,obj) {
-        var site = "/companion/{{ guildid }}/iframejour?data="+jour+"?"+mois+"?"+annee
+        var site = "/companion/{{ guildid }}/iframejours?data="+jour+"?"+mois+"?"+annee
         document.getElementById('iframeevol').src = site
         try {document.getElementById("elselect").id = NaN}
         catch {}

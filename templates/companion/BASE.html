@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="https://cdn.discordapp.com/avatars/699728606493933650/0859eb6e97dd8d92e6668c397bf4b311.webp?size=256">
+    <link rel="shortcut icon" href="https://cdn.discordapp.com/avatars/699728606493933650/cf1f6b58e81f5191684995ce4062ca7e.webp?size=256">
     {% load static %}
     <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
     
@@ -33,27 +33,42 @@
     function hideBar(id) {
         console.log("off")
         document.getElementById(id).style.opacity = 0;
-        sleep(1000).then(() => {document.getElementById(id).style.fontSize = "0"})
+        sleep(500).then(() => {document.getElementById(id).style.fontSize = "0"})
     }  
 
     function clickServ(obj) {
         obj.style.backgroundColor = "#36F";
+    }
+
+    function searchName(n) {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchTable");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("tableot");
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[n];
+            if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+            }
+        }
     }
 </script>
 
 {% block script %} {% endblock %}
 
 <header class="header-ot">
-
-    <span class="user-avatar"><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128" ></span>
-    <span class="links">
-        <a href="../">Accueil</a>
-        <a href="/">Companion</a>
-        <a href="../">Inviter OT</a>
-        <a href="../">Commandes</a>
-        <a href="../">Déconnexion</a>
-        <a href="../">Profil</a>
-    </span>
+    
+    <span class="user-avatar"><img  src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
+    <h1>Olbor Track Companion</h1></span>
     
 </header>
 
@@ -61,7 +76,11 @@
     <div class="sidenav" id="side">
         <a href="/companion/" class="ot-logo" onmouseenter="showBar('OT')" onmouseleave="hideBar('OT')" onclick="clickServ(this)">
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
-            <span id="OT" class="text-bar">Olbor Track</span>
+            <span id="OT" class="text-bar">Olbor Track - Accueil</span>
+        </a>
+        <a href="/companion/focus" class="focus-logo" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128"></span>
+            <span id="Focus" class="text-bar">Focus et profil</span>
         </a>
         <a href="/companion/" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png"></span>
@@ -80,61 +99,95 @@
                     </a>
             {% endif %}
         {% endfor %}
+
+        <a href="/companion/" id="nones">
+            <span class="little-icon-guild" ></span>
+            <span id="0" class="text-bar">Classements jeux</span>
+        </a>
     </div>
 
     <div class="guild-stats">
-        <img src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}.png?size=128">
-        <br>{{ guildname }}
+        {% if guildid == 0 %}
+            <img src="https://cdn.discordapp.com/avatars/699728606493933650/cf1f6b58e81f5191684995ce4062ca7e.webp?size=128">
+            <br>Olbor Track - Classements mondiaux
+        {% else %}
+            <img src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}.png?size=128">
+            <br>{{ guildname }}
+        {% endif %}
     </div>
 
-    <div class="navbar">
-        <a>Accueil</a>
-        <a class="select">Messages</a>
-        <a>Salons</a>
-        <a>Emotes</a>
-        <a>Vocal</a>
-        <a>Réactions</a>
-        <a>Mots</a>
-        <a>Fréquences</a>
-    </div>
-    <div class="navbar">
-        <a class="select">Classements</a>
-        <a class="disabled">Perso</a>
-        <a href="/companion/{{ guildid }}/messages/periods">Périodes</a>
-        <a class="disabled">Serveur</a>
-        <a href="/companion/{{ guildid }}/messages/evol">Évolution</a>
-        <a href="/companion/{{ guildid }}/messages/roles">Rôles</a>
-        <a href="/companion/{{ guildid }}/messages/jours">Jours</a>
-        <a>Rapport</a>
-    </div>
-    <div class="navbar">
-        <a class="select">Stats</a>
-        <a href="/companion/{{ guildid }}/graphs/messages/rank">Graphiques</a>
-        <a>Comparateur</a>
-    </div>
-    <form action="" method="get" class="form-example">
+    {% if sections != None %}
         <div class="navbar">
-            <select name="mois">
-                {% for i in listeMois %}
-                    {% if i == mois %}
-                        <option selected>{{ i }}</option>
-                    {% else %}
-                        <option>{{ i }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-            <select name="annee">
-                {% for i in listeAnnee %}
-                    {% if i == annee %}
-                        <option selected>{{ i }}</option>
-                    {% else %}
-                        <option>{{ i }}</option>
-                    {% endif %}
-                    {% endfor %}
-            </select>
-            <input type="submit" value="Voyager dans le temps !">
+            {% for s in sections %}
+                {% if section == s %}
+                    <a class="select">{{ s }}</a>
+                {% else %}
+                    <a href="/companion/{{ guildid }}/{{ s }}/">{{ s }}</a>
+                {% endif %}
+            {% endfor %}
         </div>
-    </form>
+    {% endif %}
+
+    {% if categs != None %}
+        <div class="navbar">
+            {% for categ in categs %}
+                {% if type == categ %}
+                    <a class="select">{{ categ }}</a>
+                {% else %}
+                    <a href="/companion/{{ guildid }}/=/">{{ categ }}</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if selector != False %}
+        <div class="navbar">
+            <a class="select">Stats</a>
+            <a href="/companion/{{ guildid }}/graphs/messages/rank">Graphiques</a>
+            <a>Comparateur</a>
+        </div>
+    {% endif %}
+
+    {% if travel or obj != None %}
+        <form action="" method="get" class="form-example">
+            <div class="navbar">
+            {% if travel %}
+                <select name="mois">
+                    {% for i in listeMois %}
+                        {% if i == mois %}
+                            <option selected>{{ i }}</option>
+                        {% else %}
+                            <option>{{ i }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <select name="annee">
+                    {% for i in listeAnnee %}
+                        {% if i == annee %}
+                            <option selected>{{ i }}</option>
+                        {% else %}
+                            <option>{{ i }}</option>
+                        {% endif %}
+                        {% endfor %}
+                </select>
+            {% endif %}
+            {% if obj != None %}
+                <select name="obj">
+                    {% for i in listeObjs %}
+                        {% if i.ID == obj %}
+                            <option value="{{ i.ID }}" selected>{{ i.Nom }}</option>
+                        {% else %}
+                            <option value="{{ i.ID }}">{{ i.Nom }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            {% endif %}
+                <input type="submit" value="Parcourir">
+            </div>
+        </form>
+    {% endif %}
+
+
 
     {% block stats %} {% endblock %}
 

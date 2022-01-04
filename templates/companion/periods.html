@@ -4,7 +4,7 @@
 <script type="text/javascript">
     
     function newSite(mois,annee,obj) {
-        var site = "/companion/{{ guildid }}/iframerank?data="+mois+"?"+annee
+        var site = "/companion/{{ guildid }}/{{ option }}/iframe{{ command }}?data="+mois+"?"+annee+"?{{ obj }}"
         document.getElementById('iframeevol').src = site;
         try {document.getElementById("elselect").id = NaN}
         catch {}
@@ -15,19 +15,23 @@
 {% endblock script %}
 
 {% block stats %}
+<div class="searchTable">
+    <input type="text" id="searchTable" onkeyup="searchName(1)" placeholder="Recherchez une période">
+</div>
+
 <div class="stats">
     <table id="tableot">
         <tr><th colspan="4">Périodes mensuelles</th></tr>
         <tr>
             <th>Rang</th>
             <th>Date</th>
-            <th id="leg-barre">Barre</th>
+            <th>Barre</th>
             <th>Messages</th>
         </tr>
         {% for i in rankMois %}
             <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
                 <td>{{ i.Rank }}</td>
-                <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                <td id="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
                 <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ color }}"></div></td>
                 <td>{{ i.Count }}</td>
             </tr>
@@ -42,7 +46,7 @@
         {% for i in rankAnnee %}
             <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
                 <td>{{ i.Rank }}</td>
-                <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                <td id="{{ i.Annee }}00">{{ i.Mois }}/{{ i.Annee }}</td>
                 <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ color }}"></div></td>
                 <td>{{ i.Count }}</td>
             </tr>
