@@ -1,7 +1,7 @@
 import requests
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from ..outils import avatarAnim, collapseEvol, getMoisAnnee, getGuild, getTableDay, getTableRoles, getUser, colorRoles, connectSQL, rankingClassic, tableauMois, listeAnnee, listeMois
+from ..outils import avatarAnim, collapseEvol, getMoisAnnee, getGuild, getTableDay, getTableRoles, getTimes, getUser, colorRoles, connectSQL, rankingClassic, tableauMois
 from math import inf
 import plotly.graph_objects as go
 from plotly.offline import plot
@@ -20,10 +20,7 @@ def guildGraph(request,guild,section):
     
     roles_position,roles_color,roles_name=colorRoles(guild_full)
 
-    
-    maxi=-inf
-
-    #config = dict({'scrollZoom': True})
+    listeMois,listeAnnee=getTimes(guild,None)
 
     if section=="rank":
         old=1
@@ -79,7 +76,7 @@ def guildGraph(request,guild,section):
             paper_bgcolor="rgb(47,64,120)",
             font_family="Roboto",
             font_color="white",
-            xaxis={'categoryorder':'total descending'}
+            xaxis={'categoryorder':'total descending',"rangeslider":{"visible":True}},
         )
         fig.update_yaxes(automargin=True)
         div=plot(fig,output_type='div')
@@ -109,7 +106,6 @@ def guildGraph(request,guild,section):
         if members.status_code==200:
             members=members.json()
         table=getTableRoles(curseur,members,moisDB+anneeDB)
-        print(roles_color)
         for i in table:
             membres.append(roles_name[i])
             roles.append("@everyone")
@@ -143,7 +139,6 @@ def guildGraph(request,guild,section):
                         colors.append("rgb(110,200,250)")
 
         data = dict(membres=membres,roles=roles,count=count)
-        print(data)
         fig2 =go.Figure(go.Sunburst(
             labels=membres, parents=roles, values=count, ids=ids, marker_colors=colors
         ))
@@ -153,11 +148,10 @@ def guildGraph(request,guild,section):
             paper_bgcolor="rgb(47,64,120)",
             font_family="Roboto",
         )
-        #fig2.show()
         div2=plot(fig2,output_type='div')
 
         connexion.close()
-        ctx={"fig":div,"fig2":div2,"fig3":div3,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"max":maxi,"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"guilds":getGuilds(user)}
+        ctx={"fig":div,"fig2":div2,"fig3":div3,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"guilds":getGuilds(user)}
         return render(request, "companion/graph.html", ctx)
 
     elif section=="periods":
@@ -205,7 +199,6 @@ def guildGraph(request,guild,section):
         table=getTableRoles(curseur,members,moisDB+anneeDB)
         tableRoles=[]
         for i in table:
-            print(roles_color[i])
             tableRoles.append({"Rank":0,"Count":table[i],"Color":"#{0}".format(hex(roles_color[i])[2:]),"Name":roles_name[i],"ID":i})
         rankingClassic(tableRoles)
 
@@ -217,7 +210,6 @@ def guildGraph(request,guild,section):
     elif section=="jours":
         connexion,curseur=connectSQL(guild,"Messages","Stats","GL",None)
         table=getTableDay(curseur,tableauMois[moisDB],anneeDB)
-        print(table)
         maxi=max(list(map(lambda x:x["Count"],table)))
         ctx={"rank":table,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"nom":user_full["user"]["username"],"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"]}
         return render(request,"companion/jours.html",ctx)

@@ -15,6 +15,7 @@ def home(request):
     bot_ids=list(map(lambda x:x["id"], bguild_json))
 
     user_avatar=requests.get("https://discord.com/api/v9/users/@me",headers={"Authorization":"Bearer {0}".format(user.token)})
+    print(user_avatar)
     if user_avatar.status_code==401:
         user.token=refresh(user.refresh)
         return home(request)
