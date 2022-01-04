@@ -1,11 +1,21 @@
-import sqlite3
 import os
+import sqlite3
+
 import requests
 
-listeMois=["Total","Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Décembre"]
-listeAnnee=["Global","2015","2016","2017","2018","2019","2020","2021"]
+listeSections=["Accueil","Messages","Salons","Emotes","Vocal","Réactions","Mots","Fréquences"]
 
-tableauMois={"01":"Janvier","02":"Février","03":"Mars","04":"Avril","05":"Mai","06":"Juin","07":"Juillet","08":"Aout","09":"Septembre","10":"Octobre","11":"Novembre","12":"Décembre","TO":"TO","janvier":"01","février":"02","mars":"03","avril":"04","mai":"05","juin":"06","juillet":"07","aout":"08","septembre":"09","octobre":"10","novembre":"11","décembre":"12","glob":"GL","to":"TO","Total":"TO"}
+tableauMois={"01":"Janvier","02":"Février","03":"Mars","04":"Avril","05":"Mai","06":"Juin","07":"Juillet","08":"Aout","09":"Septembre","10":"Octobre","11":"Novembre","12":"Décembre","TO":"TO","janvier":"01","février":"02","mars":"03","avril":"04","mai":"05","juin":"06","juillet":"07","aout":"08","septembre":"09","octobre":"10","novembre":"11","décembre":"12","glob":"GL","to":"TO","Total":"TO","total":"to"}
+
+dictOptions={"messages":"Messages","voice":"Voice","salons":"Salons","voicechan":"Voicechan","emotes":"Emotes","reactions":"Reactions","mots":"Mots","freq":"Freq"}
+
+def getTimes(guild,option):
+    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
+    mois=curseur.execute("SELECT DISTINCT Mois FROM firstM ORDER BY Mois ASC").fetchall()
+    annee=curseur.execute("SELECT DISTINCT Annee FROM firstM ORDER BY Annee ASC").fetchall()
+    mois=list(map(lambda x:tableauMois[x["Mois"]],mois))+["Total"]
+    annee=list(map(lambda x:"20{0}".format(x["Annee"]),annee))+["Global"]
+    return mois,annee
 
 def dict_factory(cursor, row):
     d = {}
@@ -35,11 +45,11 @@ def connectSQL(guild,db,option,mois,annee):
         pathDir="SQL/OT/{0}".format(option)
         path="SQL/OT/{0}/{1}.db".format(option,db)
     elif mois in ("GL","glob") or annee in ("GL","glob"):
-        pathDir="E:/IFNO/OlborTrack/SQL/{0}/GL".format(guild)
-        path="E:/IFNO/OlborTrack/SQL/{0}/GL/{1}.db".format(guild,db)
+        pathDir="G:/IFNO/OlborTrack/SQL/{0}/GL".format(guild)
+        path="G:/IFNO/OlborTrack/SQL/{0}/GL/{1}.db".format(guild,db)
     else:
-        pathDir="E:/IFNO/OlborTrack/SQL/{0}/{1}/{2}".format(guild,annee,mois.upper())
-        path="E:/IFNO/OlborTrack/SQL/{0}/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
+        pathDir="G:/IFNO/OlborTrack/SQL/{0}/{1}/{2}".format(guild,annee,mois.upper())
+        path="G:/IFNO/OlborTrack/SQL/{0}/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
 
     if not os.path.exists(pathDir):
         os.makedirs(pathDir)
@@ -164,3 +174,47 @@ def getTableDay(curseur:sqlite3.Cursor,mois:str,annee:str) -> list:
         return curseur.execute("SELECT *, Annee || '' || Mois || '' || Jour AS DateID FROM dayRank WHERE Annee='{0}' ORDER BY Count DESC".format(annee)).fetchall()
     else:
         return curseur.execute("SELECT *, Annee || '' || Mois || '' || Jour AS DateID FROM dayRank WHERE Mois='{0}' AND Annee='{1}' ORDER BY Count DESC".format(mois,annee,)).fetchall()
+
+
+def getTablePerso(guild,option,id,idobj,period,tri):
+    liste=[]
+    connectionF,curseurF=connectSQL(guild,option,"Stats","GL","")
+    for i in curseurF.execute("SELECT Mois,Annee FROM first{0}".format(period)).fetchall():
+        try:
+            connection,curseur=connectSQL(guild,option,"Stats",i["Mois"],i["Annee"])
+            if not idobj:
+                stat=curseur.execute("SELECT Rank,Count,Mois,Annee,ID FROM {0}{1} WHERE ID={2}".format(tableauMois[i["Mois"]],i["Annee"],id)).fetchone()
+            else:
+                stat=curseur.execute("SELECT Rank,Count,Mois,Annee,ID FROM perso{0}{1}{2} WHERE ID={3}".format(i["Mois"],i["Annee"],id,idobj)).fetchone()
+            if stat!=None:
+                liste.append(stat)
+        except:
+            pass
+    if tri=="countDesc":
+        liste.sort(key=lambda x:x["Count"],reverse=True)
+    elif tri=="periodAsc":
+        liste.sort(key=lambda x:x["Annee"]+x["Mois"])
+    elif tri=="periodDesc":
+        liste.sort(key=lambda x:x["Annee"]+x["Mois"],reverse=True)
+    elif tri=="rankAsc":
+        liste.sort(key=lambda x:x["Rank"])
+    return liste
+
+
+def getGuilds(user):
+    bot_guilds=requests.get("https://discord.com/api/v9/users/@me/guilds",headers={"Authorization":"Bot Njk5NzI4NjA2NDkzOTMzNjUw.XpYnDA.ScdeM2sFekTRHY5hubkwg0HWDPU"})
+    bguild_json=bot_guilds.json()
+    bot_ids=list(map(lambda x:x["id"], bguild_json))
+    user_guild=requests.get("https://discord.com/api/v9/users/@me/guilds",headers={"Authorization":"Bearer {0}".format(user.token)})
+    uguild_json=user_guild.json()
+
+    common=list(filter(lambda x: x["id"] in bot_ids, uguild_json))
+    final_guilds=[]
+
+    for guild in common:
+        if guild["icon"]!=None:
+            end=avatarAnim(guild["icon"][0:2])
+        final_guilds.append({"ID":int(guild["id"]),"Nom":guild["name"],"Icon":guild["icon"],"Anim":end})
+
+    final_guilds.sort(key=lambda x:x["Nom"])
+    return final_guilds

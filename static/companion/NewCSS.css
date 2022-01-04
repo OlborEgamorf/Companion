@@ -11,6 +11,8 @@
 
 .links {
     flex: 1 1 auto;
+    justify-content: center;
+    display: flex;
 }
 .links a {
     color:white;
@@ -37,6 +39,8 @@
 
 .user-avatar {
     flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
 }
 
 
@@ -398,11 +402,6 @@ tr:hover {
   }
   
 
-.sidenav a:hover {
-    color: #f1f1f1;
-  }
-  
-
 .main {
     margin-left: 160px; /* Same as the width of the sidebar */
     padding: 0px 10px;
@@ -439,7 +438,10 @@ tr:hover {
     width: 400px;
     transition: all 0.5s;
     border-radius: 0;
+    color: #f1f1f1;
 }
+
+
 
 .sidenav a img:hover {
     border-radius: 25%;
@@ -448,4 +450,28 @@ tr:hover {
 
 .ot-logo:hover {
     background-image: url(https://cdn.discordapp.com/attachments/726034739550486618/908632652242882590/thin.png);
+}
+
+.focus-logo:hover {
+    background-image: url(https://cdn.discordapp.com/attachments/726034739550486618/920017345404092416/FOCUSTHIN.png);
+}
+
+
+.stats-compare {
+    display: flex;
+    width: 80%;
+    margin: 10px auto;
+}
+
+.iframe-compare {
+    width: 100%;
+}
+
+.div-compare {
+    width:100%
+}
+
+.searchTable {
+    display: flex;
+    justify-content: center;
 }
