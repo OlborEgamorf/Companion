@@ -27,10 +27,10 @@
 
 <body class="bodyiframe">
     <table class="table-iframe">
-        <tr><th colspan="5">Classement {{ role }} {{ jour }} {{ mois }} {{ annee }}</th></tr>
+        <tr><th colspan="4">Classement {{ role }} {{ jour }} {{ mois }} {{ annee }}</th></tr>
             <tr>
                 <th>Rang</th>
-                <th colspan="2">Membre</th>
+                <th>Membre</th>
                 <th id="leg-barre">Barre</th>
                 <th>Messages</th>
             </tr>
@@ -41,11 +41,6 @@
                     <tr id="{{ i.ID }}" onmouseover="hoverID('{{ i.ID }}')" onmouseleave="leaveHover('{{ i.ID }}')">
                 {% endif %}
                     <td>{{ i.Rank }}</td>
-                    <td>
-                    {% if i.Avatar %}
-                        <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
-                    {% endif %}
-                    </td>
                     <td style="text-align: start;">{{ i.Nom }}</td>
                     <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
                     <td>{{ i.Count|tempsvoice:option }}</td>

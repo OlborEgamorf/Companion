@@ -5,8 +5,9 @@ from django.shortcuts import render
 
 from ..Getteurs import *
 from ..outils import (avatarAnim, colorRoles, connectSQL, dictOptions,
-                      getGuild, getGuilds, getMoisAnnee, getTablePerso,
-                      getUser, tableauMois)
+                      dictRefCommands, dictRefOptions, getCommands, getGuild,
+                      getGuilds, getMoisAnnee, getTablePerso, getUser,
+                      listeOptions, tableauMois)
 
 
 @login_required(login_url="/login")
@@ -18,21 +19,20 @@ def viewServ(request,guild,option):
 
     user_full=getUser(guild,user.id)
     user_avatar=user_full["user"]["avatar"]
-    
-    roles_position,roles_color,roles_name=colorRoles(guild_full)
 
     full_guilds=getGuilds(user)
-
-    listeCateg=["Classements","Périodes","Évolution","Rôles","Jours","Rapports"]
-    listeSections=["Accueil","Messages","Salons","Emotes","Vocal","Réactions","Mots","Fréquences"]
-    dictRef={"Classements":"rank","Périodes":"periods","Évolution":"evol","Rôles":"roles","Jours":"jours","Rapport":"rapport"}
     
-    ctx={"rankMois":None,"rankAnnee":None,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"maxM":None,"maxA":None,"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"color":None,"guilds":full_guilds,"type":"Serv","categs":listeCateg,"hrefs":dictRef,"travel":False,"sections":listeSections,"section":dictOptions[option],"selector":True,"option":option,"command":"serv"}
+    ctx={"rankMois":None,"rankAnnee":None,"maxM":None,"maxA":None,
+    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"color":None,
+    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
+    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"serv",
+    "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "selector":True,"travel":False,}
 
     if option in ("emotes","reactions"):
         full_emotes=getAllEmotes(full_guilds)
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
-    listeObj=curseur.execute("SELECT * FROM persoTOGL{0} ORDER BY Count DESC".format(user.id)).fetchall()
+    listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
     if option in ("emotes","reactions"):
         listeObj=list(map(lambda x:getEmoteTable(x,full_emotes),listeObj))
     elif option in ("salons","voicechan"):
@@ -51,6 +51,8 @@ def viewServ(request,guild,option):
 
     ctx["maxM"]=max(list(map(lambda x:x["Count"],ctx["rankMois"])))
     ctx["maxA"]=max(list(map(lambda x:x["Count"],ctx["rankAnnee"])))
+
+    print(ctx["obj"])
     
     return render(request, "companion/periods.html", ctx)
 
@@ -67,7 +69,6 @@ def iFrameServ(request,guild,option):
     mois,annee,moisDB,anneeDB=getMoisAnnee(tableauMois[mois],annee)
     user=request.user
 
-    guild_full=getGuild(guild)
     full_guilds=getGuilds(user)
     if option in ("emotes","reactions"):
         full_emotes=getAllEmotes(full_guilds)
@@ -96,5 +97,8 @@ def iFrameServ(request,guild,option):
         maxi=max(maxi,i["Count"])
     
     connexion.close()
-    ctx={"rank":stats,"id":obj,"max":maxi,"mois":mois,"annee":annee}
-    return render(request, "companion/Ranks/iFrameRanks_ranks.html", ctx)
+    ctx={"rank":stats,"id":int(obj),"max":maxi,"mois":mois,"annee":annee,"option":option}
+    if option in ("emotes","reactions"):
+        return render(request, "companion/Serv/iFrameServEmotes.html", ctx)
+    elif option in ("salons","voicechan","freq"):
+        return render(request, "companion/Serv/iFrameServAutres.html", ctx)

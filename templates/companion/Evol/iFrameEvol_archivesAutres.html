@@ -11,6 +11,8 @@
     <title>Olbor Track Companion</title>
 </head>
 
+{% load TagsCustom %}
+
 <body class="bodyiframe">
     <table class="table-iframe">
         <tr><th colspan="5">Archive {{ mois }} {{ annee }} au {{ jour }} {{ mois }} {{ annee }}</th></tr>
@@ -29,7 +31,7 @@
                     <td>{{ i.Rank }}</td>
                     <td style="text-align: start;">{{ i.Nom }}</td>
                     <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ moisTabMaxi }}); background-color: {{ i.Color }}"></div></td>
-                    <td>{{ i.Count }}</td>
+                    <td>{{ i.Count|tempsvoice:option }}</td>
                 </tr>
             {% endfor %}
     </table>
@@ -51,7 +53,7 @@
                     <td>{{ i.Rank }}</td>
                     <td style="text-align: start;">{{ i.Nom }}</td>
                     <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ anneeTabMaxi }}); background-color: {{ i.Color }}"></div></td>
-                    <td>{{ i.Count }}</td>
+                    <td>{{ i.Count|tempsvoice:option }}</td>
                 </tr>
             {% endfor %}
     </table>
@@ -73,7 +75,7 @@
                     <td>{{ i.Rank }}</td>
                     <td style="text-align: start;">{{ i.Nom }}</td>
                     <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ globTabMaxi }}); background-color: {{ i.Color }}"></div></td>
-                    <td>{{ i.Count }}</td>
+                    <td>{{ i.Count|tempsvoice:option }}</td>
                 </tr>
             {% endfor %}
     </table>

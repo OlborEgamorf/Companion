@@ -15,6 +15,7 @@
 {% endblock script %}
 
 {% block stats %}
+{% load TagsCustom %}
 <div class="searchTable">
     <input type="text" id="searchTable" onkeyup="searchName(1)" placeholder="Recherchez une période">
 </div>
@@ -33,7 +34,7 @@
                 <td>{{ i.Rank }}</td>
                 <td id="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
                 <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ color }}"></div></td>
-                <td>{{ i.Count }}</td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
             </tr>
         {% endfor %}
         <tr><th colspan="4">Périodes annuelles</th></tr>
@@ -48,7 +49,7 @@
                 <td>{{ i.Rank }}</td>
                 <td id="{{ i.Annee }}00">{{ i.Mois }}/{{ i.Annee }}</td>
                 <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ color }}"></div></td>
-                <td>{{ i.Count }}</td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
             </tr>
         {% endfor %}
     </table>

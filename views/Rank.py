@@ -4,11 +4,12 @@ import requests
 from django.contrib.auth.decorators import login_required
 from django.http.response import JsonResponse
 from django.shortcuts import render
-from ..Getteurs import *
 
+from ..Getteurs import *
 from ..outils import (avatarAnim, collapseEvol, colorRoles, connectSQL,
-                      dictOptions, getGuild, getGuilds, getMoisAnnee, getTimes,
-                      getUser, listeSections, tableauMois)
+                      dictOptions, dictRefCommands, dictRefOptions,
+                      getCommands, getGuild, getGuilds, getMoisAnnee, getTimes,
+                      getUser, listeOptions, tableauMois)
 
 
 @login_required(login_url="/login")
@@ -25,9 +26,6 @@ def viewRank(request,guild,option):
     
     roles_position,roles_color,roles_name=colorRoles(guild_full)
 
-    listeCateg=["Classements","Périodes","Évolution","Rôles","Jours","Rapports"]
-    dictRef={"Classements":"rank","Périodes":"periods","Évolution":"evol","Rôles":"roles","Jours":"jours","Rapport":"rapport"}
-
     maxi=-inf
     stats=[]
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
@@ -36,7 +34,13 @@ def viewRank(request,guild,option):
     full_guilds=getGuilds(user)
     listeMois,listeAnnee=getTimes(guild,option)
 
-    ctx={"rank":stats,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"max":maxi,"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"guilds":full_guilds,"type":"Classements","categs":listeCateg,"hrefs":dictRef,"travel":True,"sections":listeSections,"section":dictOptions[option],"selector":True,"obj":None,"option":option}
+    ctx={"rank":stats,"max":maxi,
+    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),
+    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
+    "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
+    "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "travel":True,"selector":True,"obj":None}
 
     if option in ("emotes","reactions"):
         full_emotes=getAllEmotes(full_guilds)
@@ -83,7 +87,7 @@ def iFrameRank(request,guild,option):
     
     roles_position,roles_color,roles_name=colorRoles(guild_full)
     
-    connexion,curseur=connectSQL(guild,option,"Stats",tableauMois[moisDB],anneeDB)
+    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
 
     table=curseur.execute("SELECT * FROM evol{0}{1}{2}".format(moisDB,anneeDB,id)).fetchall()
     table=collapseEvol(table)
@@ -96,7 +100,7 @@ def iFrameRank(request,guild,option):
 
     maxi=max(list(map(lambda x:x["Count"],table)))
 
-    ctx={"rank":table,"id":user.id,"color":color,"max":maxi,"mois":mois,"annee":annee,"nom":user_full["user"]["username"]}
+    ctx={"rank":table,"id":user.id,"color":color,"max":maxi,"mois":mois,"annee":annee,"nom":user_full["user"]["username"],"option":option}
     connexion.close()
     return render(request,"companion/Ranks/iFrameRanks_evol.html",ctx)
 
@@ -112,7 +116,7 @@ def iFrameRankObj(request,guild,option):
     
     roles_position,roles_color,roles_name=colorRoles(guild_full)
     
-    connexion,curseur=connectSQL(guild,option,"Stats",tableauMois[moisDB],anneeDB)
+    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
 
     maxi=-inf
     stats=[]
@@ -120,7 +124,8 @@ def iFrameRankObj(request,guild,option):
     for i in curseur.execute("SELECT * FROM {0}{1}{2} ORDER BY Rank ASC".format(moisDB,anneeDB,obj)).fetchall():
 
         stats.append(getUserTable(i,guild,roles_position,roles_color))
+        maxi=max(maxi,i["Count"])
     
     connexion.close()
-    ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee}
+    ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"option":option}
     return render(request, "companion/Ranks/iFrameRanks_ranks.html", ctx)

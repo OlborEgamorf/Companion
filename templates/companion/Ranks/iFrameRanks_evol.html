@@ -11,6 +11,8 @@
     <title>Olbor Track Companion</title>
 </head>
 
+{% load TagsCustom %}
+
 <body class="bodyiframe">
     <table class="table-iframe">
         <tr><th colspan="4">Statistiques évolution {{ mois }} {{ annee }}, {{ nom }}</th></tr>
@@ -31,7 +33,7 @@
                 {% endif %}
                 <td class="date">{{ i.Jour }} / {{ i.Mois }} / {{ i.Annee }}</td>
                 <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ color }}"></div></td>
-                <td>{{ i.Count }}</td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
             </tr>
         {% endfor %}
     </table>

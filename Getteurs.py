@@ -1,6 +1,5 @@
 import requests
 
-
 def getAllEmotes(full_guilds):
     full_emotes=[]
     for i in full_guilds:

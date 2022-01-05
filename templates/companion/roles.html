@@ -15,6 +15,7 @@
 {% endblock script %}
 
 {% block stats %}
+{% load TagsCustom %}
 <div class="stats">
     <table id="tableot">
         <tr><th colspan="5">Classement {{ mois }} {{ annee }}</th></tr>
@@ -31,9 +32,9 @@
                 <tr onClick="newSite('{{ i.ID }}',this)">
             {% endif %}
                 <td>{{ i.Rank }}</td>
-                <td style="text-align: start;">{{ i.Name }}</td>
+                <td style="text-align: start;">{{ i.Nom }}</td>
                 <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
-                <td>{{ i.Count }}</td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
             </tr>
         {% endfor %}
     </table>

@@ -1,0 +1,80 @@
+{% extends "companion/BASE.html" %}
+{% block script %}
+<script type="text/javascript">
+    
+    function newSite(id,obj,mois,annee) {
+        var site = "/companion/{{ guildid }}/{{ option }}/iframefirst?data="+mois+"?"+annee+"?"+id
+        document.getElementById('iframeevol').src = site;
+        try {document.getElementById("elselect").id = NaN}
+        catch {}
+        obj.id = "elselect"
+    }    
+
+</script>
+{% endblock script %}
+
+
+
+{% block stats %}
+<div class="searchTable">
+    <input type="text" id="searchTable" onkeyup="searchName(0)" placeholder="Recherchez une période">
+</div>
+
+<div class="stats">
+    <table id="tableot">
+        <tr><th colspan="5">Périodes mensuelles</th></tr>
+        <tr>
+            <th>Période</th>
+            <th colspan="2">Membre</th>
+            <th id="leg-barre">Barre</th>
+            <th>Messages</th>
+        </tr>
+        {% for i in rankMois %}
+            {% if i.ID == id %}
+                <tr class="user" onClick="newSite('{{ i.ID }}',this,'{{ i.Mois }}','{{ i.Annee }}')">
+            {% else %}
+                <tr onClick="newSite('{{ i.ID }}',this,'{{ i.Mois }}','{{ i.Annee }}')">
+            {% endif %}
+                <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                <td>
+                    {% if i.Animated %}
+                        <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                    {% else %}
+                        <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                    {% endif %}
+                </td>
+                <td style="text-align: start;">{{ i.Nom }}</td>
+                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ i.Color }}"></div></td>
+                <td>{{ i.Count }}</td>
+            </tr>
+        {% endfor %}
+        <tr><th colspan="5">Périodes annuelles</th></tr>
+        <tr>
+            <th>Période</th>
+            <th colspan="2">Membre</th>
+            <th id="leg-barre">Barre</th>
+            <th>Messages</th>
+        </tr>
+        {% for i in rankAnnee %}
+            {% if i.ID == id %}
+                <tr class="user" onClick="newSite('{{ i.ID }}',this,'{{ i.Mois }}','{{ i.Annee }}')">
+            {% else %}
+                <tr onClick="newSite('{{ i.ID }}',this,'{{ i.Mois }}','{{ i.Annee }}')">
+            {% endif %}
+                <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                <td>
+                    {% if i.Animated %}
+                        <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                    {% else %}
+                        <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                    {% endif %}
+                </td>
+                <td style="text-align: start;">{{ i.Nom }}</td>
+                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ i.Color }}"></div></td>
+                <td>{{ i.Count }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <iframe id="iframeevol" src="/companion/iframeblank" scrolling="no" onload="resizeIframe(this)"></iframe>
+</div>
+{% endblock stats %}

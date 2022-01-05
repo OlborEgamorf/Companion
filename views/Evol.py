@@ -5,8 +5,9 @@ from django.shortcuts import render
 
 from ..Getteurs import *
 from ..outils import (avatarAnim, collapseEvol, colorRoles, connectSQL,
-                      dictOptions, getGuild, getGuilds, getMoisAnnee, getTimes,
-                      getUser, tableauMois)
+                      dictOptions, dictRefCommands, dictRefOptions,
+                      getCommands, getGuild, getGuilds, getMoisAnnee, getTimes,
+                      getUser, listeOptions, tableauMois)
 
 
 @login_required(login_url="/login")
@@ -25,12 +26,14 @@ def viewEvol(request,guild,option):
     listeMois,listeAnnee=getTimes(guild,option)
 
     full_guilds=getGuilds(user)
-    
-    listeCateg=["Classements","Périodes","Évolution","Rôles","Jours","Rapports"]
-    listeSections=["Accueil","Messages","Salons","Emotes","Vocal","Réactions","Mots","Fréquences"]
-    dictRef={"Classements":"rank","Périodes":"periods","Évolution":"evol","Rôles":"roles","Jours":"jours","Rapport":"rapport"}
 
-    ctx={"rank":None,"id":user.id,"color":None,"max":None,"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"nom":user_full["user"]["username"],"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"type":"Évolution","categs":listeCateg,"hrefs":dictRef,"travel":True,"sections":listeSections,"section":dictOptions[option],"selector":True,"option":option,"guilds":full_guilds}
+    ctx={"rank":None,"max":None,
+    "id":user.id,"color":None,"nom":user_full["user"]["username"],"avatar":user_avatar,"anim":avatarAnim(user_avatar),
+    "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
+    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"evol",
+    "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "travel":True,"selector":True,}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
     if option in ("messages","voice","mots"):
@@ -57,8 +60,6 @@ def viewEvol(request,guild,option):
         
         ctx["obj"]=int(obj)
         ctx["listeObjs"]=listeObj
-        print(listeObj)
-        print(obj)
             
     maxi=-inf
     
@@ -91,7 +92,7 @@ def iFrameEvol(request,guild,option):
 
     maxi=-inf
     dictUsers={}
-    ctx={"id":user.id,"mois":mois,"annee":annee,"jour":jour}
+    ctx={"id":user.id,"mois":mois,"annee":annee,"jour":jour,"option":option}
     liste={"moisTab":tabMois,"anneeTab":tabAnnee,"globTab":tabGlob}
 
     if obj!="None":

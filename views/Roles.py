@@ -1,16 +1,21 @@
 from math import inf
 
 import requests
+from companion.Getteurs import (getAllEmotes, getChannels, getEmoteTable,
+                                getFreq)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from ..outils import (avatarAnim, colorRoles, connectSQL, getGuild, getGuilds,
-                      getMoisAnnee, getTableRoles, getTimes, getUser, rankingClassic, tableauMois)
+from ..outils import (avatarAnim, colorRoles, connectSQL, dictRefCommands,
+                      dictRefOptions, getCommands, getGuild, getGuilds,
+                      getMoisAnnee, getMoisAnneePerso, getTableRoles,
+                      getTableRolesMem, getTimes, getUser, listeOptions,
+                      rankingClassic, tableauMois, dictOptions)
 
 
 @login_required(login_url="/login")
 def viewRoles(request,guild,option):
-    mois,annee = request.GET.get("mois"),request.GET.get("annee")
+    mois,annee,obj = request.GET.get("mois"),request.GET.get("annee"),request.GET.get("obj")
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
     user=request.user
 
@@ -21,27 +26,74 @@ def viewRoles(request,guild,option):
     
     roles_position,roles_color,roles_name=colorRoles(guild_full)
 
+    full_guilds=getGuilds(user)
     listeMois,listeAnnee=getTimes(guild,option)
 
-    listeCateg=["Classements","Périodes","Évolution","Rôles","Jours","Rapports"]
-    listeSections=["Accueil","Messages","Salons","Emotes","Vocal","Réactions","Mots","Fréquences"]
-    dictRef={"Classements":"rank","Périodes":"periods","Évolution":"evol","Rôles":"roles","Jours":"jours","Rapport":"rapport"}
-
-    
+    stats=[]
     maxi=-inf
-    connexion,curseur=connectSQL(guild,"Messages","Stats",tableauMois[moisDB],anneeDB)
+
+    if option in ("emotes","reactions"):
+        full_emotes=getAllEmotes(full_guilds)
+    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
+    listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
+    if option in ("emotes","reactions"):
+        listeObj=list(map(lambda x:getEmoteTable(x,full_emotes),listeObj))
+    elif option in ("salons","voicechan"):
+        listeObj=list(map(lambda x:getChannels(x),listeObj))
+    elif option=="freq":
+        listeObj=list(map(lambda x:getFreq(x),listeObj))
+    roles=list(map(lambda x:{"Nom":roles_name[x],"ID":x}, roles_name))
+    listeObj=roles[1:]+listeObj
+
+    ctx={"rank":stats,"max":maxi,
+    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),
+    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
+    "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"roles",
+    "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "travel":True,"selector":True,"obj":int(obj),"listeObjs":listeObj}
+
+    print(tableauMois[moisDB],anneeDB)
+    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
     members=requests.get("https://discord.com/api/v9/guilds/{0}/members?limit=1000".format(guild),headers={"Authorization":"Bot Njk5NzI4NjA2NDkzOTMzNjUw.XpYnDA.ScdeM2sFekTRHY5hubkwg0HWDPU"})
     if members.status_code==200:
         members=members.json()
-    table=getTableRoles(curseur,members,moisDB+anneeDB)
-    tableRoles=[]
-    for i in table:
-        tableRoles.append({"Rank":0,"Count":table[i],"Color":"#{0}".format(hex(roles_color[i])[2:]),"Name":roles_name[i],"ID":i})
-    rankingClassic(tableRoles)
+    if option in ("messages","voice","mots"):
+        table=getTableRoles(curseur,members,moisDB+anneeDB)
+        for i in table:
+            stats.append({"Rank":0,"Count":table[i],"Color":"#{0}".format(hex(roles_color[i])[2:]),"Nom":roles_name[i],"ID":i})
+        rankingClassic(stats)
+    else:
+        if obj==None:
+            obj=listeObj[0]["ID"]
+            ctx["obj"]=int(obj)
+        roles_id=list(map(lambda x:x["id"],guild_full["roles"]))
+        if obj in roles_id:
+            mois,annee,moisDB,anneeDB=getMoisAnneePerso(mois,annee)
+            table=getTableRolesMem(curseur,members,obj,moisDB,anneeDB)
+            for i in table:
+                opti={"ID":i,"Count":table[i],"Rank":0}
+                if option in ("emotes","reactions"):
+                    opti=getEmoteTable(opti,full_emotes)
 
-    maxi=max(list(map(lambda x:x["Count"],tableRoles)))
+                elif option in ("salons","voicechan"):
+                    opti=getChannels(opti)
+
+                elif option=="freq":
+                    opti=getFreq(opti)
+
+                opti["Color"]=None
+                stats.append(opti)
+            rankingClassic(stats)
+        else:
+            table=getTableRoles(curseur,members,moisDB+anneeDB+str(obj))
+            for i in table:
+                stats.append({"Rank":0,"Count":table[i],"Color":"#{0}".format(hex(roles_color[i])[2:]),"Nom":roles_name[i],"ID":i})
+            rankingClassic(stats)
+        
+
+    ctx["max"]=max(list(map(lambda x:x["Count"],stats)))
     connexion.close()
-    ctx={"rank":tableRoles,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"nom":user_full["user"]["username"],"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":getGuilds(user),"type":"Rôles","categs":listeCateg,"hrefs":dictRef,"travel":True,"sections":listeSections,"section":"Messages","selector":True}
     return render(request,"companion/roles.html",ctx)
     
 
@@ -56,7 +108,7 @@ def iFrameRoles(request,guild,option):
     
     roles_position,roles_color,roles_name=colorRoles(guild_full)
     
-    connexion,curseur=connectSQL(guild,"Messages","Stats",tableauMois[moisDB],anneeDB)
+    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
 
     members=requests.get("https://discord.com/api/v9/guilds/{0}/members?limit=1000".format(guild),headers={"Authorization":"Bot Njk5NzI4NjA2NDkzOTMzNjUw.XpYnDA.ScdeM2sFekTRHY5hubkwg0HWDPU"})
     if members.status_code==200:
@@ -80,5 +132,5 @@ def iFrameRoles(request,guild,option):
     
     stats.sort(key=lambda x:x["Rank"])
     connexion.close()
-    ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"role":roles_name[role]}
+    ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"role":roles_name[role],"option":option}
     return render(request, "companion/rankIFrame.html", ctx)

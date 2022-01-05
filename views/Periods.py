@@ -5,8 +5,9 @@ from django.shortcuts import render
 
 from ..Getteurs import *
 from ..outils import (avatarAnim, colorRoles, connectSQL, dictOptions,
-                      getGuild, getGuilds, getMoisAnnee, getTablePerso,
-                      getUser, tableauMois)
+                      dictRefCommands, dictRefOptions, getCommands, getGuild,
+                      getGuilds, getMoisAnnee, getTablePerso, getUser,
+                      listeOptions, tableauMois)
 
 
 @login_required(login_url="/login")
@@ -22,40 +23,22 @@ def viewPeriods(request,guild,option):
     roles_position,roles_color,roles_name=colorRoles(guild_full)
 
     full_guilds=getGuilds(user)
-
-    listeCateg=["Classements","Périodes","Évolution","Rôles","Jours","Rapports"]
-    listeSections=["Accueil","Messages","Salons","Emotes","Vocal","Réactions","Mots","Fréquences"]
-    dictRef={"Classements":"rank","Périodes":"periods","Évolution":"evol","Rôles":"roles","Jours":"jours","Rapport":"rapport"}
     
-    ctx={"rankMois":None,"rankAnnee":None,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"maxM":None,"maxA":None,"guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"color":None,"guilds":full_guilds,"type":"Périodes","categs":listeCateg,"hrefs":dictRef,"travel":False,"sections":listeSections,"section":dictOptions[option],"selector":True,"option":option,"command":"periods"}
+    ctx={"rankMois":None,"rankAnnee":None,"maxM":None,"maxA":None,
+    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"color":None,
+    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
+    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"periods",
+    "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "travel":False,"selector":True}
 
-    if option in ("messages","voice","mots"):
-        user_full["roles"].sort(key=lambda x:roles_position[x], reverse=True)
-        if len(user_full["roles"])==0:
-            ctx["color"]=None
-        else:
-            ctx["color"]="#{0}".format(hex(roles_color[user_full["roles"][0]])[2:])
-        obj=False
+    user_full["roles"].sort(key=lambda x:roles_position[x], reverse=True)
+    if len(user_full["roles"])==0:
+        ctx["color"]=None
     else:
-        if option in ("emotes","reactions"):
-            full_emotes=getAllEmotes(full_guilds)
-        connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
-        listeObj=curseur.execute("SELECT * FROM persoTOGL{0} ORDER BY Count DESC".format(user.id)).fetchall()
-        if option in ("emotes","reactions"):
-            listeObj=list(map(lambda x:getEmoteTable(x,full_emotes),listeObj))
-        elif option in ("salons","voicechan"):
-            listeObj=list(map(lambda x:getChannels(x),listeObj))
-        elif option=="freq":
-            listeObj=list(map(lambda x:getFreq(x),listeObj))
+        ctx["color"]="#{0}".format(hex(roles_color[user_full["roles"][0]])[2:])
 
-        if obj==None:
-            obj=listeObj[0]["ID"]
-        
-        ctx["obj"]=int(obj)
-        ctx["listeObjs"]=listeObj
-
-    ctx["rankMois"]=getTablePerso(guild,dictOptions[option],user.id,obj,"M","countDesc")
-    ctx["rankAnnee"]=getTablePerso(guild,dictOptions[option],user.id,obj,"A","countDesc")
+    ctx["rankMois"]=getTablePerso(guild,dictOptions[option],user.id,False,"M","countDesc")
+    ctx["rankAnnee"]=getTablePerso(guild,dictOptions[option],user.id,False,"A","countDesc")
 
     ctx["maxM"]=max(list(map(lambda x:x["Count"],ctx["rankMois"])))
     ctx["maxA"]=max(list(map(lambda x:x["Count"],ctx["rankAnnee"])))
@@ -73,6 +56,7 @@ def iFramePeriods(request,guild,option):
     if annee not in ("GL","Global"):
         annee="20"+annee
     mois,annee,moisDB,anneeDB=getMoisAnnee(tableauMois[mois],annee)
+    print(mois,annee,moisDB,anneeDB)
     user=request.user
 
     guild_full=getGuild(guild)
@@ -100,5 +84,5 @@ def iFramePeriods(request,guild,option):
         maxi=max(maxi,i["Count"])
     
     connexion.close()
-    ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee}
+    ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"option":option}
     return render(request, "companion/Ranks/iFrameRanks_ranks.html", ctx)

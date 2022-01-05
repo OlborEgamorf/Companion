@@ -26,7 +26,7 @@ def emotesMondial(request):
     liste.sort(key=lambda x:x["Rank"])
     maxi=liste[0]["Count"]
     ctx={"rank":liste,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"max":maxi,"mois":mois,"annee":annee,"guilds":getGuilds(user),"type":"Classements","categs":None,"hrefs":[],"sections":["Jeux","Emotes"],"section":"Emotes","guildid":0,"guildname":"Mondial","selector":False}
-    return render(request, "companion/emotesmondial.html", ctx)
+    return render(request, "companion/EmotesWW/emotesmondial.html", ctx)
 
 
 @login_required(login_url="/login")
@@ -53,5 +53,5 @@ def iframeEmotes(request,emote):
         maxi=max(maxi,i["Count"])
 
     ctx={"rank":liste,"id":user.id,"max":maxi,"mois":mois,"annee":annee}
-    return render(request, "companion/emoteswwIFrame.html", ctx)
+    return render(request, "companion/EmotesWW/iFrameEmotesWW.html", ctx)
 

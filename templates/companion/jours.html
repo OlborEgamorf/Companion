@@ -4,7 +4,7 @@
 <script type="text/javascript">
     
     function newSite(jour,mois,annee,obj) {
-        var site = "/companion/{{ guildid }}/iframejours?data="+jour+"?"+mois+"?"+annee
+        var site = "/companion/{{ guildid }}/{{ option }}/iframejours?data="+jour+"?"+mois+"?"+annee
         document.getElementById('iframeevol').src = site
         try {document.getElementById("elselect").id = NaN}
         catch {}
@@ -15,6 +15,7 @@
 {% endblock script %}
 
 {% block stats %}
+{% load TagsCustom %}
 <div class="stats">
     <table id="tableot">
         <tr><th colspan="4">Classement jours {{ mois }} {{ annee }}</th></tr>
@@ -29,7 +30,7 @@
                 <td>{{ i.Rank }}</td>
                 <td class="date">{{ i.Jour }} / {{ i.Mois }} / {{ i.Annee }}</td>
                 <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }})"></div></td>
-                <td>{{ i.Count }}</td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
             </tr>
         {% endfor %}
     </table>

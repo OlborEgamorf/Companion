@@ -9,6 +9,26 @@ tableauMois={"01":"Janvier","02":"Février","03":"Mars","04":"Avril","05":"Mai",
 
 dictOptions={"messages":"Messages","voice":"Voice","salons":"Salons","voicechan":"Voicechan","emotes":"Emotes","reactions":"Reactions","mots":"Mots","freq":"Freq"}
 
+listeCommands=["ranks","perso","periods","serv","evol","first","roles","jours","moy","rapport"]
+listeOptions=["home","messages","salons","emotes","voice","reactions","mots","freq"]
+dictRefCommands={"ranks":"Classements","periods":"Périodes","serv":"Serveur","perso":"Perso","evol":"Évolutions","first":"Premiers","roles":"Rôles","jours":"Jours","moy":"Moyennes","rapport":"Rapports","mondial":"Mondial"}
+dictRefOptions={"home":"Accueil","messages":"Messages","voice":"Vocal","salons":"Salons","voicechan":"Salons vocaux","emotes":"Emotes","reactions":"Réactions","mots":"Mots","freq":"Fréquences"}
+
+def getCommands(option):
+    liste=listeCommands.copy()
+    if option!="messages":
+        liste.remove("moy")
+    if option not in ("messages","voice"):
+        liste.remove("jours")
+    if option in ("messages","voice","mots"):
+        liste.remove("serv")
+        liste.remove("perso")
+    if option not in ("messages","voice","mots"):
+        liste.remove("periods")
+    if option=="emotes":
+        liste.append("mondial")
+    return liste
+
 def getTimes(guild,option):
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
     mois=curseur.execute("SELECT DISTINCT Mois FROM firstM ORDER BY Mois ASC").fetchall()
@@ -29,11 +49,11 @@ def connectSQL(guild,db,option,mois,annee):
         path="SQL/{0}/Guild/{1}.db".format(guild,db)
     elif db in ("Voice","Voicechan"):
         if mois in ("GL","glob") or annee in ("GL","glob"):
-            pathDir="SQL/{0}/Voice/GL".format(guild)
-            path="SQL/{0}/Voice/GL/{1}.db".format(guild,db)
+            pathDir="G:/IFNO/OlborTrack/SQL/{0}/Voice/GL".format(guild)
+            path="G:/IFNO/OlborTrack/SQL/{0}/Voice/GL/{1}.db".format(guild,db)
         else:
-            pathDir="SQL/{0}/Voice/{1}/{2}".format(guild,annee,mois.upper())
-            path="SQL/{0}/Voice/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
+            pathDir="G:/IFNO/OlborTrack/SQL/{0}/Voice/{1}/{2}".format(guild,annee,mois.upper())
+            path="G:/IFNO/OlborTrack/SQL/{0}/Voice/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
     elif option=="Jeux":
         if mois in ("GL","glob") or annee in ("GL","glob"):
             pathDir="SQL/{0}/Jeux/GL".format(guild)
@@ -78,6 +98,19 @@ def getMoisAnnee(mois,annee):
         moisDB,anneeDB="to",annee[2:4]
     else:
         moisDB,anneeDB=mois.lower(),annee[2:4]
+    return mois,annee,moisDB,anneeDB
+
+def getMoisAnneePerso(mois,annee):
+    print(mois,annee)
+    if mois==None or annee==None:
+        mois,annee="Total","Global"
+    if annee in ("Global","GL"):
+        mois="Total"
+        moisDB,anneeDB="TO","GL"
+    elif mois in ("Total","TO"):
+        moisDB,anneeDB="TO",annee[2:4]
+    else:
+        moisDB,anneeDB=tableauMois[mois.lower()],annee[2:4]
     return mois,annee,moisDB,anneeDB
 
 
@@ -142,6 +175,26 @@ def getTableRoles(curseur,members,nom) -> list:
                     dictRoles[j]=0
                 dictRoles[j]+=count["Count"]
     return dictRoles
+
+def getTableRolesMem(curseur,members,id,mois,annee) -> list:
+    """Permet d'obtenir le classement des membres ayant un certain rôles pour une table donnée
+    Entrées :
+        curseur : curseur pour accéder à la base de données
+        guild : le serveur d'où vient la commande
+        id : l'ID du rôle
+        nom : le nom de la table
+        tri : comment la liste doit être triée 
+    Sortie :
+        newTable : le classement des membres ayant le rôle"""
+    table={}
+    for i in members:
+        if id in i["roles"]:
+            stats=curseur.execute("SELECT * FROM perso{0}{1}{2}".format(mois,annee,i["user"]["id"])).fetchall()
+            for j in stats:
+                if j["ID"] not in table:
+                    table[j["ID"]]=0
+                table[j["ID"]]+=j["Count"]
+    return table
         
 def rankingClassic(table:list):
     """Cette fonction effectue un classement de type 'classique' d'une table donnée.

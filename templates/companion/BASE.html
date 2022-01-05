@@ -65,6 +65,7 @@
 
 {% block script %} {% endblock %}
 
+{% load TagsCustom %}
 <header class="header-ot">
     
     <span class="user-avatar"><img  src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
@@ -89,9 +90,9 @@
         {% for guild in guilds %}
             {% if guild.Icon != None %}
                 {% if guild.ID == guildid %}
-                    <a href="/companion/{{ guild.ID }}/messages/rank" style="background-color: #696969;" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')">
+                    <a href="/companion/{{ guild.ID }}/messages/ranks" style="background-color: #696969;" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')">
                 {% else %}
-                    <a href="/companion/{{ guild.ID }}/messages/rank" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')" onclick="clickServ(this)">
+                    <a href="/companion/{{ guild.ID }}/messages/ranks" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')" onclick="clickServ(this)">
                 {% endif %}
                     
                         <img src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}.{{ guild.Anim }}?size=128" alt="Icone du serveur {{ guild.Nom }}" >
@@ -116,25 +117,25 @@
         {% endif %}
     </div>
 
-    {% if sections != None %}
+    {% if options != None %}
         <div class="navbar">
-            {% for s in sections %}
-                {% if section == s %}
-                    <a class="select">{{ s }}</a>
+            {% for o in options %}
+                {% if option == o %}
+                    <a class="select">{{ o|usedict:dictOptions }}</a>
                 {% else %}
-                    <a href="/companion/{{ guildid }}/{{ s }}/">{{ s }}</a>
+                    <a href="/companion/{{ guildid }}/{{ o }}/ranks">{{ o|usedict:dictOptions }}</a>
                 {% endif %}
             {% endfor %}
         </div>
     {% endif %}
 
-    {% if categs != None %}
+    {% if commands != None %}
         <div class="navbar">
-            {% for categ in categs %}
-                {% if type == categ %}
-                    <a class="select">{{ categ }}</a>
+            {% for c in commands %}
+                {% if command == c %}
+                    <a class="select">{{ c|usedict:dictCommands }}</a>
                 {% else %}
-                    <a href="/companion/{{ guildid }}/=/">{{ categ }}</a>
+                    <a href="/companion/{{ guildid }}/{{ option }}/{{ c }}">{{ c|usedict:dictCommands }}</a>
                 {% endif %}
             {% endfor %}
         </div>
