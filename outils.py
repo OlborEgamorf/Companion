@@ -9,24 +9,22 @@ tableauMois={"01":"Janvier","02":"Février","03":"Mars","04":"Avril","05":"Mai",
 
 dictOptions={"messages":"Messages","voice":"Voice","salons":"Salons","voicechan":"Voicechan","emotes":"Emotes","reactions":"Reactions","mots":"Mots","freq":"Freq"}
 
-listeCommands=["ranks","perso","periods","serv","evol","first","roles","jours","moy","rapport"]
-listeOptions=["home","messages","salons","emotes","voice","reactions","mots","freq"]
+listeCommands=["ranks","perso","periods","serv","evol","first","roles","jours","rapport"]
+listeOptions=["home","messages","voice","emotes","freq","salons","voicechan","reactions","mots"]
 dictRefCommands={"ranks":"Classements","periods":"Périodes","serv":"Serveur","perso":"Perso","evol":"Évolutions","first":"Premiers","roles":"Rôles","jours":"Jours","moy":"Moyennes","rapport":"Rapports","mondial":"Mondial"}
 dictRefOptions={"home":"Accueil","messages":"Messages","voice":"Vocal","salons":"Salons","voicechan":"Salons vocaux","emotes":"Emotes","reactions":"Réactions","mots":"Mots","freq":"Fréquences"}
 
 def getCommands(option):
     liste=listeCommands.copy()
-    if option!="messages":
-        liste.remove("moy")
     if option not in ("messages","voice"):
         liste.remove("jours")
     if option in ("messages","voice","mots"):
         liste.remove("serv")
         liste.remove("perso")
-    if option not in ("messages","voice","mots"):
-        liste.remove("periods")
     if option=="emotes":
         liste.append("mondial")
+    if option=="home":
+        liste=[]
     return liste
 
 def getTimes(guild,option):
@@ -45,8 +43,8 @@ def dict_factory(cursor, row):
 
 def connectSQL(guild,db,option,mois,annee):
     if option=="Guild":
-        pathDir="SQL/{0}/Guild".format(guild)
-        path="SQL/{0}/Guild/{1}.db".format(guild,db)
+        pathDir="G:/IFNO/OlborTrack/SQL/{0}/Guild".format(guild)
+        path="G:/IFNO/OlborTrack/SQL/{0}/Guild/{1}.db".format(guild,db)
     elif db in ("Voice","Voicechan"):
         if mois in ("GL","glob") or annee in ("GL","glob"):
             pathDir="G:/IFNO/OlborTrack/SQL/{0}/Voice/GL".format(guild)
@@ -271,3 +269,20 @@ def getGuilds(user):
 
     final_guilds.sort(key=lambda x:x["Nom"])
     return final_guilds
+
+def createPhrase(args:list) -> str:
+    """Formate une liste de str pour en faire une phrase sans ' , pour que l'insertion dans les bases de données se fasse sans casse.
+    Entrée : 
+        args : liste de mots qui forme une phrase
+    Sortie :
+        descip : la phrase reconstituée"""
+    descip=""
+    for i in args:
+        mot=""
+        for lettre in i:
+            if lettre=="'":
+                mot+="’"
+            else:
+                mot+=lettre
+        descip+=mot+" "
+    return descip

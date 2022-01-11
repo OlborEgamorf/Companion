@@ -1,8 +1,11 @@
 from math import inf
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from ..outils import avatarAnim, connectSQL, getGuild, getMoisAnnee, getUser, tableauMois,getGuilds
+from ..Getteurs import getGuildInfo
+from ..outils import (avatarAnim, connectSQL, getGuilds, getMoisAnnee, getUser,
+                      tableauMois)
 
 
 @login_required(login_url="/login")
@@ -40,14 +43,19 @@ def iframeEmotes(request,emote):
     user=request.user
 
     connexion,curseur=connectSQL("OT","Emotes","Stats","GL","")
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    
     liste=[]
     guilds=getGuilds(user)
     guilds_id=list(map(lambda x:x["ID"],guilds))
     maxi=-inf
     for i in curseur.execute("SELECT * FROM glob_emote{0} ORDER BY Rank ASC".format(emote)).fetchall():
         if i["ID"] in guilds_id:
-            guild=getGuild(i["ID"])
-            liste.append({"Rank":i["Rank"],"Count":i["Count"],"Icon":guild["icon"],"ID":i["ID"],"Nom":guild["name"]})
+            guild=getGuildInfo(i["ID"],curseurGet)
+            if guild!=None:
+                liste.append({"Rank":i["Rank"],"Count":i["Count"],"Icon":guild["Icon"],"ID":i["ID"],"Nom":guild["Nom"]})
+            else:
+                liste.append({"Rank":i["Rank"],"Count":i["Count"],"Icon":False,"ID":False,"Nom":"Autre serveur"})
         else:
             liste.append({"Rank":i["Rank"],"Count":i["Count"],"Icon":False,"ID":False,"Nom":"Autre serveur"})
         maxi=max(maxi,i["Count"])

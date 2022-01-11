@@ -84,7 +84,15 @@ h1 {
     transition: all 0.5s;
 }
 
-.icon-guild img {
+.img-mix {
+    width: 20px;
+    height: 20px;
+    padding: 10px;
+    border-radius: 100%;
+    transition: all 0.5s;
+}
+
+.img-guild {
     width: 100px;
     height: 100px;
     padding: 10px;
@@ -118,6 +126,16 @@ h1 {
 
 .card-guild:hover .guild-name {
     padding: 0 20px;
+    transition: all 0.5s;
+}
+
+.card-mix {
+    background: #23254a;
+    margin: 20px 15px;
+    width: 120px;
+    height: 200px;
+    float: left;
+    border-radius: 10px;
     transition: all 0.5s;
 }
 
@@ -474,4 +492,65 @@ tr:hover {
 .searchTable {
     display: flex;
     justify-content: center;
+}
+
+
+.stats-rapports {
+    width: 80%;
+    margin: 30px auto;
+    display: flex;
+}
+
+.table-rapports {
+    margin: 30px 0 30px auto;
+    width: 33%;
+    height: min-content
+}
+
+.table-rapports-objs {
+    margin: 30px 0 30px auto;
+    width: 24%;
+    height: min-content
+}
+
+.table-rapports-full {
+    margin: 30px 0 30px auto;
+    width: 100%;
+    height: min-content
+}
+
+.input-mix-box {
+    width: 92%;
+}
+
+
+
+
+
+
+.carousel-items {
+    display: flex;
+    overflow-x: scroll;
+    padding: 1rem 0;
+    scroll-snap-type: x mandatory;
+}
+
+.carousel-item {
+    flex: 1 0 250px;
+    margin-left: 1rem;
+    scroll-snap-align: start;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar {
+    height: 6px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #3d4852;
+    border-radius: 3px;
 }

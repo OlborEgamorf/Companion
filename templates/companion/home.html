@@ -16,6 +16,8 @@
     
 </header>
 
+{% load TagsCustom %}
+
 <script type="text/javascript">
     
     function sleep (time) {
@@ -23,17 +25,54 @@
     }
 
     function showBar(id) {
-        console.log("on")
-        console.log(document.getElementById(id))
         document.getElementById(id).style.opacity = 100;
         sleep(500).then(() => {document.getElementById(id).style.fontSize = "20px"})
     }    
 
     function hideBar(id) {
-        console.log("off")
         document.getElementById(id).style.opacity = 0;
-        sleep(1000).then(() => {document.getElementById(id).style.fontSize = "0"})
+        sleep(500).then(() => {document.getElementById(id).style.fontSize = "0"})
     }  
+
+    function hideIcon(id) {
+        document.getElementById(id).style.opacity = 0;
+        sleep(500).then(() => {document.getElementById(id).style.fontSize = "0"})
+    }
+
+    function checkBoxes() {
+        var inputs = document.getElementsByClassName("input-mix");
+        var guilds = document.getElementsByClassName("a-guilds");
+        var i;
+        var alert = document.getElementById("alert-mix")
+        if (alert != null ) {
+            alert.style.display = "none"
+        }
+        if (inputs[0].style.display == "none") {
+            document.getElementById("create-mix").innerHTML="Annuler création"
+            document.getElementById("name-mix").style.display="inherit"
+            document.getElementById("active-mix").style.display="inherit"
+            for (i = 0; i < inputs.length; i++) {
+                inputs[i].style.display = "inherit"
+                guilds[i].removeAttribute("href")
+            } 
+            document.body.scrollTop = 0; // For Safari
+            document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+        } else {
+            document.getElementById("create-mix").innerHTML="Créez un mix"
+            document.getElementById("name-mix").style.display="none"
+            document.getElementById("active-mix").style.display="none"
+            for (i = 0; i < inputs.length; i++) {
+                inputs[i].style.display = "none"
+                guilds[i].href="/companion/"+guilds[i].id+"/home"
+            } 
+        }
+    }
+
+    function loadMix(){
+        var lol = document.getElementsByClassName("card-mix")
+        console.log(lol.length)
+        console.log("SUCE")
+    }
     </script>
 
 <body>
@@ -52,23 +91,91 @@
         </a>
     </div>
 
-    <h1>Choisissez votre serveur</h1>
+    <div class="guild-stats">Vos serveurs</div>
 
+    <form method="post"> {% csrf_token %}
+        <div class="all-guilds">
+            {% for guild in guilds %}
+                <a id="{{ guild.ID }}" class="a-guilds" href="/companion/{{ guild.ID }}/home">
+                    <div class="card-guild">
+                        {% if guild.Icon != None %}
+                            <span class="icon-guild">
+                                <img class="img-guild" src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}.{{ guild.Anim }}?size=128" alt="Icone du serveur {{ guild.Nom }}">
+                            </span>
+                        {% endif %}     
+                        <span class="guild-name">{{ guild.Nom }}</span>
+                        <span class="input-mix" style="display: none;"><input class="input-mix-box" type="checkbox" id="{{ guild.ID }}" name="{{ guild.ID }}"></span>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+        <div class="searchTable">
+            <input type="text" name="name-mix" id="name-mix" style="display: none;" placeholder="Nommez votre mix">
+            <input type="submit" id="active-mix" style="display: none;" value="Valider">
+        </div>
+    </form>
+        
+
+    <div class="guild-stats">Autres</div>
     <div class="all-guilds">
-        {% for guild in guilds %}
-            <a href="/companion/{{ guild.ID }}/messages/ranks">
-                <div class="card-guild">
-                    {% if guild.Icon != None %}
-                        <span class="icon-guild">
-                            <img src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}.{{ guild.Anim }}?size=128" alt="Icone du serveur {{ guild.Nom }}">
-                    {% endif %}
-                        
-                    </span>
-                    <span class="guild-name">{{ guild.Nom }}</span>
+        <a href="/companion/profil">
+            <div class="card-guild">
+                <span class="icon-guild">
+                    <img class="img-guild" src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128">
+                </span>
+                <span class="guild-name">Profil et Focus</span>
+            </div>
+        </a>
+        <a href="/companion/mondial">
+            <div class="card-guild">
+                <span class="icon-guild">
+                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png">
+                </span>
+                <span class="guild-name">Classements mondiaux et jeux</span>
+            </div>
+        </a>
+        <a href="https://discord.com/oauth2/authorize?client_id=699728606493933650&permissions=120259472576&scope=bot">
+            <div class="card-guild">
+                <span class="icon-guild">
+                    <img class="img-guild" src="https://media.discordapp.net/attachments/661948174339932203/929011609555329024/772766034163400715.png">
+                </span>
+                <span class="guild-name">Ajoutez un serveur</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="guild-stats">Vos Mix</div>
+    {% if mixalert == True %}
+        <div id="alert-mix" class="guild-stats" style="background-color: green;">Mix créé !</div>
+    {% elif mixalert == False %}
+        <div id="alert-mix" class="guild-stats" style="background-color: red;">Impossible de créer ce mix. Vous devez choisir 2 à 5 serveurs, et faire en sorte que le mix n'existe pas déjà.</div>
+    {% endif %}
+    <div class="all-guilds">
+        {% for mix in mixes %}
+            <a id="{{ guild.ID }}" href="/companion/mixes/{{ mix.ID }}/messages/ranks">
+                <div class="card-mix" style="width: calc({{ mix.Liste|len }} * 120px + ({{ mix.Liste|len }} - 1) * 5px);">
+                    {% for guild in mix.Liste %}
+                        {% if guild.Icon != None %}
+                            <span class="icon-guild">
+                                <img class="img-guild" src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}.png?size=128" alt="Icone du serveur {{ guild.Nom }}">
+                            </span>
+                        {% endif %}     
+                    {% endfor %}
+                    <span class="guild-name" style="width: calc({{ mix.Liste|len }}* 120px - 10px);">{{ mix.Nom }}</span>
                 </div>
             </a>
         {% endfor %}
+
+        <a onclick="checkBoxes()">
+            <div class="card-guild">
+                <span class="icon-guild">
+                    <img class="img-guild" src="https://media.discordapp.net/attachments/661948174339932203/929011609555329024/772766034163400715.png">
+                </span>
+                <span id="create-mix" class="guild-name">Créez un mix</span>
+            </div>
+        </a>
     </div>
+
     <div class="footer-ot">
         <span class="footer-links">
             <a href="../">Accueil</a>

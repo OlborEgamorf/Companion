@@ -1,25 +1,25 @@
 from django.urls import path
 
-from .views.EmotesWW import emotesMondialGuild
-
-from .views.First import iFrameFirst, viewFirst
-
 from .views.Blank import iFrameBlank, iFrameBlankCompare
 from .views.emotesmondial import emotesMondial, iframeEmotes
+from .views.EmotesWW import emotesMondialGuild
 from .views.Evol import iFrameEvol, viewEvol
+from .views.First import iFrameFirst, viewFirst
 from .views.graphiques import guildGraph
 from .views.home import home
 from .views.Jours import iFrameJour, viewJours
 from .views.Periods import iFramePeriods, viewPeriods
 from .views.Perso import iFramePerso, viewPerso
-from .views.Rank import iFrameRank, iFrameRankObj, viewRank
+from .views.Rank import iFrameRank, viewRank
+from .views.Rapports import viewRapports
 from .views.Roles import iFrameRoles, viewRoles
 from .views.Serv import iFrameServ, viewServ
+from .views.StatsHome import viewStatsHome
 
 urlpatterns = [
     path('', home, name="companion-home"),
 
-
+    path("<int:guild>/home",viewStatsHome,name="guild-ranks"),
     path("<int:guild>/<str:option>/ranks",viewRank,name="guild-ranks"),
     path("<int:guild>/<str:option>/periods",viewPeriods,name="guild-periods"),
     path("<int:guild>/<str:option>/evol",viewEvol,name="guild-evol"),
@@ -28,6 +28,7 @@ urlpatterns = [
     path("<int:guild>/<str:option>/serv",viewServ,name="guild-serv"),
     path("<int:guild>/<str:option>/perso",viewPerso,name="guild-perso"),
     path("<int:guild>/<str:option>/first",viewFirst,name="guild-first"),
+    path("<int:guild>/<str:option>/rapport",viewRapports,name="guild-first"),
     path("<int:guild>/emotes/mondial",emotesMondialGuild,name="guild-emotes-mondial"),
 
     path("<int:guild>/<str:option>/iframeranks",iFrameRank,name="iframe-ranks"),
@@ -35,7 +36,6 @@ urlpatterns = [
     path("<int:guild>/<str:option>/iframeevol",iFrameEvol,name="iframe-evol"),
     path("<int:guild>/<str:option>/iframejours",iFrameJour,name="iframe-jours"),
     path("<int:guild>/<str:option>/iframeroles",iFrameRoles,name="iframe-roles"),
-    path("<int:guild>/<str:option>/iframeranksobj",iFrameRankObj,name="iframe-ranks-obj"),
     path("<int:guild>/<str:option>/iframeserv",iFrameServ,name="iframe-serv"),
     path("<int:guild>/<str:option>/iframeperso",iFramePerso,name="iframe-perso"),
     path("<int:guild>/<str:option>/iframefirst",iFrameFirst,name="iframe-first"),

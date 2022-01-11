@@ -29,14 +29,16 @@ def viewServ(request,guild,option):
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "selector":True,"travel":False,}
 
-    if option in ("emotes","reactions"):
-        full_emotes=getAllEmotes(full_guilds)
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
+
+    if option!="freq":
+        connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+        
     listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
     if option in ("emotes","reactions"):
-        listeObj=list(map(lambda x:getEmoteTable(x,full_emotes),listeObj))
+        listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
     elif option in ("salons","voicechan"):
-        listeObj=list(map(lambda x:getChannels(x),listeObj))
+        listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
     elif option=="freq":
         listeObj=list(map(lambda x:getFreq(x),listeObj))
 
@@ -51,8 +53,6 @@ def viewServ(request,guild,option):
 
     ctx["maxM"]=max(list(map(lambda x:x["Count"],ctx["rankMois"])))
     ctx["maxA"]=max(list(map(lambda x:x["Count"],ctx["rankAnnee"])))
-
-    print(ctx["obj"])
     
     return render(request, "companion/periods.html", ctx)
 
@@ -68,12 +68,12 @@ def iFrameServ(request,guild,option):
         annee="20"+annee
     mois,annee,moisDB,anneeDB=getMoisAnnee(tableauMois[mois],annee)
     user=request.user
-
-    full_guilds=getGuilds(user)
-    if option in ("emotes","reactions"):
-        full_emotes=getAllEmotes(full_guilds)
     
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
+
+    if option!="freq":
+        connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+
     rank=curseur.execute("SELECT Rank FROM {0}{1} WHERE ID={2}".format(moisDB.lower(),anneeDB,obj)).fetchone()["Rank"]
 
     rankPlus=rank-10
@@ -88,9 +88,9 @@ def iFrameServ(request,guild,option):
     for i in curseur.execute("SELECT * FROM {0}{1} WHERE (Rank>={2} AND Rank<={3}) OR Rank=1 ORDER BY Rank ASC".format(moisDB.lower(),anneeDB,rankPlus,rankMoins)).fetchall():
 
         if option in ("emotes","reactions"):
-            stats.append(getEmoteTable(i,full_emotes))
+            stats.append(getEmoteTable(i,curseurGet))
         elif option in ("salons","voicechan"):
-            stats.append(getChannels(i))
+            stats.append(getChannels(i,curseurGet))
         elif option=="freq":
             stats.append(getFreq(i))
 
@@ -98,7 +98,4 @@ def iFrameServ(request,guild,option):
     
     connexion.close()
     ctx={"rank":stats,"id":int(obj),"max":maxi,"mois":mois,"annee":annee,"option":option}
-    if option in ("emotes","reactions"):
-        return render(request, "companion/Serv/iFrameServEmotes.html", ctx)
-    elif option in ("salons","voicechan","freq"):
-        return render(request, "companion/Serv/iFrameServAutres.html", ctx)
+    return render(request, "companion/Serv/iFrameServ.html", ctx)

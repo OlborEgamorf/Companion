@@ -21,29 +21,22 @@ def viewPerso(request,guild,option):
 
     user_full=getUser(guild,user.id)
     user_avatar=user_full["user"]["avatar"]
-    
-    roles_position,roles_color,roles_name=colorRoles(guild_full)
 
     full_guilds=getGuilds(user)
     listeMois,listeAnnee=getTimes(guild,option)
 
     stats=[]
     maxi=-inf
+
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     
     ctx={"rank":stats,"max":None,
-    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"color":None,
+    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"color":getColor(user.id,guild,curseurGet),
     "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"perso",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "travel":True,"selector":True}
-
-    user_full["roles"].sort(key=lambda x:roles_position[x], reverse=True)
-    if len(user_full["roles"])!=0:
-        ctx["color"]="#{0}".format(hex(roles_color[user_full["roles"][0]])[2:])
-
-    if option in ("emotes","reactions"):
-        full_emotes=getAllEmotes(full_guilds)
 
     print(moisDB,anneeDB)
 
@@ -51,12 +44,11 @@ def viewPerso(request,guild,option):
 
     for i in curseur.execute("SELECT * FROM perso{0}{1}{2} ORDER BY Count DESC LIMIT 200".format(moisDB,anneeDB,user.id)).fetchall():
 
-
         if option in ("emotes","reactions"):
-            ligne=getEmoteTable(i,full_emotes)
+            ligne=getEmoteTable(i,curseurGet)
 
         elif option in ("salons","voicechan"):
-            ligne=getChannels(i)
+            ligne=getChannels(i,curseurGet)
 
         elif option=="freq":
             ligne=getFreq(i)
@@ -69,23 +61,20 @@ def viewPerso(request,guild,option):
         maxi=max(maxi,i["Count"])
 
     ctx["max"]=maxi
-    if option in ("emotes","reactions"):
-        return render(request, "companion/Perso/persoEmotes.html", ctx)
-    else:
-        return render(request, "companion/Perso/persoAutres.html", ctx)
+    return render(request, "companion/Perso/perso.html", ctx)
 
 
 @login_required(login_url="/login")
 def iFramePerso(request,guild,option):
     obj=request.GET.get("data")
     user=request.user
+
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     
-    ctx={"rankMois":None,"rankAnnee":None,"maxM":None,"maxA":None,"color":None,"option":option}
+    ctx={"rankMois":None,"rankAnnee":None,"maxM":None,"maxA":None,"color":None,"option":option,"color":getColor(user.id,guild,curseurGet)}
 
     ctx["rankMois"]=getTablePerso(guild,dictOptions[option],user.id,obj,"M","countDesc")
     ctx["rankAnnee"]=getTablePerso(guild,dictOptions[option],user.id,obj,"A","countDesc")
-
-    print(ctx["rankMois"])
 
     ctx["maxM"]=max(list(map(lambda x:x["Count"],ctx["rankMois"])))
     ctx["maxA"]=max(list(map(lambda x:x["Count"],ctx["rankAnnee"])))

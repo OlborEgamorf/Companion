@@ -1,16 +1,15 @@
 from math import inf
 
 import requests
-from companion.Getteurs import (getAllEmotes, getChannels, getEmoteTable,
-                                getFreq)
+from companion.Getteurs import getChannels, getEmoteTable, getFreq
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from ..outils import (avatarAnim, colorRoles, connectSQL, dictRefCommands,
-                      dictRefOptions, getCommands, getGuild, getGuilds,
-                      getMoisAnnee, getMoisAnneePerso, getTableRoles,
-                      getTableRolesMem, getTimes, getUser, listeOptions,
-                      rankingClassic, tableauMois, dictOptions)
+from ..outils import (avatarAnim, colorRoles, connectSQL, dictOptions,
+                      dictRefCommands, dictRefOptions, getCommands, getGuild,
+                      getGuilds, getMoisAnnee, getMoisAnneePerso,
+                      getTableRoles, getTableRolesMem, getTimes, getUser,
+                      listeOptions, rankingClassic, tableauMois)
 
 
 @login_required(login_url="/login")
@@ -32,14 +31,16 @@ def viewRoles(request,guild,option):
     stats=[]
     maxi=-inf
 
-    if option in ("emotes","reactions"):
-        full_emotes=getAllEmotes(full_guilds)
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
+
+    if option!="freq":
+        connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+
     listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
     if option in ("emotes","reactions"):
-        listeObj=list(map(lambda x:getEmoteTable(x,full_emotes),listeObj))
+        listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
     elif option in ("salons","voicechan"):
-        listeObj=list(map(lambda x:getChannels(x),listeObj))
+        listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
     elif option=="freq":
         listeObj=list(map(lambda x:getFreq(x),listeObj))
     roles=list(map(lambda x:{"Nom":roles_name[x],"ID":x}, roles_name))
@@ -51,9 +52,8 @@ def viewRoles(request,guild,option):
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"roles",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "travel":True,"selector":True,"obj":int(obj),"listeObjs":listeObj}
+    "travel":True,"selector":True,"obj":None,"listeObjs":listeObj}
 
-    print(tableauMois[moisDB],anneeDB)
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
     members=requests.get("https://discord.com/api/v9/guilds/{0}/members?limit=1000".format(guild),headers={"Authorization":"Bot Njk5NzI4NjA2NDkzOTMzNjUw.XpYnDA.ScdeM2sFekTRHY5hubkwg0HWDPU"})
     if members.status_code==200:
@@ -66,7 +66,7 @@ def viewRoles(request,guild,option):
     else:
         if obj==None:
             obj=listeObj[0]["ID"]
-            ctx["obj"]=int(obj)
+        ctx["obj"]=int(obj)
         roles_id=list(map(lambda x:x["id"],guild_full["roles"]))
         if obj in roles_id:
             mois,annee,moisDB,anneeDB=getMoisAnneePerso(mois,annee)
@@ -74,10 +74,10 @@ def viewRoles(request,guild,option):
             for i in table:
                 opti={"ID":i,"Count":table[i],"Rank":0}
                 if option in ("emotes","reactions"):
-                    opti=getEmoteTable(opti,full_emotes)
+                    opti=getEmoteTable(opti,curseurGet)
 
                 elif option in ("salons","voicechan"):
-                    opti=getChannels(opti)
+                    opti=getChannels(opti,curseurGet)
 
                 elif option=="freq":
                     opti=getFreq(opti)
@@ -97,7 +97,7 @@ def viewRoles(request,guild,option):
     return render(request,"companion/roles.html",ctx)
     
 
-@login_required(login_url="/login")
+"""@login_required(login_url="/login")
 def iFrameRoles(request,guild,option):
     all=request.GET.get("data")
     mois,annee,role=all.split("?")
@@ -133,4 +133,49 @@ def iFrameRoles(request,guild,option):
     stats.sort(key=lambda x:x["Rank"])
     connexion.close()
     ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"role":roles_name[role],"option":option}
-    return render(request, "companion/rankIFrame.html", ctx)
+    return render(request, "companion/Ranks/iFrameRanks_ranks.html", ctx)"""
+
+
+@login_required(login_url="/login")
+def iFrameRoles(request,guild,option):
+    all=request.GET.get("data")
+    mois,annee,obj,objrank=all.split("?")
+    mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
+    user=request.user
+
+    guild_full=getGuild(guild)
+    
+    roles_position,roles_color,roles_name=colorRoles(guild_full)
+    
+    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
+
+    members=requests.get("https://discord.com/api/v9/guilds/{0}/members?limit=1000".format(guild),headers={"Authorization":"Bot Njk5NzI4NjA2NDkzOTMzNjUw.XpYnDA.ScdeM2sFekTRHY5hubkwg0HWDPU"})
+    if members.status_code==200:
+        members=members.json()
+
+    maxi=-inf
+    stats=[]
+
+    if objrank=="None":
+        objrank=""
+
+    roles_id=list(map(lambda x:x["id"],guild_full["roles"]))
+    if obj not in roles_id:
+        obj,objrank=objrank,obj
+    for i in members:
+        if obj in i["roles"]:
+            table=curseur.execute("SELECT * FROM {0}{1}{2} WHERE ID={3}".format(moisDB,anneeDB,objrank,i["user"]["id"])).fetchone()
+            if table!=None:
+                i["roles"].sort(key=lambda x:roles_position[x], reverse=True)
+                if len(i["roles"])==0:
+                    color=i
+                else:
+                    color="#{0}".format(hex(roles_color[i["roles"][0]])[2:])
+                stats.append({"Count":table["Count"],"Rank":table["Rank"],"Nom":i["user"]["username"],"Color":color,"Avatar":i["user"]["avatar"],"ID":i["user"]["id"]})
+
+                maxi=max(maxi,table["Count"])
+    
+    stats.sort(key=lambda x:x["Rank"])
+    connexion.close()
+    ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"option":option}
+    return render(request, "companion/Ranks/iFrameRanks_ranks.html", ctx)

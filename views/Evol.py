@@ -4,10 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from ..Getteurs import *
-from ..outils import (avatarAnim, collapseEvol, colorRoles, connectSQL,
-                      dictOptions, dictRefCommands, dictRefOptions,
-                      getCommands, getGuild, getGuilds, getMoisAnnee, getTimes,
-                      getUser, listeOptions, tableauMois)
+from ..outils import (avatarAnim, collapseEvol, connectSQL, dictOptions,
+                      dictRefCommands, dictRefOptions, getCommands, getGuild,
+                      getGuilds, getMoisAnnee, getTimes, getUser, listeOptions,
+                      tableauMois)
 
 
 @login_required(login_url="/login")
@@ -20,12 +20,12 @@ def viewEvol(request,guild,option):
 
     user_full=getUser(guild,user.id)
     user_avatar=user_full["user"]["avatar"]
-    
-    roles_position,roles_color,roles_name=colorRoles(guild_full)
 
     listeMois,listeAnnee=getTimes(guild,option)
 
     full_guilds=getGuilds(user)
+
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
 
     ctx={"rank":None,"max":None,
     "id":user.id,"color":None,"nom":user_full["user"]["username"],"avatar":user_avatar,"anim":avatarAnim(user_avatar),
@@ -39,17 +39,11 @@ def viewEvol(request,guild,option):
     if option in ("messages","voice","mots"):
         ctx["obj"]=None
         obj=user.id
-        user_full["roles"].sort(key=lambda x:roles_position[x], reverse=True)
-        if len(user_full["roles"])==0:
-            ctx["color"]=None
-        else:
-            ctx["color"]="#{0}".format(hex(roles_color[user_full["roles"][0]])[2:])
+        ctx["color"]=getColor(user.id,guild,curseurGet)
     else:
-        if option in ("emotes","reactions"):
-            full_emotes=getAllEmotes(full_guilds)
         listeObj=curseur.execute("SELECT * FROM {0}{1} WHERE Rank<150 ORDER BY Rank ASC".format(moisDB,anneeDB)).fetchall()
         if option in ("emotes","reactions"):
-            listeObj=list(map(lambda x:getEmoteTable(x,full_emotes),listeObj))
+            listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
         elif option in ("salons","voicechan"):
             listeObj=list(map(lambda x:getChannels(x),listeObj))
         elif option=="freq":
@@ -60,8 +54,6 @@ def viewEvol(request,guild,option):
         
         ctx["obj"]=int(obj)
         ctx["listeObjs"]=listeObj
-            
-    maxi=-inf
     
     table=curseur.execute("SELECT * FROM evol{0}{1}{2}".format(moisDB,anneeDB,obj)).fetchall()
     table=collapseEvol(table)   
@@ -80,11 +72,9 @@ def iFrameEvol(request,guild,option):
         annee="20"+annee
     mois,annee,moisDB,anneeDB=getMoisAnnee(tableauMois[mois],annee)
     user=request.user
-
-    guild_full=getGuild(guild)
     
-    roles_position,roles_color,roles_name=colorRoles(guild_full)
-    
+    if option!="freq":
+        connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     connexion,curseur=connectSQL(guild,"Rapports","Stats","GL","")
     tabMois=curseur.execute("SELECT * FROM archives WHERE DateID={0}{1}{2} AND Type='{3}' AND Periode='Mois'".format(anneeDB,tableauMois[moisDB],jour,dictOptions[option])).fetchall()
     tabAnnee=curseur.execute("SELECT * FROM archives WHERE DateID={0}{1}{2} AND Type='{3}' AND Periode='Annee'".format(anneeDB,tableauMois[moisDB],jour,dictOptions[option])).fetchall()
@@ -98,15 +88,12 @@ def iFrameEvol(request,guild,option):
     if obj!="None":
         ctx["id"]=int(obj)
 
-    if option in ("emotes","reactions"):
-        full_emotes=getAllEmotes(getGuilds(user))
-
     for table in liste:
         stats=[]
         if option in ("messages","voice","mots"):
             for i in liste[table]:
                 if i["ID"] not in dictUsers:
-                    userTable=getUserTable(i,guild,roles_position,roles_color)
+                    userTable=getUserTable(i,curseurGet,guild)
                     if userTable["Nom"]!="Ancien membre":
                         dictUsers[i["ID"]]=[userTable["Color"],userTable["Nom"],userTable["Avatar"]]
                     else:
@@ -119,7 +106,7 @@ def iFrameEvol(request,guild,option):
         elif option in ("emotes","reactions"):
             for i in liste[table]:
                 if i["ID"] not in dictUsers:
-                    emote=getEmoteTable(i,full_emotes)
+                    emote=getEmoteTable(i,curseurGet)
                     dictUsers[i["ID"]]=[emote["Nom"],emote["Animated"]]
                     stats.append(emote)
                 else:
@@ -130,7 +117,7 @@ def iFrameEvol(request,guild,option):
         elif option in ("salons","voicechan"):
             for i in liste[table]:
                 if i["ID"] not in dictUsers:
-                    chan=getChannels(i)
+                    chan=getChannels(i,curseurGet)
                     dictUsers[i["ID"]]=chan["Nom"]
                     stats.append(chan)
                 else:
@@ -153,9 +140,4 @@ def iFrameEvol(request,guild,option):
         ctx[table+"Maxi"]=maxi
 
     connexion.close()
-    if option in ("messages","voice","mots"):
-        return render(request, "companion/Evol/iFrameEvol_archives.html", ctx)
-    elif option in ("emotes","reactions"):
-        return render(request, "companion/Evol/iFrameEvol_archivesEmotes.html", ctx)
-    else:
-        return render(request, "companion/Evol/iFrameEvol_archivesAutres.html", ctx)
+    return render(request, "companion/Evol/iFrameEvol_archives.html", ctx)

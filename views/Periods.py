@@ -19,8 +19,6 @@ def viewPeriods(request,guild,option):
 
     user_full=getUser(guild,user.id)
     user_avatar=user_full["user"]["avatar"]
-    
-    roles_position,roles_color,roles_name=colorRoles(guild_full)
 
     full_guilds=getGuilds(user)
     
@@ -31,14 +29,31 @@ def viewPeriods(request,guild,option):
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "travel":False,"selector":True}
 
-    user_full["roles"].sort(key=lambda x:roles_position[x], reverse=True)
-    if len(user_full["roles"])==0:
-        ctx["color"]=None
-    else:
-        ctx["color"]="#{0}".format(hex(roles_color[user_full["roles"][0]])[2:])
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
 
-    ctx["rankMois"]=getTablePerso(guild,dictOptions[option],user.id,False,"M","countDesc")
-    ctx["rankAnnee"]=getTablePerso(guild,dictOptions[option],user.id,False,"A","countDesc")
+    if option in ("messages","voice","mots"):
+        ctx["color"]=getColor(user.id,guild,curseurGet)
+
+        ctx["rankMois"]=getTablePerso(guild,dictOptions[option],user.id,False,"M","countDesc")
+        ctx["rankAnnee"]=getTablePerso(guild,dictOptions[option],user.id,False,"A","countDesc")
+    else:
+        connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
+        listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
+        if option in ("emotes","reactions"):
+            listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
+        elif option in ("salons","voicechan"):
+            listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
+        elif option=="freq":
+            listeObj=list(map(lambda x:getFreq(x),listeObj))
+
+        if obj==None:
+            obj=listeObj[0]["ID"]
+    
+        ctx["obj"]=int(obj)
+        ctx["listeObjs"]=listeObj
+
+        ctx["rankMois"]=getTablePerso(guild,dictOptions[option],user.id,obj,"M","countDesc")
+        ctx["rankAnnee"]=getTablePerso(guild,dictOptions[option],user.id,obj,"A","countDesc")
 
     ctx["maxM"]=max(list(map(lambda x:x["Count"],ctx["rankMois"])))
     ctx["maxA"]=max(list(map(lambda x:x["Count"],ctx["rankAnnee"])))
@@ -56,17 +71,14 @@ def iFramePeriods(request,guild,option):
     if annee not in ("GL","Global"):
         annee="20"+annee
     mois,annee,moisDB,anneeDB=getMoisAnnee(tableauMois[mois],annee)
-    print(mois,annee,moisDB,anneeDB)
     user=request.user
-
-    guild_full=getGuild(guild)
-    
-    roles_position,roles_color,roles_name=colorRoles(guild_full)
 
     if obj=="None":
         obj=""
     
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    
     rank=curseur.execute("SELECT Rank FROM {0}{1}{2} WHERE ID={3}".format(moisDB.lower(),anneeDB,obj,user.id)).fetchone()["Rank"]
 
     rankPlus=rank-10
@@ -80,7 +92,7 @@ def iFramePeriods(request,guild,option):
 
     for i in curseur.execute("SELECT * FROM {0}{1}{2} WHERE (Rank>={3} AND Rank<={4}) OR Rank=1 ORDER BY Rank ASC".format(moisDB.lower(),anneeDB,obj,rankPlus,rankMoins)).fetchall():
 
-        stats.append(getUserTable(i,guild,roles_position,roles_color))
+        stats.append(getUserTable(i,curseurGet,guild))
         maxi=max(maxi,i["Count"])
     
     connexion.close()

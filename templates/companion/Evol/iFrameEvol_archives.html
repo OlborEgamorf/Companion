@@ -15,33 +15,55 @@
 
 <body class="bodyiframe">
     <table class="table-iframe">
-        <tr><th colspan="5">Archive {{ mois }} {{ annee }} au {{ jour }} {{ mois }} {{ annee }}</th></tr>
+        {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
+            <tr><th colspan="5">Archive {{ mois }} {{ annee }} au {{ jour }} {{ mois }} {{ annee }}</th></tr>
             <tr>
                 <th>Rang</th>
                 <th colspan="2">Membre</th>
                 <th id="leg-barre">Barre</th>
                 <th>Messages</th>
             </tr>
-            {% for i in moisTab %}
-                {% if i.ID == id %}
-                    <tr style="background-color: #696969; border-color: #696969;">
-                {% else %}
-                    <tr>
-                {% endif %}
-                    <td>{{ i.Rank }}</td>
+            {% else %}
+            <tr><th colspan="4">Archive {{ mois }} {{ annee }} au {{ jour }} {{ mois }} {{ annee }}</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>Emote</th>
+                <th id="leg-barre">Barre</th>
+                <th>Utilisations</th>
+            </tr>
+        {% endif %}
+
+        {% for i in moisTab %}
+            {% if i.ID == id %}
+                <tr style="background-color: #696969; border-color: #696969;">
+            {% else %}
+                <tr>
+            {% endif %}
+                <td>{{ i.Rank }}</td>
+                {% if option == "messages" or option == "mots" or option == "voice" %}
                     <td>
-                    {% if i.Avatar %}
-                        <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
-                    {% endif %}
+                        {% if i.Avatar %}
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                        {% endif %}
                     </td>
-                    <td style="text-align: start;">{{ i.Nom }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ moisTabMaxi }}); background-color: {{ i.Color }}"></div></td>
-                    <td>{{ i.Count|tempsvoice:option }}</td>
-                </tr>
-            {% endfor %}
+                {% elif option == "emotes" or option == "reactions" %}
+                    <td>
+                        {% if i.Animated %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                        {% endif %}
+                    </td>
+                {% endif %}
+                <td style="text-align: start;">{{ i.Nom }}</td>
+                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ moisTabMaxi }}); background-color: {{ i.Color }}"></div></td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
+            </tr>
+        {% endfor %}
     </table>
     
     <table class="table-iframe">
+        {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
             <tr><th colspan="5">Archive {{ annee }} au {{ jour }} {{ mois }} {{ annee }}</th></tr>
             <tr>
                 <th>Rang</th>
@@ -49,26 +71,47 @@
                 <th id="leg-barre">Barre</th>
                 <th>Messages</th>
             </tr>
-            {% for i in anneeTab %}
-                {% if i.ID == id %}
-                    <tr style="background-color: #696969; border-color: #696969;">
-                {% else %}
-                    <tr>
-                {% endif %}
-                    <td>{{ i.Rank }}</td>
+            {% else %}
+            <tr><th colspan="4">Archive {{ annee }} au {{ jour }} {{ mois }} {{ annee }}</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>Emote</th>
+                <th id="leg-barre">Barre</th>
+                <th>Utilisations</th>
+            </tr>
+        {% endif %}
+
+        {% for i in anneeTab %}
+            {% if i.ID == id %}
+                <tr style="background-color: #696969; border-color: #696969;">
+            {% else %}
+                <tr>
+            {% endif %}
+                <td>{{ i.Rank }}</td>
+                {% if option == "messages" or option == "mots" or option == "voice" %}
                     <td>
-                    {% if i.Avatar %}
-                        <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
-                    {% endif %}
+                        {% if i.Avatar %}
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                        {% endif %}
                     </td>
-                    <td style="text-align: start;">{{ i.Nom }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ anneeTabMaxi }}); background-color: {{ i.Color }}"></div></td>
-                    <td>{{{ i.Count|tempsvoice:option }}</td>
-                </tr>
-            {% endfor %}
+                {% elif option == "emotes" or option == "reactions" %}
+                    <td>
+                        {% if i.Animated %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                        {% endif %}
+                    </td>
+                {% endif %}
+                <td style="text-align: start;">{{ i.Nom }}</td>
+                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ anneeTabMaxi }}); background-color: {{ i.Color }}"></div></td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
+            </tr>
+        {% endfor %}
     </table>
 
     <table class="table-iframe">
+        {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
             <tr><th colspan="5">Archive global au {{ jour }} {{ mois }} {{ annee }}</th></tr>
             <tr>
                 <th>Rang</th>
@@ -76,23 +119,43 @@
                 <th id="leg-barre">Barre</th>
                 <th>Messages</th>
             </tr>
-            {% for i in globTab %}
-                {% if i.ID == id %}
-                    <tr style="background-color: #696969; border-color: #696969;">
-                {% else %}
-                    <tr>
-                {% endif %}
-                    <td>{{ i.Rank }}</td>
+            {% else %}
+            <tr><th colspan="4">Archive global au {{ jour }} {{ mois }} {{ annee }}</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>Emote</th>
+                <th id="leg-barre">Barre</th>
+                <th>Utilisations</th>
+            </tr>
+        {% endif %}
+
+        {% for i in globTab %}
+            {% if i.ID == id %}
+                <tr style="background-color: #696969; border-color: #696969;">
+            {% else %}
+                <tr>
+            {% endif %}
+                <td>{{ i.Rank }}</td>
+                {% if option == "messages" or option == "mots" or option == "voice" %}
                     <td>
-                    {% if i.Avatar %}
-                        <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
-                    {% endif %}
+                        {% if i.Avatar %}
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                        {% endif %}
                     </td>
-                    <td style="text-align: start;">{{ i.Nom }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ globTabMaxi }}); background-color: {{ i.Color }}"></div></td>
-                    <td>{{ i.Count|tempsvoice:option }}</td>
-                </tr>
-            {% endfor %}
+                {% elif option == "emotes" or option == "reactions" %}
+                    <td>
+                        {% if i.Animated %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                        {% endif %}
+                    </td>
+                {% endif %}
+                <td style="text-align: start;">{{ i.Nom }}</td>
+                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ globTabMaxi }}); background-color: {{ i.Color }}"></div></td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
+            </tr>
+        {% endfor %}
     </table>
 </body>
 

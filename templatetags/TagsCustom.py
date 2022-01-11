@@ -23,5 +23,35 @@ def formatCount(count,option) -> str:
         return tempsVoice(count)
     return count
 
+def getLen(liste):
+    return len(liste)
+
+def getRankMois(stats,option):
+    return stats[option]["mois"]
+
+def getRankAnnee(stats,option):
+    return stats[option]["annee"]
+
+def getRankGlobal(stats,option):
+    return stats[option]["global"]
+
+def getRankFirst(stats,option):
+    return stats[option]["first"]
+
+def getRankPerso(stats,option):
+    return stats[option]["perso"]
+
+def getRankBest(stats,option):
+    return stats[option]["best"]
+
+
 register.filter("usedict", useDict)
 register.filter("tempsvoice",formatCount)
+register.filter("len",getLen)
+
+register.filter("getmois",getRankMois)
+register.filter("getannee",getRankAnnee)
+register.filter("getglobal",getRankGlobal)
+register.filter("getfirst",getRankFirst)
+register.filter("getperso",getRankPerso)
+register.filter("getbest",getRankBest)

@@ -1,44 +1,51 @@
 import requests
 
-def getAllEmotes(full_guilds):
-    full_emotes=[]
-    for i in full_guilds:
-        emotes=requests.get("https://discord.com/api/v9/guilds/{0}/emojis".format(i["ID"]),headers={"Authorization":"Bot Njk5NzI4NjA2NDkzOTMzNjUw.XpYnDA.ScdeM2sFekTRHY5hubkwg0HWDPU"})
-        if emotes.status_code==200:
-            full_emotes+=emotes.json()
-    return full_emotes
 
-
-def getUserTable(i,guild,roles_position,roles_color):
-    user_search=requests.get("https://discord.com/api/v9/guilds/{0}/members/{1}".format(guild,i["ID"]),headers={"Authorization":"Bot Njk5NzI4NjA2NDkzOTMzNjUw.XpYnDA.ScdeM2sFekTRHY5hubkwg0HWDPU"})
-    if user_search.status_code==200:
-        user_search=user_search.json()
-        user_search["roles"].sort(key=lambda x:roles_position[x], reverse=True)
-        if len(user_search["roles"])==0:
-            color=None
-        else:
-            color="#{0}".format(hex(roles_color[user_search["roles"][0]])[2:])
-        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":user_search["user"]["username"],"Color":color,"Avatar":user_search["user"]["avatar"],"ID":i["ID"]}
-    else:
+def getUserTable(i,curseurGet,guild):
+    infos=curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,i["ID"])).fetchone()
+    if infos==None:
         return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"Ancien membre","Color":None}
+    else:
+        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Nom"],"Color":"#"+hex(infos["Color"])[2:],"Avatar":infos["Avatar"],"ID":i["ID"]}
 
-
-def getEmoteTable(i,full_emotes):
-    find=list(filter(lambda x:int(x["id"])==i["ID"],full_emotes))
-    if find==[]:
+def getEmoteTable(i,curseurGet):
+    infos=curseurGet.execute("SELECT * FROM emotes WHERE ID={0}".format(i["ID"])).fetchone()
+    if infos==None:
         return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"Emote inconnue","ID":i["ID"],"Animated":False}
     else:
-        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":find[0]["name"],"ID":i["ID"],"Animated":find[0]["animated"]}
+        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Nom"],"ID":i["ID"],"Animated":infos["Animated"]}
 
 
-def getChannels(i):
-    channel=requests.get("https://discord.com/api/v9/channels/{0}".format(i["ID"]),headers={"Authorization":"Bot Njk5NzI4NjA2NDkzOTMzNjUw.XpYnDA.ScdeM2sFekTRHY5hubkwg0HWDPU"})
-    if channel.status_code==200:
-        channel=channel.json()
-        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":channel["name"],"ID":i["ID"]}
+def getChannels(i,curseurGet):
+    infos=curseurGet.execute("SELECT * FROM salons WHERE ID={0}".format(i["ID"])).fetchone()
+    if infos!=None:
+        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Nom"],"ID":i["ID"]}
     else:
         return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"Salon inconnu","ID":i["ID"]}
 
 
 def getFreq(i):
     return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"{0}h-{1}h".format(i["ID"],i["ID"]+1),"ID":i["ID"]}
+
+
+def getColor(id,guild,curseurGet):
+    infos=curseurGet.execute("SELECT * FROM users_{0} WHERE ID={1}".format(guild,id)).fetchone()
+    if infos!=None:
+        return "#"+hex(infos["Color"])[2:]
+    return None
+
+def getGuildInfo(id,curseurGet):
+    return curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(id)).fetchone()
+
+def getNom(id,option,curseurGet,obj):
+    if option in ("messages","voice","mots") or obj:
+        infos=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(id)).fetchone()
+    elif option in ("emotes","reactions"):
+        infos=curseurGet.execute("SELECT * FROM emotes WHERE ID={0}".format(id)).fetchone()
+    elif option in ("salons","voicechan"):
+        infos=curseurGet.execute("SELECT * FROM salons WHERE ID={0}".format(id)).fetchone()
+    elif option=="freq":
+        infos={"Nom":"{0}h-{1}h".format(id,id+1)}
+    if infos!=None:
+        return infos["Nom"]
+    return "Inconnu"

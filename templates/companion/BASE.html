@@ -24,14 +24,12 @@
     }
 
     function showBar(id) {
-        console.log("on")
         console.log(document.getElementById(id))
         document.getElementById(id).style.opacity = 100;
         sleep(500).then(() => {document.getElementById(id).style.fontSize = "20px"})
     }    
 
     function hideBar(id) {
-        console.log("off")
         document.getElementById(id).style.opacity = 0;
         sleep(500).then(() => {document.getElementById(id).style.fontSize = "0"})
     }  
@@ -90,9 +88,9 @@
         {% for guild in guilds %}
             {% if guild.Icon != None %}
                 {% if guild.ID == guildid %}
-                    <a href="/companion/{{ guild.ID }}/messages/ranks" style="background-color: #696969;" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')">
+                    <a href="/companion/{{ guild.ID }}/home" style="background-color: #696969;" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')">
                 {% else %}
-                    <a href="/companion/{{ guild.ID }}/messages/ranks" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')" onclick="clickServ(this)">
+                    <a href="/companion/{{ guild.ID }}/home" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')" onclick="clickServ(this)">
                 {% endif %}
                     
                         <img src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}.{{ guild.Anim }}?size=128" alt="Icone du serveur {{ guild.Nom }}" >
@@ -122,6 +120,8 @@
             {% for o in options %}
                 {% if option == o %}
                     <a class="select">{{ o|usedict:dictOptions }}</a>
+                {% elif o == "home" %}
+                    <a href="/companion/{{ guildid }}/{{ o }}">{{ o|usedict:dictOptions }}</a>
                 {% else %}
                     <a href="/companion/{{ guildid }}/{{ o }}/ranks">{{ o|usedict:dictOptions }}</a>
                 {% endif %}

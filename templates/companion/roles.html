@@ -4,7 +4,7 @@
 <script type="text/javascript">
     
     function newSite(id,obj) {
-        var site = "/companion/{{ guildid }}/iframeroles?data={{ mois }}?{{ annee }}?"+id
+        var site = "/companion/{{ guildid }}/{{ option }}/iframeroles?data={{ mois }}?{{ annee }}?"+id+"?{{ obj }}"
         document.getElementById('iframeevol').src = site;
         try {document.getElementById("elselect").id = NaN}
         catch {}
