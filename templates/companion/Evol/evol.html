@@ -12,25 +12,43 @@
         
     }    
 
+    function toggle(tog){
+        var lignes = document.getElementsByClassName("evol")
+        var i
+        if (tog.checked == true) {
+            for (i = 0; i < lignes.length; i++) {
+                console.log(lignes[i].style.display)
+                if (lignes[i].dataset.collapse == "True") {
+                    lignes[i].style.display = "none"
+                }
+            } 
+        } else {
+            for (i = 0; i < lignes.length; i++) {
+                lignes[i].style.display = "table-row"
+            }
+        }
+    }
+
 </script>
 {% endblock script %}
 
 {% block stats %}
 {% load TagsCustom %}
-<div class="searchTable">
-    <input type="text" id="searchTable" onkeyup="searchName(2)" placeholder="Recherchez une date">
+<div class="navbar">
+    <input type="text" id="searchTable" onkeyup="searchName(1)" placeholder="Recherchez une date">
+    <input id="input-collapse" type="checkbox" onclick="toggle(this)" name="ytes"> <label for="input-collapse">Affiner</label>
 </div>
 <div class="stats">
     <table id="tableot">
-        <tr><th colspan="4">Statistiques évolution {{ mois }} {{ annee }}, {{ nom }}</th></tr>
+        <tr><th colspan="5">Statistiques évolution {{ mois }} {{ annee }}, {{ nom }}</th></tr>
         <tr>
-            <th>Rang</th>
+            <th colspan="2">Rang</th>
             <th>Date</th>
             <th id="leg-barre">Barre</th>
             <th>Messages</th>
         </tr>
         {% for i in rank %}
-            <tr onClick="newSite('{{ i.Jour }}','{{ i.Mois }}','{{ i.Annee }}',this)">
+            <tr class="evol" data-collapse={{ i.Collapse }} onClick="newSite('{{ i.Jour }}','{{ i.Mois }}','{{ i.Annee }}',this)">
                 {% if i.Evol > 0 %}
                     <td style="background-color: green;">{{ i.Rank }}</td>
                 {% elif i.Evol < 0 %}
@@ -38,6 +56,13 @@
                 {% else %}
                     <td>{{ i.Rank }}</td>
                 {% endif %}
+                <td>
+                    {% if i.Evol > 0 %}
+                        <img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png"> {{ i.Evol }}
+                    {% elif i.Evol < 0 %}
+                        {{ i.Evol }}<img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png"> 
+                    {% endif %}
+                </td>
                 <td class="date">{{ i.Jour }} / {{ i.Mois }} / {{ i.Annee }}</td>
                 <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ color }}"></div></td>
                 <td>{{ i.Count|tempsvoice:option }}</td>

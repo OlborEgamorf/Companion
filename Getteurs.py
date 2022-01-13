@@ -4,7 +4,7 @@ import requests
 def getUserTable(i,curseurGet,guild):
     infos=curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,i["ID"])).fetchone()
     if infos==None:
-        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"Ancien membre","Color":None}
+        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"Ancien membre","Color":None,"Avatar":None,"ID":None}
     else:
         return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Nom"],"Color":"#"+hex(infos["Color"])[2:],"Avatar":infos["Avatar"],"ID":i["ID"]}
 
@@ -36,6 +36,9 @@ def getColor(id,guild,curseurGet):
 
 def getGuildInfo(id,curseurGet):
     return curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(id)).fetchone()
+
+def getUserInfo(id,curseurGet,guild):
+    return curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,id)).fetchone()
 
 def getNom(id,option,curseurGet,obj):
     if option in ("messages","voice","mots") or obj:

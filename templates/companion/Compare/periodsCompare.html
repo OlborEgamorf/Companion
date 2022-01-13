@@ -1,0 +1,122 @@
+{% extends "companion/BASE.html" %}
+
+
+{% block stats %}
+{% load TagsCustom %}
+<div class="searchTable">
+    <input type="text" id="searchTable" onkeyup="searchName(3)" placeholder="Recherchez une période">
+</div>
+
+<div class="stats" style="width:80%">
+    <table id="tablecompare">
+        {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
+            <tr>
+                <th style="width:45%" colspan="3"> 
+                    {% if option == "messages" or option == "mots" or option == "voice" %}
+                        {% if user1Avatar %}
+                            <img src="https://cdn.discordapp.com/avatars/{{ user1ID }}/{{ user1Avatar }}.png?size=128">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                        {% endif %}
+                    {% elif option == "emotes" or option == "reactions" %}
+                        {% if i.Animated %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ user1ID }}.gif?size=128" style="border-radius: 0%;">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ user1ID }}.png?size=128" style="border-radius: 0%;">
+                        {% endif %}
+                    {% endif %}
+                {{ user1Nom }}</th>
+                <th style="width:10%">VS</th>
+                <th style="width:45%" colspan="4"> 
+                    {% if option == "messages" or option == "mots" or option == "voice" %}
+                        {% if user2Avatar %}
+                            <img src="https://cdn.discordapp.com/avatars/{{ user2ID }}/{{ user2Avatar }}.png?size=128">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                        {% endif %}
+                    {% elif option == "emotes" or option == "reactions" %}
+                        {% if i.Animated %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ user2ID }}.gif?size=128" style="border-radius: 0%;">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ user2ID }}.png?size=128" style="border-radius: 0%;">
+                        {% endif %}
+                    {% endif %}
+                {{ user2Nom }}</th>
+            </tr>
+            <tr>
+                <th style="width:10%">Messages</th>
+                <th style="width:31%" id="leg-barre">Barre</th>
+                <th style="width:5%">Rang</th>
+                <th style="width:8%">Date</th>
+                <th style="width:5%">Rang</th>
+                <th style="width:31%" id="leg-barre">Barre</th>
+                <th style="width:10%">Messages</th>
+            </tr>
+        {% else %}
+            <tr><th colspan="4">Classement {{ mois }} {{ annee }}</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>Emote</th>
+                <th id="leg-barre">Barre</th>
+                <th>Utilisations</th>
+            </tr>
+        {% endif %}
+
+        {% for i in rankMois %}
+            <tr>
+                <td>{{ i.Count|tempsvoice:option }}</td>
+                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ user1Color }}"></div></td>
+
+                {% if i.Rank < i.Rank2 %}
+                    <td style="text-align: center;font-style: italic;font-weight: bolder; ">{{ i.Rank }}</td>
+                {% else %}
+                    <td style="text-align: center;">{{ i.Rank }}</td>
+                {% endif %}
+
+                <td>{{ i.Mois }}/{{ i.Annee }}</td>
+
+                {% if i.Rank2 < i.Rank %}
+                    <td style="text-align: center; font-style: italic;font-weight: bolder;">{{ i.Rank2 }}</td>
+                {% else %}
+                    <td style="text-align: center;">{{ i.Rank2 }}</td>
+                {% endif %}
+
+                <td>
+                    {% if i.Count2 %}
+                        <div class="barre" style="width:calc(100%*{{ i.Count2 }}/{{ maxM }}); background-color: {{ user2Color }}"></div>
+                    {% endif %}
+                </td>
+                <td>{{ i.Count2|tempsvoice:option }}</td>
+            </tr>
+        {% endfor %}
+        <tr><th colspan="7">Périodes annuelles</th></tr>
+        {% for i in rankAnnee %}
+            <tr>
+                <td>{{ i.Count|tempsvoice:option }}</td>
+                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ user1Color }}"></div></td>
+
+                {% if i.Rank < i.Rank2 %}
+                    <td style="text-align: center;font-style: italic;font-weight: bolder; ">{{ i.Rank }}</td>
+                {% else %}
+                    <td style="text-align: center;">{{ i.Rank }}</td>
+                {% endif %}
+
+                <td>{{ i.Mois }}/{{ i.Annee }}</td>
+
+                {% if i.Rank2 < i.Rank %}
+                    <td style="text-align: center; font-style: italic;font-weight: bolder;">{{ i.Rank2 }}</td>
+                {% else %}
+                    <td style="text-align: center;">{{ i.Rank2 }}</td>
+                {% endif %}
+
+                <td>
+                    {% if i.Count2 %}
+                        <div class="barre" style="width:calc(100%*{{ i.Count2 }}/{{ maxA }}); background-color: {{ user2Color }}"></div>
+                    {% endif %}
+                </td>
+                <td>{{ i.Count2|tempsvoice:option }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock stats %}

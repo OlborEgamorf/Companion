@@ -184,6 +184,10 @@ td {
     padding: 5px 3px;
 }
 
+tr:nth-child(even){
+    background-color: #373964;
+}
+
 
 .barretd {
     width:65%;
@@ -294,6 +298,7 @@ iframe {
 
 tr {
     transition: 0.5s;
+    background-color: #23254a;
 }
 
 tr:hover {
@@ -314,6 +319,12 @@ tr:hover {
 #tableot {
     margin: 30px 0 30px auto;
     width: 50%;
+    height: min-content
+}
+
+#tablecompare {
+    margin: 30px 0 30px auto;
+    width: 80%;
     height: min-content
 }
 

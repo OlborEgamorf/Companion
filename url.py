@@ -1,5 +1,8 @@
 from django.urls import path
 
+from .compare.PeriodsCompare import viewPeriodsCompare
+
+from .compare.RanksCompare import viewRankCompare
 from .views.Blank import iFrameBlank, iFrameBlankCompare
 from .views.emotesmondial import emotesMondial, iframeEmotes
 from .views.EmotesWW import emotesMondialGuild
@@ -47,5 +50,15 @@ urlpatterns = [
 
 
     path("mondial/emotes",emotesMondial,name="emotes-mondial"),
-    path("<int:emote>/iframeemotesww",iframeEmotes,name="iframe-emotesww")
+    path("<int:emote>/iframeemotesww",iframeEmotes,name="iframe-emotesww"),
+
+
+    path("<int:guild>/<str:option>/ranks/compare",viewRankCompare,name="guild-ranks"),
+    path("<int:guild>/<str:option>/periods/compare",viewPeriodsCompare,name="guild-periods"),
+    path("<int:guild>/<str:option>/evol/compare",viewEvol,name="guild-evol"),
+    path("<int:guild>/<str:option>/jours/compare",viewJours,name="guild-jours"),
+    path("<int:guild>/<str:option>/roles/compare",viewRoles,name="guild-roles"),
+    path("<int:guild>/<str:option>/serv/compare",viewServ,name="guild-serv"),
+    path("<int:guild>/<str:option>/perso/compare",viewPerso,name="guild-perso"),
+    path("<int:guild>/<str:option>/first/compare",viewFirst,name="guild-first"),
 ]

@@ -1,6 +1,5 @@
 from math import inf
 
-import requests
 from django.contrib.auth.decorators import login_required
 from django.http.response import JsonResponse
 from django.shortcuts import render
@@ -82,7 +81,8 @@ def iFrameRank(request,guild,option):
         user_full=getUser(guild,obj)
         stats=curseur.execute("SELECT * FROM evol{0}{1}{2}".format(moisDB,anneeDB,obj)).fetchall()
         stats=collapseEvol(stats)
-        stats.reverse()        
+        stats.reverse()   
+        stats=list(filter(lambda x:not x["Collapse"], stats))     
         color=getColor(obj,guild,curseurGet)
         maxi=max(list(map(lambda x:x["Count"],stats)))
         ctx={"rank":stats,"id":user.id,"color":color,"max":maxi,"mois":mois,"annee":annee,"nom":user_full["user"]["username"],"option":option}

@@ -25,15 +25,16 @@ def viewStatsHome(request,guild):
 
     stats_final={}
     maxis_final={}
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
 
     ctx={
-    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),
+    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"color":getColor(user.id,guild,curseurGet),
     "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
     "commands":getCommands("home"),"dictCommands":dictRefCommands,"command":"ranks",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":"home","optNotHome":listeOptions[1:],
     "travel":False,"selector":False,"obj":None}
 
-    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    
 
     for option in listeOptions[1:]:
         tables=[]
@@ -45,21 +46,24 @@ def viewStatsHome(request,guild):
 
             connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
 
-            for i in curseur.execute("SELECT * FROM {0}{1} ORDER BY Rank ASC LIMIT 10".format(moisDB,anneeDB)).fetchall():
+            try:
+                for i in curseur.execute("SELECT * FROM {0}{1} ORDER BY Rank ASC LIMIT 10".format(moisDB,anneeDB)).fetchall():
 
-                if option in ("messages","voice","mots"):
-                    stats.append(getUserTable(i,curseurGet,guild))
+                    if option in ("messages","voice","mots"):
+                        stats.append(getUserTable(i,curseurGet,guild))
 
-                elif option in ("emotes","reactions"):
-                    stats.append(getEmoteTable(i,curseurGet))
+                    elif option in ("emotes","reactions"):
+                        stats.append(getEmoteTable(i,curseurGet))
 
-                elif option in ("salons","voicechan"):
-                    stats.append(getChannels(i,curseurGet))
+                    elif option in ("salons","voicechan"):
+                        stats.append(getChannels(i,curseurGet))
 
-                elif option=="freq":
-                    stats.append(getFreq(i))
+                    elif option=="freq":
+                        stats.append(getFreq(i))
 
-                maxi=max(maxi,i["Count"])
+                    maxi=max(maxi,i["Count"])
+            except:
+                pass
 
             maxis[j[2]]=maxi
             connexion.close()
@@ -103,17 +107,20 @@ def viewStatsHome(request,guild):
             maxiB=max(list(map(lambda x:x["Count"],best)))
         else:
             best=[]
-            for i in curseur.execute("SELECT * FROM persoTOGL{0} ORDER BY Count DESC LIMIT 5".format(user.id)).fetchall():
-                if option in ("emotes","reactions"):
-                    best.append(getEmoteTable(i,curseurGet))
+            try:
+                for i in curseur.execute("SELECT * FROM persoTOGL{0} ORDER BY Count DESC LIMIT 5".format(user.id)).fetchall():
+                    if option in ("emotes","reactions"):
+                        best.append(getEmoteTable(i,curseurGet))
 
-                elif option in ("salons","voicechan"):
-                    best.append(getChannels(i,curseurGet))
+                    elif option in ("salons","voicechan"):
+                        best.append(getChannels(i,curseurGet))
 
-                elif option=="freq":
-                    best.append(getFreq(i))
+                    elif option=="freq":
+                        best.append(getFreq(i))
 
-                maxiB=max(maxiB,i["Count"])
+                    maxiB=max(maxiB,i["Count"])
+            except:
+                pass
 
             perso=[]
             for i in curseur.execute("SELECT * FROM firstM ORDER BY DateID DESC LIMIT 5").fetchall():

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="https://cdn.discordapp.com/avatars/699728606493933650/cf1f6b58e81f5191684995ce4062ca7e.webp?size=256">
+    <link rel="shortcut icon" href="https://cdn.discordapp.com/avatars/699728606493933650/594343dccf861c6f77aa80da5b3d318d.webp?size=1024">
     {% load static %}
     <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
     
@@ -24,7 +24,6 @@
     }
 
     function showBar(id) {
-        console.log(document.getElementById(id))
         document.getElementById(id).style.opacity = 100;
         sleep(500).then(() => {document.getElementById(id).style.fontSize = "20px"})
     }    
@@ -44,18 +43,21 @@
         input = document.getElementById("searchTable");
         filter = input.value.toUpperCase();
         table = document.getElementById("tableot");
+        if (table == null) {
+            table = document.getElementById("tablecompare")
+        }
         tr = table.getElementsByTagName("tr");
 
         // Loop through all table rows, and hide those who don't match the search query
         for (i = 0; i < tr.length; i++) {
             td = tr[i].getElementsByTagName("td")[n];
             if (td) {
-            txtValue = td.textContent || td.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
-            }
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
             }
         }
     }
@@ -144,8 +146,8 @@
     {% if selector != False %}
         <div class="navbar">
             <a class="select">Stats</a>
-            <a href="/companion/{{ guildid }}/graphs/messages/rank">Graphiques</a>
-            <a>Comparateur</a>
+            <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}/graphs">Graphiques</a>
+            <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}/compare">Comparateur</a>
         </div>
     {% endif %}
 

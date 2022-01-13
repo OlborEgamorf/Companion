@@ -245,7 +245,7 @@
                         </td>
                     {% endif %}
                     <td style="text-align: start;">{{ i.Nom }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max|getperso:opt }}); background-color: {{ i.Color }}"></div></td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max|getperso:opt }}); background-color: {{ color }}"></div></td>
                     <td>{{ i.Count|tempsvoice:opt }}</td>
                 </tr>
             {% endfor %}

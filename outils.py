@@ -143,15 +143,19 @@ def collapseEvol(table:list) -> list:
         table : la table évol à écraser
     Sortie :
         table si len(table)<=31, sinon newTable, la table écrasée"""
-    newTable=[table[0]]
     temp=(table[0]["Mois"],table[0]["Annee"])
     if len(table)>31:
+        table[0]["Collapse"]=False
+        table[-1]["Collapse"]=False
         for i in range(1,len(table)-1):
             if table[i]["Evol"]!=0 or temp!=(table[i]["Mois"],table[i]["Annee"]):
-                newTable.append(table[i])
+                table[i]["Collapse"]=False
                 temp=(table[i]["Mois"],table[i]["Annee"])
-        newTable.append(table[i+1])
-        return newTable
+            else:
+                table[i]["Collapse"]=True
+    else:
+        for i in table:
+            i["Collapse"]=False
     return table
 
 def getTableRoles(curseur,members,nom) -> list:
