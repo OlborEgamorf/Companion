@@ -5,9 +5,9 @@ from django.shortcuts import render
 
 from ..Getteurs import *
 from ..outils import (avatarAnim, collapseEvol, connectSQL, dictOptions,
-                      dictRefCommands, dictRefOptions, getCommands, getGuild,
-                      getGuilds, getMoisAnnee, getTimes, getUser, listeOptions,
-                      tableauMois)
+                      dictRefCommands, dictRefOptions, dictRefPlus,
+                      getCommands, getGuild, getGuilds, getMoisAnnee, getPlus,
+                      getTimes, getUser, listeOptions, tableauMois)
 
 
 @login_required(login_url="/login")
@@ -33,6 +33,7 @@ def viewEvol(request,guild,option):
     "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"evol",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "lisPlus":getPlus("evol"),"dictPlus":dictRefPlus,"plus":"",
     "travel":True,"selector":True,}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)

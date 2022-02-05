@@ -3,7 +3,7 @@
 {% block script %}
 <script type="text/javascript">
     
-    function newSite(jour,mois,annee,obj,id) {
+    function newSite(jour,mois,annee,obj) {
         var site = "/companion/{{ guildid }}/{{ option }}/iframeevol?data="+jour+"?"+mois+"?"+annee+"?{{ obj }}"
         document.getElementById('iframeevol').src = site
         try {document.getElementById("elselect").id = NaN}
@@ -34,7 +34,7 @@
 
 {% block stats %}
 {% load TagsCustom %}
-<div class="navbar">
+<div class="navbar" style="width: 400px;">
     <input type="text" id="searchTable" onkeyup="searchName(1)" placeholder="Recherchez une date">
     <input id="input-collapse" type="checkbox" onclick="toggle(this)" name="ytes"> <label for="input-collapse">Affiner</label>
 </div>

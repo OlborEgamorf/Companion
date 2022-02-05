@@ -11,8 +11,10 @@ dictOptions={"messages":"Messages","voice":"Voice","salons":"Salons","voicechan"
 
 listeCommands=["ranks","perso","periods","serv","evol","first","roles","jours","rapport"]
 listeOptions=["home","messages","voice","emotes","freq","salons","voicechan","reactions","mots"]
+listePlus=["","graphs","compare"]
 dictRefCommands={"ranks":"Classements","periods":"Périodes","serv":"Serveur","perso":"Perso","evol":"Évolutions","first":"Premiers","roles":"Rôles","jours":"Jours","moy":"Moyennes","rapport":"Rapports","mondial":"Mondial"}
 dictRefOptions={"home":"Accueil","messages":"Messages","voice":"Vocal","salons":"Salons","voicechan":"Salons vocaux","emotes":"Emotes","reactions":"Réactions","mots":"Mots","freq":"Fréquences"}
+dictRefPlus={"":"Tableaux","graphs":"Graphiques","compare":"Comparateur"}
 
 def getCommands(option):
     liste=listeCommands.copy()
@@ -26,6 +28,17 @@ def getCommands(option):
     if option=="home":
         liste=[]
     return liste
+
+def getPlus(command):
+    liste=listePlus.copy()
+    if command in ("jours","roles"):
+        liste=["","graphs"]
+    elif command=="rapport":
+        liste=[""]
+    else:
+        liste=listePlus.copy()
+    return liste
+
 
 def getTimes(guild,option):
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
@@ -86,7 +99,6 @@ def avatarAnim(user_avatar):
 
 
 def getMoisAnnee(mois,annee):
-    print(mois,annee)
     if mois==None or annee==None:
         mois,annee="Total","Global"
     if annee in ("Global","GL"):
@@ -99,7 +111,6 @@ def getMoisAnnee(mois,annee):
     return mois,annee,moisDB,anneeDB
 
 def getMoisAnneePerso(mois,annee):
-    print(mois,annee)
     if mois==None or annee==None:
         mois,annee="Total","Global"
     if annee in ("Global","GL"):

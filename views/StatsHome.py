@@ -1,17 +1,14 @@
 from math import inf
 
-import requests
 from django.contrib.auth.decorators import login_required
 from django.http.response import JsonResponse
 from django.shortcuts import render
 
 from ..Getteurs import *
-from ..outils import (avatarAnim, collapseEvol, connectSQL, dictOptions,
-                      dictRefCommands, dictRefOptions, getCommands, getGuild,
-                      getGuilds, getMoisAnnee, getTablePerso, getTimes, getUser, listeOptions,
+from ..outils import (avatarAnim, connectSQL, dictOptions, dictRefCommands,
+                      dictRefOptions, getCommands, getGuild, getGuilds,
+                      getMoisAnnee, getTablePerso, getUser, listeOptions,
                       tableauMois)
-
-from time import strftime
 
 
 @login_required(login_url="/login")

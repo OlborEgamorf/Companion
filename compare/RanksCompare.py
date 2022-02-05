@@ -7,8 +7,8 @@ from django.shortcuts import render
 from ..Getteurs import *
 from ..outils import (avatarAnim, connectSQL, dictOptions,
                       dictRefCommands, dictRefOptions, getCommands, getGuild,
-                      getGuilds, getMoisAnnee, getTimes, getUser, listeOptions,
-                      tableauMois)
+                      getGuilds, getMoisAnnee, getPlus, getTimes, getUser, listeOptions,
+                      tableauMois, dictRefPlus)
 
 @login_required(login_url="/login")
 def viewRankCompare(request,guild,option):
@@ -96,6 +96,7 @@ def viewRankCompare(request,guild,option):
     "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
     "mois1":mois1,"annee1":annee1,"mois2":mois2,"annee2":annee2,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
+    "lisPlus":getPlus("ranks"),"dictPlus":dictRefPlus,"plus":"compare",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "travel":False,"selector":True,"obj":None}
 

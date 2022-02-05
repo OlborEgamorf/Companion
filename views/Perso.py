@@ -4,10 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from ..Getteurs import *
-from ..outils import (avatarAnim, colorRoles, connectSQL, dictOptions,
-                      dictRefCommands, dictRefOptions, getCommands, getGuild,
-                      getGuilds, getMoisAnnee, getMoisAnneePerso, getTablePerso, getTimes, getUser,
-                      listeOptions, tableauMois)
+from ..outils import (avatarAnim, connectSQL, dictOptions, dictRefCommands,
+                      dictRefOptions, dictRefPlus, getCommands, getGuild,
+                      getGuilds, getMoisAnnee, getMoisAnneePerso, getPlus,
+                      getTablePerso, getTimes, getUser, listeOptions)
 
 
 @login_required(login_url="/login")
@@ -36,6 +36,7 @@ def viewPerso(request,guild,option):
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"perso",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "lisPlus":getPlus("perso"),"dictPlus":dictRefPlus,"plus":"",
     "travel":True,"selector":True}
 
     print(moisDB,anneeDB)

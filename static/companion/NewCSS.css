@@ -142,22 +142,23 @@ h1 {
 .footer-ot {
     background: #36F;
     height: 40px;
-    width: 50%;
+    width: 400px;
     border-radius: 10px;
     font-family:Roboto, Verdana, Tahoma, sans-serif;
     display :flex;
     margin: 20px auto;
+    justify-content: center;
 }
 
 .footer-links {
     justify-content:center;
     display:flex;
-    flex: 1 1 auto;
+    flex: auto;
 }
 .footer-links a {
     color:white;
     text-align: center;
-    padding: 7px 10px;
+    padding: 5px 15px;
     font-size: 20px;
 }
 
@@ -182,6 +183,12 @@ table {
 td {
     border: none;
     padding: 5px 3px;
+}
+
+.user {
+    background-color: #696969; 
+    border-color: #696969;
+    transition: 0.5s;
 }
 
 tr:nth-child(even){
@@ -331,12 +338,6 @@ tr:hover {
 #elselect {
     background-color: #9c9393; 
     border-color: #9c9393;
-    transition: 0.5s;
-}
-
-.user {
-    background-color: #696969; 
-    border-color: #696969;
     transition: 0.5s;
 }
 
@@ -564,4 +565,15 @@ tr:hover {
 ::-webkit-scrollbar-thumb {
     background-color: #3d4852;
     border-radius: 3px;
+}
+
+
+.image-small {
+    width: 30px;
+    height: 30px;
+}
+
+.footer-credits {
+    text-align: center;
+    color: white;
 }

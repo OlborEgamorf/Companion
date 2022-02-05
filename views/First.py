@@ -8,8 +8,8 @@ from django.shortcuts import render
 from ..Getteurs import *
 from ..outils import (avatarAnim, collapseEvol, connectSQL, dictOptions,
                       dictRefCommands, dictRefOptions, getCommands, getGuild,
-                      getGuilds, getMoisAnnee, getUser, listeOptions,
-                      tableauMois)
+                      getGuilds, getMoisAnnee, getPlus, getUser, listeOptions,
+                      tableauMois,dictRefPlus)
 
 
 @login_required(login_url="/login")
@@ -35,6 +35,7 @@ def viewFirst(request,guild,option):
     "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"first",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "lisPlus":getPlus("first"),"dictPlus":dictRefPlus,"plus":"",
     "travel":False,"selector":True}
 
     for i in curseur.execute("SELECT * FROM firstM ORDER BY Count DESC").fetchall():

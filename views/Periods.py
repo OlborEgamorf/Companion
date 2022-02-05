@@ -6,8 +6,8 @@ from django.shortcuts import render
 from ..Getteurs import *
 from ..outils import (avatarAnim, colorRoles, connectSQL, dictOptions,
                       dictRefCommands, dictRefOptions, getCommands, getGuild,
-                      getGuilds, getMoisAnnee, getTablePerso, getUser,
-                      listeOptions, tableauMois)
+                      getGuilds, getMoisAnnee, getPlus, getTablePerso, getUser,
+                      listeOptions, tableauMois, dictRefPlus)
 
 
 @login_required(login_url="/login")
@@ -27,6 +27,7 @@ def viewPeriods(request,guild,option):
     "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"periods",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "lisPlus":getPlus("periods"),"dictPlus":dictRefPlus,"plus":"",
     "travel":False,"selector":True}
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)

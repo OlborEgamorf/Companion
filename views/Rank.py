@@ -6,9 +6,9 @@ from django.shortcuts import render
 
 from ..Getteurs import *
 from ..outils import (avatarAnim, collapseEvol, connectSQL, dictOptions,
-                      dictRefCommands, dictRefOptions, getCommands, getGuild,
-                      getGuilds, getMoisAnnee, getTimes, getUser, listeOptions,
-                      tableauMois)
+                      dictRefCommands, dictRefOptions, dictRefPlus,
+                      getCommands, getGuild, getGuilds, getMoisAnnee, getPlus,
+                      getTimes, getUser, listeOptions, tableauMois)
 
 
 @login_required(login_url="/login")
@@ -59,6 +59,7 @@ def viewRank(request,guild,option):
         "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
         "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
         "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+        "lisPlus":getPlus("ranks"),"dictPlus":dictRefPlus,"plus":"",
         "travel":True,"selector":True,"obj":None}
 
         return render(request, "companion/Ranks/ranks.html", ctx)

@@ -11,7 +11,11 @@ def getUserTable(i,curseurGet,guild):
 def getEmoteTable(i,curseurGet):
     infos=curseurGet.execute("SELECT * FROM emotes WHERE ID={0}".format(i["ID"])).fetchone()
     if infos==None:
-        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"Emote inconnue","ID":i["ID"],"Animated":False}
+        try:
+            chr(i["ID"])
+            return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"twemoji","ID":i["ID"],"Animated":False} 
+        except:
+            return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"Emote inconnue","ID":i["ID"],"Animated":False}
     else:
         return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Nom"],"ID":i["ID"],"Animated":infos["Animated"]}
 

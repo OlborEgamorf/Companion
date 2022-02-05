@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from ..outils import (avatarAnim, connectSQL, dictRefCommands, dictRefOptions,
-                      getCommands, getGuild, getGuilds, getMoisAnnee, getTimes,
-                      getUser, listeOptions, tableauMois)
+                      getCommands, getGuild, getGuilds, getMoisAnnee, getPlus, getTimes,
+                      getUser, listeOptions, tableauMois, dictRefPlus)
 from ..OutilsRapports import (anecdotesSpe, descipGlobal, descipMoyennes,
                               getEarlierAnnee, getEarlierMois, hierMAG,
                               paliers)
@@ -120,6 +120,7 @@ def viewRapports(request,guild,option):
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"rapport",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "travel":True,"selector":True,"obj":None}
+    "lisPlus":getPlus("rapport"),"dictPlus":dictRefPlus,"plus":"",
+    "travel":True,"selector":False,"obj":None}
 
     return render(request, "companion/Rapports.html", ctx)

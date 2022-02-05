@@ -50,6 +50,8 @@
                     <td>
                         {% if i.Avatar %}
                             <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
                         {% endif %}
                     </td>
                 {% elif option == "emotes" or option == "reactions" %}

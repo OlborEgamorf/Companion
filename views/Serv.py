@@ -4,10 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from ..Getteurs import *
-from ..outils import (avatarAnim, colorRoles, connectSQL, dictOptions,
+from ..outils import (avatarAnim, connectSQL, dictOptions,
                       dictRefCommands, dictRefOptions, getCommands, getGuild,
-                      getGuilds, getMoisAnnee, getTablePerso, getUser,
-                      listeOptions, tableauMois)
+                      getGuilds, getMoisAnnee, getPlus, getTablePerso, getUser,
+                      listeOptions, tableauMois,dictRefPlus)
 
 
 @login_required(login_url="/login")
@@ -27,6 +27,7 @@ def viewServ(request,guild,option):
     "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"serv",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "lisPlus":getPlus("evol"),"dictPlus":dictRefPlus,"plus":"",
     "selector":True,"travel":False,}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")

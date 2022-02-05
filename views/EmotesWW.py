@@ -1,8 +1,10 @@
 from math import inf
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from ..outils import avatarAnim, connectSQL, getCommands, getGuild, getMoisAnnee, getUser, tableauMois,getGuilds,dictRefCommands,dictRefOptions,listeOptions
+from ..outils import (avatarAnim, connectSQL, dictRefCommands, dictRefOptions,
+                      getCommands, getGuild, getGuilds, getUser, listeOptions)
 
 
 @login_required(login_url="/login")

@@ -7,8 +7,8 @@ from django.shortcuts import render
 from ..Getteurs import getUserTable
 from ..outils import (avatarAnim, connectSQL, dictOptions, dictRefCommands,
                       dictRefOptions, getCommands, getGuild, getGuilds,
-                      getMoisAnnee, getTableDay, getTimes, getUser,
-                      listeOptions, tableauMois)
+                      getMoisAnnee, getPlus, getTableDay, getTimes, getUser,
+                      listeOptions, tableauMois,dictRefPlus)
 
 
 @login_required(login_url="/login")
@@ -33,6 +33,7 @@ def viewJours(request,guild,option):
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"jours",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "lisPlus":getPlus("jours"),"dictPlus":dictRefPlus,"plus":"",
     "travel":True,"selector":True}
     
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL",None)

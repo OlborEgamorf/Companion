@@ -7,7 +7,7 @@ from django.shortcuts import render
 from ..Getteurs import *
 from ..outils import (avatarAnim, connectSQL, dictOptions,
                       dictRefCommands, dictRefOptions, getCommands, getGuild,
-                      getGuilds, getTablePerso, getUser, listeOptions)
+                      getGuilds, getPlus, getTablePerso, getUser, listeOptions, dictRefPlus)
 
 @login_required(login_url="/login")
 def viewPeriodsCompare(request,guild,option):
@@ -31,6 +31,8 @@ def viewPeriodsCompare(request,guild,option):
         listeObj=list(map(lambda x:getFreq(x),listeObj))
     elif option in ("messages","voice","mots"):
         listeObj=list(map(lambda x:getUserTable(x,curseurGet,guild),listeObj))
+
+    listeObj=list(filter(lambda x:x["ID"]!=user.id,listeObj))
 
     if user2==None:
         user2=listeObj[0]["ID"]
@@ -81,6 +83,7 @@ def viewPeriodsCompare(request,guild,option):
     "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"periods",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "lisPlus":getPlus("periods"),"dictPlus":dictRefPlus,"plus":"compare",
     "travel":False,"selector":True,"listeObjs":listeObj,"obj":int(user2),
     "user1ID":user.id,"user1Avatar":avatar1,"user1Nom":nom1,"user1Color":color1,"user2ID":user2,"user2Avatar":avatar2,"user2Nom":nom2,"user2Color":color2}
 

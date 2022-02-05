@@ -6,10 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from ..outils import (avatarAnim, colorRoles, connectSQL, dictOptions,
-                      dictRefCommands, dictRefOptions, getCommands, getGuild,
-                      getGuilds, getMoisAnnee, getMoisAnneePerso,
-                      getTableRoles, getTableRolesMem, getTimes, getUser,
-                      listeOptions, rankingClassic, tableauMois)
+                      dictRefCommands, dictRefOptions, dictRefPlus,
+                      getCommands, getGuild, getGuilds, getMoisAnnee,
+                      getMoisAnneePerso, getPlus, getTableRoles,
+                      getTableRolesMem, getTimes, getUser, listeOptions,
+                      rankingClassic, tableauMois)
 
 
 @login_required(login_url="/login")
@@ -52,6 +53,7 @@ def viewRoles(request,guild,option):
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"roles",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "lisPlus":getPlus("roles"),"dictPlus":dictRefPlus,"plus":"",
     "travel":True,"selector":True,"obj":None,"listeObjs":listeObj}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)

@@ -1,0 +1,141 @@
+{% extends "companion/BASE.html" %}
+
+
+{% block stats %}
+{% load TagsCustom %}
+
+<form action="" method="get" class="form-example">
+    <div class="navbar">
+        <select name="mois1">
+            {% for i in listeMois %}
+                {% if i == mois1 %}
+                    <option selected>{{ i }}</option>
+                {% else %}
+                    <option>{{ i }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <select name="annee1">
+            {% for i in listeAnnee %}
+                {% if i == annee1 %}
+                    <option selected>{{ i }}</option>
+                {% else %}
+                    <option>{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+        </select>
+        VS
+        <select name="mois2">
+            {% for i in listeMois %}
+                {% if i == mois2 %}
+                    <option selected>{{ i }}</option>
+                {% else %}
+                    <option>{{ i }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <select name="annee2">
+            {% for i in listeAnnee %}
+                {% if i == annee2 %}
+                    <option selected>{{ i }}</option>
+                {% else %}
+                    <option>{{ i }}</option>
+                {% endif %}
+                {% endfor %}
+        </select>
+        <input type="submit" value="Parcourir">
+    </div>
+</form>
+
+<div class="stats" style="width:80%">
+    <table id="tablecompare">
+        {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
+            <tr>
+                <th style="width:47.5%" colspan="4">Premiers {{ annee1 }}</th>
+                <th style="width:5%">VS</th>
+                <th style="width:47.5%" colspan="5">Premiers {{ annee2 }}</th>
+            </tr>
+            <tr>
+                <th style="width:10%">Messages</th>
+                <th style="width:22.5%" id="leg-barre">Barre</th>
+                <th style="width:15%" colspan="2">Membre</th>
+                <th style="width:5%">Mois</th>
+                <th style="width:15%" colspan="2">Membre</th>
+                <th style="width:22.5%" id="leg-barre">Barre</th>
+                <th style="width:10%">Messages</th>
+            </tr>
+        {% else %}
+            <tr><th colspan="4">Classement {{ mois }} {{ annee }}</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>Emote</th>
+                <th id="leg-barre">Barre</th>
+                <th>Utilisations</th>
+            </tr>
+        {% endif %}
+
+        {% for i in rank %}
+            {% if i.Mois == "TO" %}
+                <tr><th colspan="9">Année</th></tr>
+            {% endif %}
+            <tr>
+                <td>{{ i.Count|tempsvoice:option }}</td>
+                {% if i.Mois == "TO" %}
+                    <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ i.Color }}"></div></td>
+                {% else %}
+                    <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
+                {% endif %}
+                <td style="text-align: end;">{{ i.Nom }}</td>
+                {% if option == "messages" or option == "mots" or option == "voice" %}
+                    <td>
+                        {% if i.Avatar %}
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                        {% endif %}
+                    </td>
+                {% elif option == "emotes" or option == "reactions" %}
+                    <td>
+                        {% if i.Animated %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                        {% endif %}
+                    </td>
+                {% endif %}
+
+                <td>{{ i.Mois }}</td>
+
+                {% if option == "messages" or option == "mots" or option == "voice" %}
+                    <td>
+                        {% if i.Avatar2 %}
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID2 }}/{{ i.Avatar2 }}.png?size=128">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                        {% endif %}
+                    </td>
+                {% elif option == "emotes" or option == "reactions" %}
+                    <td>
+                        {% if i.Animated %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID2 }}.gif?size=128" style="border-radius: 0%;">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID2 }}.png?size=128" style="border-radius: 0%;">
+                        {% endif %}
+                    </td>
+                {% endif %}
+                <td style="text-align: start;">{{ i.Nom2 }}</td>
+                <td>
+                    {% if i.Count2 %}
+                        {% if i.Mois == "TO" %}
+                            <div class="barre" style="width:calc(100%*{{ i.Count2 }}/{{ maxA }}); background-color: {{ i.Color2 }}"></div>
+                        {% else %}
+                            <div class="barre" style="width:calc(100%*{{ i.Count2 }}/{{ max }}); background-color: {{ i.Color2 }}"></div>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td>{{ i.Count2|tempsvoice:option }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock stats %}

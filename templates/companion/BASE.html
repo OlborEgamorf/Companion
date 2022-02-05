@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
     
     <title>{{ guildname }} - OT Companion</title>
+    <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
 </head>
 
 <script type="text/javascript">
@@ -60,6 +61,17 @@
                 }
             }
         }
+    }
+
+    function getTwemoji(id,obj) {
+        var td = document.createElement("div")
+        var hex = id.toString(16)
+        console.log(hex)
+        var emoji = twemoji.convert.fromCodePoint(hex)
+
+        td.textContent = emoji
+        twemoji.parse(td)
+        obj.appendChild(td)
     }
 </script>
 
@@ -123,9 +135,9 @@
                 {% if option == o %}
                     <a class="select">{{ o|usedict:dictOptions }}</a>
                 {% elif o == "home" %}
-                    <a href="/companion/{{ guildid }}/{{ o }}">{{ o|usedict:dictOptions }}</a>
+                    <a href="/companion/{{ guildid }}/{{ o }}" onclick="clickServ(this)">{{ o|usedict:dictOptions }}</a>
                 {% else %}
-                    <a href="/companion/{{ guildid }}/{{ o }}/ranks">{{ o|usedict:dictOptions }}</a>
+                    <a href="/companion/{{ guildid }}/{{ o }}/ranks" onclick="clickServ(this)">{{ o|usedict:dictOptions }}</a>
                 {% endif %}
             {% endfor %}
         </div>
@@ -137,7 +149,7 @@
                 {% if command == c %}
                     <a class="select">{{ c|usedict:dictCommands }}</a>
                 {% else %}
-                    <a href="/companion/{{ guildid }}/{{ option }}/{{ c }}">{{ c|usedict:dictCommands }}</a>
+                    <a href="/companion/{{ guildid }}/{{ option }}/{{ c }}" onclick="clickServ(this)">{{ c|usedict:dictCommands }}</a>
                 {% endif %}
             {% endfor %}
         </div>
@@ -145,9 +157,17 @@
 
     {% if selector != False %}
         <div class="navbar">
-            <a class="select">Stats</a>
-            <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}/graphs">Graphiques</a>
-            <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}/compare">Comparateur</a>
+            {% for p in lisPlus %}
+                {% if plus == p %}
+                    <a class="select">{{ p|usedict:dictPlus }}</a>
+                {% else %} 
+                    {% if p == "" %}
+                        <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}" onclick="clickServ(this)">{{ p|usedict:dictPlus }}</a>
+                    {% else %}
+                        <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}/{{ p }}" onclick="clickServ(this)">{{ p|usedict:dictPlus }}</a>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
         </div>
     {% endif %}
 
@@ -185,7 +205,7 @@
                     {% endfor %}
                 </select>
             {% endif %}
-                <input type="submit" value="Parcourir">
+                <input type="submit" value="Parcourir" onclick="clickServ(this)">
             </div>
         </form>
     {% endif %}
@@ -194,12 +214,18 @@
 
     {% block stats %} {% endblock %}
 
-    <div class="footer-ot">
+    <div class="footer-ot" style="margin-bottom: 0;">
         <span class="footer-links">
-            <a href="../">Accueil</a>
-            <a href="../">Twitter</a>
-            <a href="../">Instagram</a>
-            <a href="../">GitHub</a>
+            <a href="/companion"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png"></a>
+            <a href="https://twitter.com/OlborTrack"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575596027768943/580b57fcd9996e24bc43c53e.png"></a>
+            <a href="https://instagram.com/OlborTrack"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575617326424095/zerdsfsf.png"></a>
+            <a href="https://github.com/OlborEgamorf/OlborTrack-Bot"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575617653583922/25231.png"></a>
+        </span>
+    </div>
+
+    <div class="footer-ot" style="margin-top: 0;width: 250px;">
+        <span class="footer-credits">
+            Olbor Track Companion <br>Par OlborEgamorf
         </span>
     </div>
 

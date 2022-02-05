@@ -26,7 +26,11 @@
             {% endif %}
 
             {% for i in stats|getmois:opt %}
-                <tr>
+                {% if i.ID == id %}
+                    <tr class="user">
+                {% else %}
+                    <tr>
+                {% endif %}
                     <td>{{ i.Rank }}</td>
                     {% if opt == "messages" or opt == "mots" or opt == "voice" %}
                         <td>
@@ -69,7 +73,11 @@
             {% endif %}
 
             {% for i in stats|getannee:opt %}
-                <tr>
+                {% if i.ID == id %}
+                    <tr class="user">
+                {% else %}
+                    <tr>
+                {% endif %}
                     <td>{{ i.Rank }}</td>
                     {% if opt == "messages" or opt == "mots" or opt == "voice" %}
                         <td>
@@ -112,7 +120,11 @@
             {% endif %}
 
             {% for i in stats|getglobal:opt %}
-                <tr>
+                {% if i.ID == id %}
+                    <tr class="user">
+                {% else %}
+                    <tr>
+                {% endif %}
                     <td>{{ i.Rank }}</td>
                     {% if opt == "messages" or opt == "mots" or opt == "voice" %}
                         <td>
