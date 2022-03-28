@@ -56,31 +56,31 @@ def dict_factory(cursor, row):
 
 def connectSQL(guild,db,option,mois,annee):
     if option=="Guild":
-        pathDir="G:/IFNO/OlborTrack/SQL/{0}/Guild".format(guild)
-        path="G:/IFNO/OlborTrack/SQL/{0}/Guild/{1}.db".format(guild,db)
+        pathDir="F:/IFNO/OlborTrack/SQL/{0}/Guild".format(guild)
+        path="F:/IFNO/OlborTrack/SQL/{0}/Guild/{1}.db".format(guild,db)
     elif db in ("Voice","Voicechan"):
         if mois in ("GL","glob") or annee in ("GL","glob"):
-            pathDir="G:/IFNO/OlborTrack/SQL/{0}/Voice/GL".format(guild)
-            path="G:/IFNO/OlborTrack/SQL/{0}/Voice/GL/{1}.db".format(guild,db)
+            pathDir="F:/IFNO/OlborTrack/SQL/{0}/Voice/GL".format(guild)
+            path="F:/IFNO/OlborTrack/SQL/{0}/Voice/GL/{1}.db".format(guild,db)
         else:
-            pathDir="G:/IFNO/OlborTrack/SQL/{0}/Voice/{1}/{2}".format(guild,annee,mois.upper())
-            path="G:/IFNO/OlborTrack/SQL/{0}/Voice/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
+            pathDir="F:/IFNO/OlborTrack/SQL/{0}/Voice/{1}/{2}".format(guild,annee,mois.upper())
+            path="F:/IFNO/OlborTrack/SQL/{0}/Voice/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
     elif option=="Jeux":
         if mois in ("GL","glob") or annee in ("GL","glob"):
-            pathDir="SQL/{0}/Jeux/GL".format(guild)
-            path="SQL/{0}/Jeux/GL/{1}.db".format(guild,db)
+            pathDir="F:/IFNO/OlborTrack/SQL/{0}/Jeux/GL".format(guild)
+            path="F:/IFNO/OlborTrack/SQL/{0}/Jeux/GL/{1}.db".format(guild,db)
         else:
-            pathDir="SQL/{0}/Jeux/{1}/{2}".format(guild,annee,mois.upper())
-            path="SQL/{0}/Jeux/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
+            pathDir="F:/IFNO/OlborTrack/SQL/{0}/Jeux/{1}/{2}".format(guild,annee,mois.upper())
+            path="F:/IFNO/OlborTrack/SQL/{0}/Jeux/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
     elif option in ("Trivial","Titres"):
-        pathDir="SQL/OT/{0}".format(option)
-        path="SQL/OT/{0}/{1}.db".format(option,db)
+        pathDir="F:/IFNO/OlborTrack/SQL/OT/{0}".format(option)
+        path="F:/IFNO/OlborTrack/SQL/OT/{0}/{1}.db".format(option,db)
     elif mois in ("GL","glob") or annee in ("GL","glob"):
-        pathDir="G:/IFNO/OlborTrack/SQL/{0}/GL".format(guild)
-        path="G:/IFNO/OlborTrack/SQL/{0}/GL/{1}.db".format(guild,db)
+        pathDir="F:/IFNO/OlborTrack/SQL/{0}/GL".format(guild)
+        path="F:/IFNO/OlborTrack/SQL/{0}/GL/{1}.db".format(guild,db)
     else:
-        pathDir="G:/IFNO/OlborTrack/SQL/{0}/{1}/{2}".format(guild,annee,mois.upper())
-        path="G:/IFNO/OlborTrack/SQL/{0}/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
+        pathDir="F:/IFNO/OlborTrack/SQL/{0}/{1}/{2}".format(guild,annee,mois.upper())
+        path="F:/IFNO/OlborTrack/SQL/{0}/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
 
     if not os.path.exists(pathDir):
         os.makedirs(pathDir)
@@ -301,3 +301,19 @@ def createPhrase(args:list) -> str:
                 mot+=lettre
         descip+=mot+" "
     return descip
+
+
+def rankingClassic(table:list):
+    """Cette fonction effectue un classement de type 'classique' d'une table donnée.
+    Entrée :
+        table : la liste de dictionnaires formant la table à classer"""
+    table.sort(key=lambda x:x["Count"],reverse=True)
+    countTemp=0
+    rankTemp=0
+    for i in range(len(table)):
+        if table[i]["Count"]==countTemp:
+            table[i]["Rank"]=rankTemp
+        else:
+            countTemp=table[i]["Count"]
+            rankTemp=i+1
+            table[i]["Rank"]=rankTemp

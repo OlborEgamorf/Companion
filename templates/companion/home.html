@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="https://cdn.discordapp.com/avatars/699728606493933650/594343dccf861c6f77aa80da5b3d318d.webp?size=1024">
+    <link rel="shortcut icon" href="https://media.discordapp.net/attachments/726034739550486618/908452059496448000/capucheB.png">
     {% load static %}
     <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
     <title>Olbor Track Companion</title>
@@ -81,7 +81,7 @@
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
             <span id="OT" class="text-bar">Olbor Track - Accueil</span>
         </a>
-        <a href="/companion/focus" class="focus-logo" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
+        <a href="/companion/profil/{{ id }}" class="focus-logo" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128"></span>
             <span id="Focus" class="text-bar">Focus et profil</span>
         </a>
@@ -118,7 +118,7 @@
 
     <div class="guild-stats">Autres</div>
     <div class="all-guilds">
-        <a href="/companion/profil">
+        <a href="/companion/profil/{{ id }}">
             <div class="card-guild">
                 <span class="icon-guild">
                     <img class="img-guild" src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128">

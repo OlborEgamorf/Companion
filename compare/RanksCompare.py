@@ -68,10 +68,14 @@ def viewRankCompare(request,guild,option):
     for i in range(len(stats2)):
         if i<len(stats1):
             stats1[i]["Nom2"]=stats2[i]["Nom"]
-            stats1[i]["Avatar2"]=stats2[i]["Avatar"]
             stats1[i]["Count2"]=stats2[i]["Count"]
-            stats1[i]["Color2"]=stats2[i]["Color"]
             stats1[i]["ID2"]=stats2[i]["ID"]
+            if option in ("messages","voice","mots"): 
+                stats1[i]["Color2"]=stats2[i]["Color"]
+                stats1[i]["Avatar2"]=stats2[i]["Avatar"]
+            elif option in ("emotes","reactions"):
+                 stats1[i]["Animated2"]=stats2[i]["Animated"]
+
             try:
                 stats1[i]["Evol"]=list(filter(lambda x:stats2[i]["ID"]==x["ID"], stats1))[0]["Rank"]-stats2[i]["Rank"]
             except:
@@ -82,9 +86,12 @@ def viewRankCompare(request,guild,option):
                 evol=list(filter(lambda x:stats2[i]["ID"]==x["ID"], stats1))[0]["Rank"]-stats2[i]["Rank"]
             except:
                 evol=0
-            stats1.append({"Nom2":stats2[i]["Nom"],"Count2":stats2[i]["Count"],"Avatar2":stats2[i]["Avatar"],"Color2":stats2[i]["Color"],"ID2":stats2[i]["ID"],"Evol":evol,"Rank":i+1})
-
-
+                if option in ("messages","voice","mots"):
+                    stats1.append({"Nom2":stats2[i]["Nom"],"Count2":stats2[i]["Count"],"Avatar2":stats2[i]["Avatar"],"Color2":stats2[i]["Color"],"ID2":stats2[i]["ID"],"Evol":evol,"Rank":i+1})
+                elif option in ("emotes","reactions"):
+                    stats1.append({"Nom2":stats2[i]["Nom"],"Count2":stats2[i]["Count"],"Animated2":stats2[i]["Animated"],"ID2":stats2[i]["ID"],"Evol":evol,"Rank":i+1})
+                else:
+                    stats1.append({"Nom2":stats2[i]["Nom"],"Count2":stats2[i]["Count"],"ID2":stats2[i]["ID"],"Evol":evol,"Rank":i+1}) 
 
     user_full=getUser(guild,user.id)
     user_avatar=user_full["user"]["avatar"]

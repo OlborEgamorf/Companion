@@ -109,7 +109,7 @@
                     </td>
                 {% elif option == "emotes" or option == "reactions" %}
                     <td>
-                        {% if i.Animated %}
+                        {% if i.Animated2 %}
                             <img src="https://cdn.discordapp.com/emojis/{{ i.ID2 }}.gif?size=128" style="border-radius: 0%;">
                         {% else %}
                             <img src="https://cdn.discordapp.com/emojis/{{ i.ID2 }}.png?size=128" style="border-radius: 0%;">
@@ -119,9 +119,9 @@
                 <td style="text-align: start;">{{ i.Nom2 }}</td>
                 <td>
                     {% if i.Evol > 0 %}
-                        <img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png"> {{ i.Evol }}
+                        <img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png"><br> {{ i.Evol }}
                     {% elif i.Evol < 0 %}
-                        {{ i.Evol }}<img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png">
+                        {{ i.Evol }}<br><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png">
                     {% endif %}
                 </td>
                 <td>

@@ -1,11 +1,8 @@
 from django.urls import path
 
-from .compare.FirstCompare import viewFirstCompare
-
 from .compare.EvolCompare import viewEvolCompare
-
+from .compare.FirstCompare import viewFirstCompare
 from .compare.PeriodsCompare import viewPeriodsCompare
-
 from .compare.RanksCompare import viewRankCompare
 from .views.Blank import iFrameBlank, iFrameBlankCompare
 from .views.emotesmondial import emotesMondial, iframeEmotes
@@ -17,6 +14,7 @@ from .views.home import home
 from .views.Jours import iFrameJour, viewJours
 from .views.Periods import iFramePeriods, viewPeriods
 from .views.Perso import iFramePerso, viewPerso
+from .views.Profil import viewProfil
 from .views.Rank import iFrameRank, viewRank
 from .views.Rapports import viewRapports
 from .views.Roles import iFrameRoles, viewRoles
@@ -65,4 +63,6 @@ urlpatterns = [
     path("<int:guild>/<str:option>/serv/compare",viewServ,name="guild-serv"),
     path("<int:guild>/<str:option>/perso/compare",viewPerso,name="guild-perso"),
     path("<int:guild>/<str:option>/first/compare",viewFirstCompare,name="guild-first"),
+
+    path("profil/<int:user>",viewProfil,name="user-profile"),
 ]

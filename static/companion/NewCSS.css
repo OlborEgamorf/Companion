@@ -374,12 +374,20 @@ tr:hover {
     #leg-barre {
         display: none;
     }
+
+    
 }
 
 @media screen and (max-width:690px) {
     .footer-links a {
         display:block;
         font-size: 12px;
+    }
+}
+
+@media screen and (max-width:720px) {
+    .sidenav {
+        display: none;
     }
 }
 
@@ -538,36 +546,6 @@ tr:hover {
 
 
 
-
-
-.carousel-items {
-    display: flex;
-    overflow-x: scroll;
-    padding: 1rem 0;
-    scroll-snap-type: x mandatory;
-}
-
-.carousel-item {
-    flex: 1 0 250px;
-    margin-left: 1rem;
-    scroll-snap-align: start;
-}
-
-::-webkit-scrollbar-track {
-    background-color: #F5F5F5;
-}
-
-::-webkit-scrollbar {
-    height: 6px;
-    background-color: #F5F5F5;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #3d4852;
-    border-radius: 3px;
-}
-
-
 .image-small {
     width: 30px;
     height: 30px;
@@ -576,4 +554,79 @@ tr:hover {
 .footer-credits {
     text-align: center;
     color: white;
+}
+
+
+
+.stats-jeux {
+    display: flex;
+    width: 30%;
+    flex-flow: row wrap;
+    justify-content: space-around;
+  }
+
+.table-jeux {
+    height: min-content
+}
+
+.badge {
+    height: 35px;
+    width: auto;
+    border-radius: 0;
+}
+
+.user-profil {
+    display: flex;
+    justify-content: center;
+    margin: 0 160px;
+}
+
+
+.profil-avatar {
+    border-radius:100%;
+    padding: 20px;
+    vertical-align: bottom;
+}
+
+.profil-infos {
+    width: 80%;
+    margin: 30px auto;
+    border-radius: 10px;
+    font-family: Roboto, Verdana, Tahoma, sans-serif;
+    color: white;
+    background-color: #23254a;
+    font-size: 20px;
+}
+
+.profil-texte {
+    display: inline-block;
+    padding: 0 0 25px 10px;
+}
+
+.texte-gros {
+    font-size: 50px;
+}
+
+.texte-titre {
+    font-style: italic;
+}
+
+.profil-emote {
+    width: 24px;
+}
+
+.profil-badges {
+    width: 27px;
+}
+
+.table-recap {
+    height: min-content;
+    width:45%
+}
+
+.div-recap {
+    width: fit-content;
+    display: flex;
+    flex-flow: wrap;
+    height: fit-content;
 }
