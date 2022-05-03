@@ -12,14 +12,15 @@ from .views.First import iFrameFirst, viewFirst
 from .views.graphiques import guildGraph
 from .views.home import home
 from .views.Jours import iFrameJour, viewJours
-from .views.Periods import iFramePeriods, viewPeriods
+from .views.Periods import (iFramePeriods, iFramePeriodsJeux, periodsJeux,
+                            viewPeriods)
 from .views.Perso import iFramePerso, viewPerso
-from .views.Profil import viewProfil
-from .views.Rank import iFrameRank, viewRank
+from .views.Profil import viewProfilHome, viewProfilPerso, viewProfilTitres
+from .views.Rank import iFrameRank, iFrameRankJeux, rankJeux, viewRank
 from .views.Rapports import viewRapports
 from .views.Roles import iFrameRoles, viewRoles
 from .views.Serv import iFrameServ, viewServ
-from .views.StatsHome import viewStatsHome
+from .views.StatsHome import statsHomeJeux, viewStatsHome
 
 urlpatterns = [
     path('', home, name="companion-home"),
@@ -64,5 +65,19 @@ urlpatterns = [
     path("<int:guild>/<str:option>/perso/compare",viewPerso,name="guild-perso"),
     path("<int:guild>/<str:option>/first/compare",viewFirstCompare,name="guild-first"),
 
-    path("profil/<int:user>",viewProfil,name="user-profile"),
+    path("profil/<int:user>",viewProfilHome,name="user-profil"),
+    path("profil/<int:user>/titres",viewProfilTitres,name="user-titres"),
+    path("profil/<int:user>/custom",viewProfilPerso,name="user-custom"),
+
+    path("jeux/home",statsHomeJeux,name="guild-ranks"),
+    path("jeux/<str:option>/ranks",rankJeux,name="guild-ranks"),
+    path("jeux/<str:option>/periods",periodsJeux,name="guild-periods"),
+    path("jeux/<str:option>/evol",viewEvol,name="guild-evol"),
+    path("jeux/<str:option>/first",viewFirst,name="guild-first"),
+
+    path("jeux/<str:option>/iframeranks",iFrameRankJeux,name="iframe-ranks"),
+    path("jeux/<str:option>/iframeperiods",iFramePeriodsJeux,name="iframe-periods"),
+    path("jeux/<str:option>/iframeevol",iFrameEvol,name="iframe-evol"),
+    path("jeux/<str:option>/iframejours",iFrameJour,name="iframe-jours"),
+    path("jeux/<str:option>/iframefirst",iFrameFirst,name="iframe-first"),
 ]

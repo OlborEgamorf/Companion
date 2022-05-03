@@ -5,7 +5,7 @@
     margin: auto auto 40px auto;
     border-radius: 10px;
     display: flex;
-    font-family:Roboto, Verdana, Tahoma, sans-serif;
+    font-family:Roboto, Arial, Tahoma, sans-serif;
     align-items: center;
 }
 
@@ -46,7 +46,7 @@
 
 
 body {
-    background: #2f4078;
+    background: #222;
     margin:10px;
 }
 
@@ -54,7 +54,7 @@ h1 {
     color:white;
     text-align: center;
     vertical-align:text-top;
-    font-family:Roboto, Verdana, Tahoma, sans-serif;
+    font-family:Roboto, Arial, Tahoma, sans-serif;
 }
 
 .bodyiframe {
@@ -75,7 +75,7 @@ h1 {
 
 
 .card-guild {
-    background: #23254a;
+    background: #111;
     margin: 20px 15px;
     width: 120px;
     height: 200px;
@@ -103,7 +103,7 @@ h1 {
 .guild-name {
     color:white;
     text-align: center;
-    font-family:Roboto, Verdana, Tahoma, sans-serif;
+    font-family:Roboto, Arial, Tahoma, sans-serif;
     line-height: 150%;
     float:inline-start;
     width: 100px;
@@ -130,7 +130,7 @@ h1 {
 }
 
 .card-mix {
-    background: #23254a;
+    background: #111;
     margin: 20px 15px;
     width: 120px;
     height: 200px;
@@ -144,7 +144,7 @@ h1 {
     height: 40px;
     width: 400px;
     border-radius: 10px;
-    font-family:Roboto, Verdana, Tahoma, sans-serif;
+    font-family:Roboto, Arial, Tahoma, sans-serif;
     display :flex;
     margin: 20px auto;
     justify-content: center;
@@ -172,9 +172,9 @@ table {
     width: 80%;
     margin: 30px auto;
     border-radius: 10px;
-    font-family:Roboto, Verdana, Tahoma, sans-serif;
+    font-family:Roboto, Arial, Tahoma, sans-serif;
     color:white;
-    background-color: #23254a;
+    background-color: #111;
     font-size: 20px;
     text-align: center;
     
@@ -182,17 +182,16 @@ table {
 
 td {
     border: none;
-    padding: 5px 3px;
+    font-size: 17.5px;
 }
 
 .user {
-    background-color: #696969; 
-    border-color: #696969;
-    transition: 0.5s;
+    font-style: italic;
+    font-weight: bold;
 }
 
 tr:nth-child(even){
-    background-color: #373964;
+    background-color: black;
 }
 
 
@@ -203,13 +202,13 @@ tr:nth-child(even){
 
 .barre {
     background-color:#37be96;
-    height:40px;
+    height:20px;
     border-radius: 25px;
 }
 
 table img {
-    height:40px;
-    width: 40px;
+    height: 38px;
+    width: 38px;
     border-radius: 100%;
 }
 
@@ -218,9 +217,9 @@ table img {
     width: 80%;
     margin: 10px auto;
     border-radius: 10px;
-    font-family:Roboto, Verdana, Tahoma, sans-serif;
+    font-family:Roboto, Arial, Tahoma, sans-serif;
     color:white;
-    background-color: #23254a;
+    background-color: #111;
     font-size: 20px;
     text-align: center;
     vertical-align:middle;
@@ -253,9 +252,9 @@ table img {
     width: 80%;
     margin: 30px auto;
     border-radius: 10px;
-    font-family:Roboto, Verdana, Tahoma, sans-serif;
+    font-family:Roboto, Arial, Tahoma, sans-serif;
     color:white;
-    background-color: #23254a;
+    background-color: #111;
     font-size: 20px;
     text-align: center;
     vertical-align:middle;
@@ -269,7 +268,7 @@ table img {
 select {
     border-radius: 10px;
     color:white;
-    font-family:Roboto, Verdana, Tahoma, sans-serif;
+    font-family:Roboto, Arial, Tahoma, sans-serif;
     background-color:#36F ;
     font-size: 20px;
     text-align: center;
@@ -281,8 +280,8 @@ select {
 input {
     border-radius: 10px;
     color:white;
-    font-family:Roboto, Verdana, Tahoma, sans-serif;
-    background-color:#23254a ;
+    font-family:Roboto, Arial, Tahoma, sans-serif;
+    background-color:#36F ;
     font-size: 20px;
     text-align: center;
     cursor: pointer;
@@ -292,7 +291,7 @@ input {
 }
 
 input:hover {
-    background-color:#23254a ;
+    background-color:#36F ;
     transition: 0.5s;
 }
 
@@ -305,12 +304,13 @@ iframe {
 
 tr {
     transition: 0.5s;
-    background-color: #23254a;
+    background-color: #111;
+    height: 40px;
 }
 
 tr:hover {
-    background-color: #8b8585; 
-    border-color: #8b8585;
+    background-color: #333; 
+    border-color: #333;
 }
 
 .date {
@@ -462,7 +462,7 @@ tr:hover {
 }
 
 .text-bar {
-    font-family:Roboto, Verdana, Tahoma, sans-serif;
+    font-family:Roboto, Arial, Tahoma, sans-serif;
     transition: all 0.5s;
     text-align: center;
     display: inline;
@@ -557,16 +557,9 @@ tr:hover {
 }
 
 
-
-.stats-jeux {
-    display: flex;
-    width: 30%;
-    flex-flow: row wrap;
-    justify-content: space-around;
-  }
-
 .table-jeux {
-    height: min-content
+    height: min-content;
+    width: 30%;
 }
 
 .badge {
@@ -586,15 +579,17 @@ tr:hover {
     border-radius:100%;
     padding: 20px;
     vertical-align: bottom;
+    height: 128px;
+    width: 128px;
 }
 
 .profil-infos {
     width: 80%;
     margin: 30px auto;
     border-radius: 10px;
-    font-family: Roboto, Verdana, Tahoma, sans-serif;
+    font-family:Roboto, Arial, Tahoma, sans-serif;
     color: white;
-    background-color: #23254a;
+    background-color: #111;
     font-size: 20px;
 }
 
@@ -604,7 +599,7 @@ tr:hover {
 }
 
 .texte-gros {
-    font-size: 50px;
+    font-size: 45px;
 }
 
 .texte-titre {
@@ -624,9 +619,63 @@ tr:hover {
     width:45%
 }
 
-.div-recap {
-    width: fit-content;
+.div-profil {
     display: flex;
     flex-flow: wrap;
     height: fit-content;
+    margin:0 160px
+}
+
+
+.div-titres {
+    display: flex;
+    flex-flow: wrap;
+    height: fit-content;
+    margin: 0 160px;
+}
+
+
+.bouton-achat {
+    background-color: cornflowerblue;
+    font-size: 17px;
+}
+.bouton-vente {
+    background-color: red;
+    font-size: 17px;
+}
+.bouton-set {
+    background-color: cornflowerblue;
+    font-size: 17px;
+}
+
+.otcoin {
+    height: 25px;
+    width: 25px;
+}
+
+.text-small {
+    font-size: 17px;
+}
+
+
+button {
+    border-radius: 10px;
+    color:white;
+    font-family:Roboto, Arial, Tahoma, sans-serif;
+    background-color:#23254a ;
+    font-size: 20px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    padding: 0 2%;
+    transition: 0.5s;
+}
+
+button:hover {
+    background-color:#23254a ;
+    transition: 0.5s;
+}
+
+#full {
+    transition: 0.5s;
 }

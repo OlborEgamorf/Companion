@@ -23,7 +23,7 @@ def viewJours(request,guild,option):
     user_avatar=user_full["user"]["avatar"]
 
     full_guilds=getGuilds(user)
-    listeMois,listeAnnee=getTimes(guild,option)
+    listeMois,listeAnnee=getTimes(guild,option,"Stats")
 
     maxi=-inf
 

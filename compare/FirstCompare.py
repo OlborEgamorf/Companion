@@ -15,7 +15,7 @@ from ..outils import (avatarAnim, connectSQL, dictOptions, dictRefCommands,
 def viewFirstCompare(request,guild,option):
     annee1 = request.GET.get("annee1")
     annee2 = request.GET.get("annee2")
-    listeAnnee=getTimes(guild,option)[1]
+    listeAnnee=getTimes(guild,option,"Stats")[1]
     listeAnnee.remove("Global")
     if annee1==None:
         annee1=choice(listeAnnee)
@@ -96,10 +96,12 @@ def viewFirstCompare(request,guild,option):
         print(period)
         if period!=[]:
             stats1[i]["Nom2"]=period[0]["Nom"]
-            stats1[i]["Avatar2"]=period[0]["Avatar"]
-            stats1[i]["Count2"]=period[0]["Count"]
-            stats1[i]["Color2"]=period[0]["Color"]
             stats1[i]["ID2"]=period[0]["ID"]
+            stats1[i]["Count2"]=period[0]["Count"]
+            if option in ("messages","voice","mots"):
+                stats1[i]["Avatar2"]=period[0]["Avatar"]
+                stats1[i]["Color2"]=period[0]["Color"]
+            
 
     user_full=getUser(guild,user.id)
     user_avatar=user_full["user"]["avatar"]

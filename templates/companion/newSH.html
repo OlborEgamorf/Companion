@@ -1,0 +1,167 @@
+{% extends "companion/BASE.html" %}
+
+
+{% block stats %}
+{% load TagsCustom %}
+{% for opt in optNotHome %}
+    <div class="guild-stats">{{ opt|usedict:dictOptions }}</div>
+    <div class="div-profil">
+        <table class="table-recap">
+            {% if opt == "messages" or opt == "mots" or opt == "voice" or opt == "emotes" or opt == "reactions" %}
+                <tr><th colspan="5">Classement global</th></tr>
+                <tr>
+                    <th>Rang</th>
+                    <th colspan="2">Membre</th>
+                    <th id="leg-barre">Barre</th>
+                    <th>Messages</th>
+                </tr>
+            {% else %}
+                <tr><th colspan="4">Classement global</th></tr>
+                <tr>
+                    <th>Rang</th>
+                    <th>Emote</th>
+                    <th id="leg-barre">Barre</th>
+                    <th>Utilisations</th>
+                </tr>
+            {% endif %}
+
+            {% for i in stats|getrank:opt %}
+            {% if i.ID == id %}
+                <tr class="user">
+            {% else %}
+                <tr>
+            {% endif %}
+                    <td>{{ i.Rank }}</td>
+                    {% if opt == "messages" or opt == "mots" or opt == "voice" %}
+                        <td>
+                            {% if i.Avatar %}
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                            {% endif %}
+                        </td>
+                    {% elif opt == "emotes" or opt == "reactions" %}
+                        <td>
+                            {% if i.Animated %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                            {% else %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                    <td style="text-align: start;">{{ i.Nom }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max|getrank:opt }}); background-color: {{ i.Color }}"></div></td>
+                    <td>{{ i.Count|tempsvoice:opt }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <table class="table-recap">
+            {% if opt == "messages" or opt == "mots" or opt == "voice" or opt == "emotes" or opt == "reactions" %}
+                <tr><th colspan="5">Premiers sur les 5 derniers mois</th></tr>
+                <tr>
+                    <th>Période</th>
+                    <th colspan="2">Membre</th>
+                    <th id="leg-barre">Barre</th>
+                    <th>Messages</th>
+                </tr>
+            {% else %}
+                <tr><th colspan="4">Premiers sur les 5 derniers moiss</th></tr>
+                <tr>
+                    <th>Période</th>
+                    <th>Membre</th>
+                    <th id="leg-barre">Barre</th>
+                    <th>Messages</th>
+                </tr>
+            {% endif %}
+            {% for i in stats|getfirst:opt %}
+                <tr>
+                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                    {% if opt == "messages" or opt == "mots" or opt == "voice" %}
+                        <td>
+                            {% if i.Avatar %}
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                            {% endif %}
+                        </td>
+                    {% elif opt == "emotes" or opt == "reactions" %}
+                        <td>
+                            {% if i.Animated %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                            {% else %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                    <td style="text-align: start;">{{ i.Nom }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max|getfirst:opt }}); background-color: {{ i.Color }}"></div></td>
+                    <td>{{ i.Count|tempsvoice:opt }}</td>
+                </tr>
+            {% endfor %}
+
+        </table>
+        {% if opt == "messages" or opt == "mots" or opt == "voice" %}
+            <table class="table-recap">
+                <tr><th colspan="4">Vos 5 derniers mois</th></tr>
+                <tr>
+                    <th>Rang</th>
+                    <th>Date</th>
+                    <th>Barre</th>
+                    <th>Messages</th>
+                </tr>
+                {% for i in stats|getperso:opt %}
+                    <tr>
+                        <td>{{ i.Rank }}</td>
+                        <td id="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
+                        <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max|getperso:opt }}); background-color: {{ color }}"></div></td>
+                        <td>{{ i.Count|tempsvoice:opt }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <table class="table-recap">
+                {% if opt == "emotes" or opt == "reactions" %}
+                    <tr><th colspan="5">Vos meilleures emotes sur les 5 derniers mois</th></tr>
+                    <tr>
+                        <th>Rang</th>
+                        <th colspan="2">Emote</th>
+                        <th id="leg-barre">Barre</th>
+                        <th>Utilisations</th>
+                    </tr>
+                {% else %}
+                    <tr><th colspan="4">Vos meilleures emotes sur les 5 derniers mois</th></tr>
+                    <tr>
+                        <th>Rang</th>
+                        <th>Emote</th>
+                        <th id="leg-barre">Barre</th>
+                        <th>Utilisations</th>
+                    </tr>   
+                {% endif %}
+                
+                {% for i in stats|getperso:opt %}
+                    <tr>
+                        <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                        {% if opt == "messages" or opt == "mots" or opt == "voice" %}
+                            <td>
+                                {% if i.Avatar %}
+                                    <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                                {% endif %}
+                            </td>
+                        {% elif opt == "emotes" or opt == "reactions" %}
+                            <td>
+                                {% if i.Animated %}
+                                    <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                                {% else %}
+                                    <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                        <td style="text-align: start;">{{ i.Nom }}</td>
+                        <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max|getperso:opt }}); background-color: {{ color }}"></div></td>
+                        <td>{{ i.Count|tempsvoice:opt }}</td>
+                    </tr>
+            {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+{% endfor %}
+    
+
+
+{% endblock stats %}

@@ -20,7 +20,7 @@ def guildGraph(request,guild,section):
     
     roles_position,roles_color,roles_name=colorRoles(guild_full)
 
-    listeMois,listeAnnee=getTimes(guild,None)
+    listeMois,listeAnnee=getTimes(guild,None,"Stats")
 
     if section=="rank":
         old=1

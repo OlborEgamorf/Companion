@@ -65,12 +65,19 @@
                 <th style="width:10%">Messages</th>
             </tr>
         {% else %}
-            <tr><th colspan="4">Classement {{ mois }} {{ annee }}</th></tr>
             <tr>
-                <th>Rang</th>
-                <th>Emote</th>
-                <th id="leg-barre">Barre</th>
-                <th>Utilisations</th>
+                <th style="width:47.5%" colspan="4">Premiers {{ annee1 }}</th>
+                <th style="width:5%">VS</th>
+                <th style="width:47.5%" colspan="5">Premiers {{ annee2 }}</th>
+            </tr>
+            <tr>
+                <th style="width:10%">Messages</th>
+                <th style="width:22.5%" id="leg-barre">Barre</th>
+                <th style="width:15%">Membre</th>
+                <th style="width:5%">Mois</th>
+                <th style="width:15%">Membre</th>
+                <th style="width:22.5%" id="leg-barre">Barre</th>
+                <th style="width:10%">Messages</th>
             </tr>
         {% endif %}
 

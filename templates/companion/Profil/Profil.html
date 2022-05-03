@@ -1,0 +1,193 @@
+{% extends "companion/Profil/BaseProfil.html" %}
+{% block page %}
+{% load TagsCustom %}
+<div class="guild-stats">Tableau jeux</div>
+
+<div class="div-profil">
+    {% for i in jeux %}
+        <table class="table-jeux">
+            <tr><th colspan="3">{{ i }}</th></tr>
+            
+            {% if badges|getbadges:i|len != 0 %}
+                <tr><th colspan="3">Badges</th></tr>
+                <tr><td colspan="3">
+                    {% for j in badges|getbadges:i %}
+                        <img src='{{ j|badgeurl }}' class='badge'>
+                    {% endfor %}
+                    
+                </td></tr>
+            {% endif %}
+            
+            <tr><th colspan="3">Board</th></tr>
+            <tr><th>Période</th><th>Classement</th><th>Points</th></tr>
+            {% for j in stats|getbadges:i %}
+                <tr><td>{{ j.Mois }} / {{ j.Annee }}</td><td>{{ j.Rank }}</td><td>{{ j.Count }}</td></tr>
+            {% endfor %}
+        </table>
+    {% endfor %}
+</div>
+
+{% if id == idprofil %}
+    <div class="guild-stats">Recap stats</div>
+
+    <div class="div-profil">
+        <table class="table-recap">
+            <tr><th colspan="5">Messages envoyés par serveur</th></tr>
+            <tr>
+                <th>Rang (interne)</th>
+                <th colspan="2">Serveur</th>
+                <th id="leg-barre">Barre</th>
+                <th>Messages</th>
+            </tr>
+    
+            {% for i in messages %}
+                <tr>
+                    <td>{{ i.Rank }} ({{ i.RankIntern }})</td>
+                    <td>
+                        {% if i.Icon %}
+                            <img src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}.png?size=128">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                        {% endif %}
+                    </td>
+                    <td style="text-align: start;">{{ i.Nom }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxMess }});background-color:{{ color }}"></div></td>
+                    <td>{{ i.Count }}</td>
+                </tr>
+            {% endfor %}
+
+            {% if messages|len == 0%}
+                <tr><td colspan="5">Contenu indisponible, manquant ou masqué.</td>
+            {% endif %}
+        </table>
+
+        <table class="table-recap">
+            <tr><th colspan="5">Temps en vocal par serveur</th></tr>
+            <tr>
+                <th>Rang (interne)</th>
+                <th colspan="2">Serveur</th>
+                <th id="leg-barre">Barre</th>
+                <th>Messages</th>
+            </tr>
+    
+            {% for i in vocal %}
+                <tr>
+                    <td>{{ i.Rank }} ({{ i.RankIntern }})</td>
+                    <td>
+                        {% if i.Icon %}
+                            <img src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}.png?size=128">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                        {% endif %}
+                    </td>
+                    <td style="text-align: start;">{{ i.Nom }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxVoc }});background-color:{{ color }}"></div></td>
+                    <td>{{ i.Count|tempsvoice:'voice' }}</td>
+                </tr>
+            {% endfor %}
+
+            {% if vocal|len == 0%}
+                <tr><td colspan="5">Contenu indisponible, manquant ou masqué.</td>
+            {% endif %}
+        </table>
+
+        <table class="table-recap">
+            <tr><th colspan="4">Emotes envoyées</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>Emote</th>
+                <th id="leg-barre">Barre</th>
+                <th>Messages</th>
+            </tr>
+    
+            {% for i in emotes %}
+                <tr>
+                    <td>{{ i.Rank }}</td>
+                    <td>
+                        <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}?size=128" style="border-radius: 0%;">
+                    </td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxEmote }});background-color:{{ color }}"></div></td>
+                    <td>{{ i.Count }}</td>
+                </tr>
+            {% endfor %}
+
+            {% if emotes|len == 0%}
+                <tr><td colspan="4">Contenu indisponible, manquant ou masqué.</td>
+            {% endif %}
+        </table>
+
+        <table class="table-recap">
+            <tr><th colspan="5">Salons les plus utilisés</th></tr>
+            <tr>
+                <th>Rang (interne)</th>
+                <th colspan="2">Salon</th>
+                <th id="leg-barre">Barre</th>
+                <th>Messages</th>
+            </tr>
+    
+            {% for i in salons %}
+                <tr>
+                    <td>{{ i.Rank }} ({{ i.RankIntern }})</td>
+                    <td>
+                        {% if i.Icon %}
+                            <img src="https://cdn.discordapp.com/icons/{{ i.IDGuild }}/{{ i.Icon }}.png?size=128">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                        {% endif %}
+                    </td>
+                    <td style="text-align: start;">{{ i.Nom }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxChan }});background-color:{{ color }}"></div></td>
+                    <td>{{ i.Count }}</td>
+                </tr>
+            {% endfor %}
+
+            {% if salons|len == 0%}
+                <tr><td colspan="5">Contenu indisponible, manquant ou masqué.</td>
+            {% endif %}
+        </table>
+
+        <table class="table-recap">
+            <tr><th colspan="4">Heures d'activité</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>Heure</th>
+                <th id="leg-barre">Barre</th>
+                <th>Messages</th>
+            </tr>
+    
+            {% for i in freq %}
+                <tr>
+                    <td>{{ i.Rank }}</td>
+                    <td style="text-align: start;">{{ i.ID }}h</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxFreq }});background-color:{{ color }}"></div></td>
+                    <td>{{ i.Count }}</td>
+                </tr>
+            {% endfor %}
+
+            {% if freq|len == 0%}
+                <tr><td colspan="4">Contenu indisponible, manquant ou masqué.</td>
+            {% endif %}
+        </table>
+    </div>
+
+{% else %}
+    {% if guildscom|len != 0 %}
+        <div class="guild-stats">Serveurs en commun</div>
+
+        <div class="all-guilds">
+            {% for guild in guildscom %}
+                <a id="{{ guild.ID }}" class="a-guilds" href="/companion/{{ guild.ID }}/home">
+                    <div class="card-guild">
+                        {% if guild.Icon != "None" %}
+                            <span class="icon-guild">
+                                <img class="img-guild" src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}?size=128" alt="Icone du serveur {{ guild.Nom }}">
+                            </span>
+                        {% endif %}     
+                        <span class="guild-name">{{ guild.Nom }}</span>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock page %}

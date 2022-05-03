@@ -96,7 +96,7 @@ def viewRankCompare(request,guild,option):
     user_full=getUser(guild,user.id)
     user_avatar=user_full["user"]["avatar"]
     full_guilds=getGuilds(user)
-    listeMois,listeAnnee=getTimes(guild,option)
+    listeMois,listeAnnee=getTimes(guild,option,"Stats")
 
     ctx={"rank":stats1,"max":maxi,
     "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),

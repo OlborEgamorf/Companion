@@ -22,7 +22,7 @@ def viewEvolCompare(request,guild,option):
     user_full=getUser(guild,user.id)
     user_avatar=user_full["user"]["avatar"]
 
-    listeMois,listeAnnee=getTimes(guild,option)
+    listeMois,listeAnnee=getTimes(guild,option,"Stats")
 
     full_guilds=getGuilds(user)
 

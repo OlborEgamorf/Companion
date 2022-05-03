@@ -1,0 +1,13 @@
+{% extends "companion/Profil/BaseProfil.html" %}
+{% block page %}
+{% load TagsCustom %}
+<div class="guild-stats">Surnom</div>
+
+<div class="div-profil">
+    {% if coins > 1500 %}
+        <input type="text" name="surnom" value="{{ custom }}" maxlength="8">
+    {% else %}
+        <input type="text" name="surnom" value="{{ custom }}" disabled="true">
+    {% endif %}
+</div>
+{% endblock page %}

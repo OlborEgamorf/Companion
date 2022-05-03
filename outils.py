@@ -7,7 +7,7 @@ listeSections=["Accueil","Messages","Salons","Emotes","Vocal","Réactions","Mots
 
 tableauMois={"01":"Janvier","02":"Février","03":"Mars","04":"Avril","05":"Mai","06":"Juin","07":"Juillet","08":"Aout","09":"Septembre","10":"Octobre","11":"Novembre","12":"Décembre","TO":"TO","janvier":"01","février":"02","mars":"03","avril":"04","mai":"05","juin":"06","juillet":"07","aout":"08","septembre":"09","octobre":"10","novembre":"11","décembre":"12","glob":"GL","to":"TO","Total":"TO","total":"to"}
 
-dictOptions={"messages":"Messages","voice":"Voice","salons":"Salons","voicechan":"Voicechan","emotes":"Emotes","reactions":"Reactions","mots":"Mots","freq":"Freq"}
+dictOptions={"messages":"Messages","voice":"Voice","salons":"Salons","voicechan":"Voicechan","emotes":"Emotes","reactions":"Reactions","mots":"Mots","freq":"Freq","p4":"P4","tortues":"Tortues","tortuesduo":"TortuesDuo","trivialversus":"TrivialVersus","trivialbr":"TrivialBR","trivialparty":"TrivialParty","morpion":"Morpion","matrice":"Matrice"}
 
 listeCommands=["ranks","perso","periods","serv","evol","first","roles","jours","rapport"]
 listeOptions=["home","messages","voice","emotes","freq","salons","voicechan","reactions","mots"]
@@ -15,6 +15,9 @@ listePlus=["","graphs","compare"]
 dictRefCommands={"ranks":"Classements","periods":"Périodes","serv":"Serveur","perso":"Perso","evol":"Évolutions","first":"Premiers","roles":"Rôles","jours":"Jours","moy":"Moyennes","rapport":"Rapports","mondial":"Mondial"}
 dictRefOptions={"home":"Accueil","messages":"Messages","voice":"Vocal","salons":"Salons","voicechan":"Salons vocaux","emotes":"Emotes","reactions":"Réactions","mots":"Mots","freq":"Fréquences"}
 dictRefPlus={"":"Tableaux","graphs":"Graphiques","compare":"Comparateur"}
+
+listeOptionsJeux=["home","p4","tortues","tortuesduo","trivialversus","trivialbr","trivialparty","morpion","matrice",]
+dictRefOptionsJeux={"home":"Accueil","p4":"P4","tortues":"Tortues","tortuesduo":"TortuesDuo","trivialversus":"Trivial VS","trivialbr":"Trivial BR","trivialparty":"Trivial Party","morpion":"Morpion","matrice":"Matrice"}
 
 def getCommands(option):
     liste=listeCommands.copy()
@@ -40,8 +43,8 @@ def getPlus(command):
     return liste
 
 
-def getTimes(guild,option):
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
+def getTimes(guild,option,categ):
+    connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
     mois=curseur.execute("SELECT DISTINCT Mois FROM firstM ORDER BY Mois ASC").fetchall()
     annee=curseur.execute("SELECT DISTINCT Annee FROM firstM ORDER BY Annee ASC").fetchall()
     mois=list(map(lambda x:tableauMois[x["Mois"]],mois))+["Total"]
@@ -154,6 +157,7 @@ def collapseEvol(table:list) -> list:
         table : la table évol à écraser
     Sortie :
         table si len(table)<=31, sinon newTable, la table écrasée"""
+    table.sort(key=lambda x:x["Annee"]+x["Mois"]+x["Jour"])
     temp=(table[0]["Mois"],table[0]["Annee"])
     if len(table)>31:
         table[0]["Collapse"]=False
@@ -243,11 +247,15 @@ def getTableDay(curseur:sqlite3.Cursor,mois:str,annee:str) -> list:
 
 
 def getTablePerso(guild,option,id,idobj,period,tri):
+    if option in ("Tortues","TortuesDuo","P4","Matrice","Morpion","TrivialVersus","TrivialBR","TrivialParty"):
+        categ="Jeux"
+    else:
+        categ="Stats"
     liste=[]
-    connectionF,curseurF=connectSQL(guild,option,"Stats","GL","")
+    connectionF,curseurF=connectSQL(guild,option,categ,"GL","")
     for i in curseurF.execute("SELECT Mois,Annee FROM first{0}".format(period)).fetchall():
         try:
-            connection,curseur=connectSQL(guild,option,"Stats",i["Mois"],i["Annee"])
+            connection,curseur=connectSQL(guild,option,categ,i["Mois"],i["Annee"])
             if not idobj:
                 stat=curseur.execute("SELECT Rank,Count,Mois,Annee,ID FROM {0}{1} WHERE ID={2}".format(tableauMois[i["Mois"]],i["Annee"],id)).fetchone()
             else:

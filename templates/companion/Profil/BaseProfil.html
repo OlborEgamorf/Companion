@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://media.discordapp.net/attachments/726034739550486618/908452059496448000/capucheB.png">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
+    
+    <title>{{ nomprofil }} - OT Companion</title>
+</head>
+
+<script type="text/javascript">
+    
+    function sleep (time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    function showBar(id) {
+        document.getElementById(id).style.opacity = 100;
+        sleep(500).then(() => {document.getElementById(id).style.fontSize = "20px"})
+    }    
+
+    function hideBar(id) {
+        document.getElementById(id).style.opacity = 0;
+        sleep(500).then(() => {document.getElementById(id).style.fontSize = "0"})
+    }  
+
+    
+</script>
+
+{% block script %} {% endblock %}
+
+
+{% load TagsCustom %}
+
+<body>
+    <div class="sidenav" id="side">
+        <a href="/companion/" class="ot-logo" onmouseenter="showBar('OT')" onmouseleave="hideBar('OT')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
+            <span id="OT" class="text-bar">Olbor Track - Accueil</span>
+        </a>
+        {% if id == idprofil %}
+            <a href="/companion/profil/{{ id }}" style="background-color: {{ color }};" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}"></span>
+            <span id="Focus" class="text-bar">Focus et profil</span>
+        {% else %}
+            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}"></span>
+            <span id="Focus" class="text-bar">Focus et profil</span>
+        {% endif %}
+        </a>
+        <a href="/companion/" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png"></span>
+            <span id="0" class="text-bar">Classements jeux</span>
+        </a>
+    </div>
+
+    <div class="profil-infos">
+        <div>
+            {% if id == idprofil or guildscom|len != 0 %}
+                <img class="profil-avatar" src="https://cdn.discordapp.com/avatars/{{ idprofil }}/{{ avatarprofil }}">
+                <div class="profil-texte">
+                    <div class="texte-gros">
+                        {{ nomprofil }}
+                        {% if vip == True %}
+                            <img class="profil-badges" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515315048448/VipmotifCrop400.png" alt="Badge VIP">
+                        {% endif %}
+                        {% if testeur == True %}
+                            <img class="profil-badges" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515080183859/TesteursmotifCrop400.png" alt="Badge Testeur">
+                        {% endif %}</div>
+                    <div class="texte-titre">
+                        {% if emote != None %}
+                            <img class="profil-emote" src="https://cdn.discordapp.com/emojis/{{ emote }}" alt="Emote de {{ nom }}">
+                        {% endif %}
+                        {{ titre }}</div>
+                
+                </div>
+            {% else %}
+                {% if emote != None %}
+                    <img class="profil-avatar" src="https://cdn.discordapp.com/emojis/{{ emote }}" alt="Emote de {{ nom }}">
+                {% else %}
+                    <img class="profil-avatar" src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                {% endif %}
+                <div class="profil-texte">
+                    <div class="texte-gros">
+                        {{ titre }}
+                        {% if vip == True %}
+                            <img class="profil-badges" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515315048448/VipmotifCrop400.png" alt="Badge VIP">
+                        {% endif %}
+                        {% if testeur == True %}
+                            <img class="profil-badges" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515080183859/TesteursmotifCrop400.png" alt="Badge Testeur">
+                        {% endif %}</div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="navbar">
+        {% for o in options %}
+            {% if option == o %}
+                <a class="select">{{ o|usedict:dictOptions }}</a>
+            {% elif o == "home" %}
+                <a href="/companion/profil/{{ idprofil }}" onclick="clickServ(this)">{{ o|usedict:dictOptions }}</a>
+            {% else %}
+                <a href="/companion/profil/{{ idprofil }}/{{ o }}" onclick="clickServ(this)">{{ o|usedict:dictOptions }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+{% block page %} {% endblock %}
+
+<div class="footer-ot" style="margin-bottom: 0;">
+    <span class="footer-links">
+        <a href="/companion"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png"></a>
+        <a href="https://twitter.com/OlborTrack"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575596027768943/580b57fcd9996e24bc43c53e.png"></a>
+        <a href="https://instagram.com/OlborTrack"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575617326424095/zerdsfsf.png"></a>
+        <a href="https://github.com/OlborEgamorf/OlborTrack-Bot"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575617653583922/25231.png"></a>
+    </span>
+</div>
+
+<div class="footer-ot" style="margin-top: 0;width: 250px;">
+    <span class="footer-credits">
+        Olbor Track Companion <br>Par OlborEgamorf
+    </span>
+</div>
+
+</body>
+</html>

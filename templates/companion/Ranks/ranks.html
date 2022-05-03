@@ -36,6 +36,15 @@
                 <th id="leg-barre">Barre</th>
                 <th>Messages</th>
             </tr>
+        {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+            <tr><th colspan="6">Classement {{ mois }} {{ annee }}</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th colspan="2">Joueur</th>
+                <th id="leg-barre">Barre</th>
+                <th>Points</th>
+                <th>Badges</th>
+            </tr>
         {% else %}
             <tr><th colspan="4">Classement {{ mois }} {{ annee }}</th></tr>
             <tr>
@@ -47,33 +56,62 @@
         {% endif %}
 
         {% for i in rank %}
-            <tr onClick="newSite('{{ i.ID }}',this)">
-                <td>{{ i.Rank }}</td>
-                {% if option == "messages" or option == "mots" or option == "voice" %}
-                    <td>
-                        {% if i.Avatar %}
-                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+            {% if i.ID == id %}
+                <tr class="user" onClick="newSite('{{ i.ID }}',this)">
+            {% else %}
+                <tr onClick="newSite('{{ i.ID }}',this)">
+            {% endif %}
+                    <td>{{ i.Rank }}</td>
+                    {% if option == "messages" or option == "mots" or option == "voice" %}
+                        <td>
+                            {% if i.Avatar %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                            {% else %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            {% endif %}
+                        </td>
+                    {% elif option == "emotes" or option == "reactions" %}
+                        {% if i.Nom == "twemoji" %}
+                        <td onclick="getTwemoji('{{ i.ID }}',this)">
                         {% else %}
-                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                        <td>
+                            {% if i.Animated %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                            {% else %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                            {% endif %}
                         {% endif %}
-                    </td>
-                {% elif option == "emotes" or option == "reactions" %}
-                    {% if i.Nom == "twemoji" %}
-                    <td onclick="getTwemoji('{{ i.ID }}',this)">
-                    {% else %}
-                    <td>
-                        {% if i.Animated %}
-                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
-                        {% else %}
-                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
-                        {% endif %}
+                        </td>
+                    {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                        <td>
+                            {% if i.Emote != None %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}"></a>
+                            {% else %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            {% endif %}
+                        </td>
                     {% endif %}
-                    </td>
-                {% endif %}
-                <td style="text-align: start;">{{ i.Nom }}</td>
-                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
-                <td>{{ i.Count|tempsvoice:option }}</td>
-            </tr>
+                    <td style="text-align: start;">{{ i.Nom }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
+                    <td>{{ i.Count|tempsvoice:option }}</td>
+                    {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                        <td>
+                            {% if i.BadgeJeu != None %}
+                                <img src='{{ i.BadgeJeu|badgeurl }}' class='badge'>
+                            {% endif %}
+                            {% if i.VIP == True %}
+                                <img class="badge" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515315048448/VipmotifCrop400.png" alt="Badge VIP">
+                            {% endif %}
+                            {% if i.Testeur == True %}
+                                <img class="badge" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515080183859/TesteursmotifCrop400.png" alt="Badge Testeur">
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                </tr>
         {% endfor %}
     </table>
     <iframe id="iframeevol" src="/companion/iframeblank" scrolling="no" onload="resizeIframe(this)"></iframe>

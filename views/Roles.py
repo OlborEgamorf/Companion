@@ -27,7 +27,7 @@ def viewRoles(request,guild,option):
     roles_position,roles_color,roles_name=colorRoles(guild_full)
 
     full_guilds=getGuilds(user)
-    listeMois,listeAnnee=getTimes(guild,option)
+    listeMois,listeAnnee=getTimes(guild,option,"Stats")
 
     stats=[]
     maxi=-inf

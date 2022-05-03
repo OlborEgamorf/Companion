@@ -11,18 +11,6 @@
     <title>Olbor Track Companion</title>
 </head>
 
-<script type="text/javascript">
-    
-    function hoverID(id) {
-        document.getElementById(id).style.background_color = "#696969";
-    }    
-
-    function leaveHover(id) {
-        document.getElementById(id).style.background_color = "#23254a";
-    }
-
-</script>
-
 {% load TagsCustom %}
 
 <body class="bodyiframe">
@@ -36,11 +24,23 @@
             </tr>
             {% for i in rank %}
                 {% if i.ID == id %}
-                    <tr style="background-color: #696969; border-color: #696969;" id="{{ i.ID }}" onmouseover="hoverID('{{ i.ID }}')" onmouseleave="leaveHover('{{ i.ID }}')">
+                    <tr class="user">
                 {% else %}
-                    <tr id="{{ i.ID }}" onmouseover="hoverID('{{ i.ID }}')" onmouseleave="leaveHover('{{ i.ID }}')">
+                    <tr>
                 {% endif %}
                     <td>{{ i.Rank }}</td>
+                    
+                    {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                        <td>
+                            {% if i.Emote != None %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}"></a>
+                            {% else %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            {% endif %}
+                        </td>
+                    {% else %}
                     <td>
                         {% if i.Avatar %}
                             <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
@@ -48,6 +48,8 @@
                             <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
                         {% endif %}
                     </td>
+                    {% endif %}
+    
                     <td style="text-align: start;">{{ i.Nom }}</td>
                     <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
                     <td>{{ i.Count|tempsvoice:option }}</td>

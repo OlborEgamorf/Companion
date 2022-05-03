@@ -73,17 +73,36 @@
         twemoji.parse(td)
         obj.appendChild(td)
     }
+
+    function devBar() {
+        var reduce=document.getElementById("reduce")
+        var full=document.getElementById("full")
+
+        reduce.style.opacity=0
+        sleep(500).then(() => {
+            reduce.style.display="none"
+            full.style.display="inherit"
+            sleep(200).then(() => {full.style.opacity=100})
+        })
+    }
+
+    function undevBar() {
+        var reduce=document.getElementById("reduce")
+        var full=document.getElementById("full")
+
+        full.style.opacity=0
+        sleep(500).then(() => {
+            full.style.display="none"
+            reduce.style.display="inherit"
+            sleep(200).then(() => {reduce.style.opacity=100})
+        })
+    }
 </script>
 
 {% block script %} {% endblock %}
 
 {% load TagsCustom %}
-<header class="header-ot">
-    
-    <span class="user-avatar"><img  src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
-    <h1>Olbor Track Companion</h1></span>
-    
-</header>
+
 
 <body>
     <div class="sidenav" id="side">
@@ -91,14 +110,22 @@
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
             <span id="OT" class="text-bar">Olbor Track - Accueil</span>
         </a>
-        <a href="/companion/profil/{{ id }}" class="focus-logo" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128"></span>
-            <span id="Focus" class="text-bar">Focus et profil</span>
+        <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}?size=128"></span>
+            <span id="Focus" class="text-bar">{{ nom }}</span>
         </a>
-        <a href="/companion/" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png"></span>
-            <span id="0" class="text-bar">Classements jeux</span>
-        </a>
+        {% if guildid == 'jeux' %}
+            <a href="/companion/" class="ot-logo" style="background-color: #696969;" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png"></span>
+                <span id="0" class="text-bar">Classements jeux</span>
+            </a>
+        {% else %}
+            <a href="/companion/" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png"></span>
+                <span id="0" class="text-bar">Classements jeux</span>
+            </a>
+        {% endif %}
+
         {% for guild in guilds %}
             {% if guild.Icon != None %}
                 {% if guild.ID == guildid %}
@@ -106,7 +133,6 @@
                 {% else %}
                     <a href="/companion/{{ guild.ID }}/home" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')" onclick="clickServ(this)">
                 {% endif %}
-                    
                         <img src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}.{{ guild.Anim }}?size=128" alt="Icone du serveur {{ guild.Nom }}" >
                         <span id="{{ guild.ID }}" class="text-bar">{{ guild.Nom }}</span>
                     </a>
@@ -114,62 +140,82 @@
         {% endfor %}
 
         <a href="/companion/" id="nones">
-            <span class="little-icon-guild" ></span>
-            <span id="0" class="text-bar">Classements jeux</span>
+            <span class="little-icon-guild"></span>
+            <span id="0" class="text-bar"></span>
         </a>
     </div>
 
-    <div class="guild-stats">
-        {% if guildid == 0 %}
-            <img src="https://cdn.discordapp.com/avatars/699728606493933650/cf1f6b58e81f5191684995ce4062ca7e.webp?size=128">
-            <br>Olbor Track - Classements mondiaux
-        {% else %}
-            <img src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}.png?size=128">
-            <br>{{ guildname }}
-        {% endif %}
+    <div class="profil-infos">
+        <div>
+            {% if guildid == 'jeux' %}
+                <img class="profil-avatar" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
+            {% else %}
+                <img class="profil-avatar" src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}">
+            {% endif %}
+            <div class="profil-texte">
+                <div class="texte-gros">
+                    {{ guildname }}
+                </div>
+            </div>
+        </div>
     </div>
 
-    {% if options != None %}
-        <div class="navbar">
-            {% for o in options %}
-                {% if option == o %}
-                    <a class="select">{{ o|usedict:dictOptions }}</a>
-                {% elif o == "home" %}
-                    <a href="/companion/{{ guildid }}/{{ o }}" onclick="clickServ(this)">{{ o|usedict:dictOptions }}</a>
-                {% else %}
-                    <a href="/companion/{{ guildid }}/{{ o }}/ranks" onclick="clickServ(this)">{{ o|usedict:dictOptions }}</a>
-                {% endif %}
-            {% endfor %}
-        </div>
-    {% endif %}
+    <div class="navbar" id="reduce">
+        <a class="select">{{ option|usedict:dictOptions }}</a>
+        {% if command != None %}
+            <a class="select">{{ command|usedict:dictCommands }}</a>
+        {% endif %}
+        {% if plus != None %}
+            <a class="select">{{ plus|usedict:dictPlus }}</a>
+        {% endif %}
+        <a onclick="devBar()">+</a>
+        
+    </div>
 
-    {% if commands != None %}
-        <div class="navbar">
-            {% for c in commands %}
-                {% if command == c %}
-                    <a class="select">{{ c|usedict:dictCommands }}</a>
-                {% else %}
-                    <a href="/companion/{{ guildid }}/{{ option }}/{{ c }}" onclick="clickServ(this)">{{ c|usedict:dictCommands }}</a>
-                {% endif %}
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    {% if selector != False %}
-        <div class="navbar">
-            {% for p in lisPlus %}
-                {% if plus == p %}
-                    <a class="select">{{ p|usedict:dictPlus }}</a>
-                {% else %} 
-                    {% if p == "" %}
-                        <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}" onclick="clickServ(this)">{{ p|usedict:dictPlus }}</a>
+    <div id="full" style="display:none ; opacity:0">
+        {% if options != None %}
+            <div class="navbar">
+                {% for o in options %}
+                    {% if option == o %}
+                        <a class="select">{{ o|usedict:dictOptions }}</a>
+                    {% elif o == "home" %}
+                        <a href="/companion/{{ guildid }}/{{ o }}" onclick="clickServ(this)">{{ o|usedict:dictOptions }}</a>
                     {% else %}
-                        <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}/{{ p }}" onclick="clickServ(this)">{{ p|usedict:dictPlus }}</a>
+                        <a href="/companion/{{ guildid }}/{{ o }}/ranks" onclick="clickServ(this)">{{ o|usedict:dictOptions }}</a>
                     {% endif %}
-                {% endif %}
-            {% endfor %}
-        </div>
-    {% endif %}
+                {% endfor %}
+                <a onclick="undevBar()">-</a>
+            </div>
+        {% endif %}
+
+        {% if commands != None %}
+            <div class="navbar">
+                {% for c in commands %}
+                    {% if command == c %}
+                        <a class="select">{{ c|usedict:dictCommands }}</a>
+                    {% else %}
+                        <a href="/companion/{{ guildid }}/{{ option }}/{{ c }}" onclick="clickServ(this)">{{ c|usedict:dictCommands }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if selector != False %}
+            <div class="navbar">
+                {% for p in lisPlus %}
+                    {% if plus == p %}
+                        <a class="select">{{ p|usedict:dictPlus }}</a>
+                    {% else %} 
+                        {% if p == "" %}
+                            <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}" onclick="clickServ(this)">{{ p|usedict:dictPlus }}</a>
+                        {% else %}
+                            <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}/{{ p }}" onclick="clickServ(this)">{{ p|usedict:dictPlus }}</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 
     {% if travel or obj != None %}
         <form action="" method="get" class="form-example">

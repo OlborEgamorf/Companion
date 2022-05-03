@@ -23,7 +23,7 @@ def viewRapports(request,guild,option):
         period="mois"
 
     user=request.user
-    listeMois,listeAnnee=getTimes(guild,option)
+    listeMois,listeAnnee=getTimes(guild,option,"Stats")
     guild_full=getGuild(guild)
     full_guilds=getGuilds(user)
 
