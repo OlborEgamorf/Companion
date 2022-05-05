@@ -76,31 +76,16 @@
     </script>
 
 <body>
-    <div class="sidenav" id="side">
-        <a href="/companion/" class="ot-logo" onmouseenter="showBar('OT')" onmouseleave="hideBar('OT')" onclick="clickServ(this)">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
-            <span id="OT" class="text-bar">Olbor Track - Accueil</span>
-        </a>
-        <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128"></span>
-            <span id="Focus" class="text-bar">Profil utilisateur</span>
-        </a>
-        <a href="/companion/" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png"></span>
-            <span id="0" class="text-bar">Classements jeux</span>
-        </a>
-    </div>
-
     <div class="guild-stats">Vos serveurs</div>
 
     <form method="post"> {% csrf_token %}
         <div class="all-guilds">
             {% for guild in guilds %}
-                <a id="{{ guild.ID }}" class="a-guilds" href="/companion/{{ guild.ID }}/home">
+                <a id="{{ guild.ID }}" class="a-guilds" href="/companion/{{ guild.ID }}">
                     <div class="card-guild">
                         {% if guild.Icon != None %}
                             <span class="icon-guild">
-                                <img class="img-guild" src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}.{{ guild.Anim }}?size=128" alt="Icone du serveur {{ guild.Nom }}">
+                                <img class="img-guild" src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}?size=128" alt="Icone du serveur {{ guild.Nom }}">
                             </span>
                         {% endif %}     
                         <span class="guild-name">{{ guild.Nom }}</span>
@@ -121,12 +106,12 @@
         <a href="/companion/profil/{{ id }}">
             <div class="card-guild">
                 <span class="icon-guild">
-                    <img class="img-guild" src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}.{{ anim }}?size=128">
+                    <img class="img-guild" src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}?size=128">
                 </span>
-                <span class="guild-name">Profil</span>
+                <span class="guild-name">{{ nom }}</span>
             </div>
         </a>
-        <a href="/companion/mondial">
+        <a href="/companion/jeux/home">
             <div class="card-guild">
                 <span class="icon-guild">
                     <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png">

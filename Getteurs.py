@@ -15,11 +15,11 @@ def getEmoteTable(i,curseurGet):
     if infos==None:
         try:
             chr(i["ID"])
-            return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"twemoji","ID":i["ID"],"Animated":False} 
+            return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"twemoji","ID":i["ID"]} 
         except:
-            return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"Emote inconnue","ID":i["ID"],"Animated":False}
+            return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"Emote inconnue","ID":i["ID"]}
     else:
-        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Nom"],"ID":i["ID"],"Animated":infos["Animated"]}
+        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Nom"],"ID":i["ID"]}
 
 
 def getChannels(i,curseurGet):

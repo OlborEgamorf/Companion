@@ -88,9 +88,9 @@
             <tr>
                 <td>{{ i.Count|tempsvoice:option }}</td>
                 {% if i.Mois == "TO" %}
-                    <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ i.Color }}"></div></td>
+                    <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ i.Color }} ; margin-top:10px"></div></td>
                 {% else %}
-                    <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
+                    <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }} ; margin-top:10px"></div></td>
                 {% endif %}
                 <td style="text-align: end;">{{ i.Nom }}</td>
                 {% if option == "messages" or option == "mots" or option == "voice" %}
@@ -112,35 +112,37 @@
                 {% endif %}
 
                 <td>{{ i.Mois }}</td>
-
-                {% if option == "messages" or option == "mots" or option == "voice" %}
+                
+                {% if i.Count2 %}
+                    {% if option == "messages" or option == "mots" or option == "voice" %}
+                        <td>
+                            {% if i.Avatar2 %}
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID2 }}/{{ i.Avatar2 }}.png?size=128">
+                            {% else %}
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                            {% endif %}
+                        </td>
+                    {% elif option == "emotes" or option == "reactions" %}
+                        <td>
+                            {% if i.Animated %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.ID2 }}.gif?size=128" style="border-radius: 0%;">
+                            {% else %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.ID2 }}.png?size=128" style="border-radius: 0%;">
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                
+                    <td style="text-align: start;">{{ i.Nom2 }}</td>
+                    
                     <td>
-                        {% if i.Avatar2 %}
-                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID2 }}/{{ i.Avatar2 }}.png?size=128">
-                        {% else %}
-                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
-                        {% endif %}
-                    </td>
-                {% elif option == "emotes" or option == "reactions" %}
-                    <td>
-                        {% if i.Animated %}
-                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID2 }}.gif?size=128" style="border-radius: 0%;">
-                        {% else %}
-                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID2 }}.png?size=128" style="border-radius: 0%;">
-                        {% endif %}
-                    </td>
-                {% endif %}
-                <td style="text-align: start;">{{ i.Nom2 }}</td>
-                <td>
-                    {% if i.Count2 %}
                         {% if i.Mois == "TO" %}
                             <div class="barre" style="width:calc(100%*{{ i.Count2 }}/{{ maxA }}); background-color: {{ i.Color2 }}"></div>
                         {% else %}
                             <div class="barre" style="width:calc(100%*{{ i.Count2 }}/{{ max }}); background-color: {{ i.Color2 }}"></div>
                         {% endif %}
-                    {% endif %}
-                </td>
-                <td>{{ i.Count2|tempsvoice:option }}</td>
+                    </td>
+                    <td>{{ i.Count2|tempsvoice:option }}</td>
+                {% endif %}
             </tr>
         {% endfor %}
     </table>

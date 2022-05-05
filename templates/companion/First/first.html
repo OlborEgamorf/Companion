@@ -95,6 +95,15 @@
                 <th onclick="sortTable(4)" id="leg-barre">Barre</th>
                 <th onclick="sortTable(4)">Messages</th>
             </tr>
+        {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+            <tr><th colspan="7">Périodes mensuelles</th></tr>
+            <tr>
+                <th onclick="sortTable(0)">Période</th>
+                <th colspan="2">Joueur</th>
+                <th onclick="sortTable(4)" id="leg-barre">Barre</th>
+                <th onclick="sortTable(4)">Points</th>
+                <th>Badge</th>
+            </tr>
         {% else %}
             <tr><th colspan="4">Périodes mensuelles</th></tr>
             <tr>
@@ -127,12 +136,32 @@
                             <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
                         {% endif %}
                     </td>
+                {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                    <td>
+                        {% if i.Emote != None %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                    </td>
                 {% endif %}
                 <td style="text-align: start;">{{ i.Nom }}</td>
                 <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ i.Color }}"></div></td>
                 <td>{{ i.Count|tempsvoice:option }}</td>
+                {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                    <td>
+                        {% if i.BadgeJeu != None %}
+                            <img src='{{ i.BadgeJeu|badgeurl }}' class='badge'>
+                        {% endif %}
+                        
+                    </td>
+                {% endif %}
             </tr>
         {% endfor %}
+
+
         {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
             <tr><th colspan="5">Périodes annuelles</th></tr>
             <tr>
@@ -140,6 +169,15 @@
                 <th colspan="2">Membre</th>
                 <th id="leg-barre">Barre</th>
                 <th>Messages</th>
+            </tr>
+        {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+            <tr><th colspan="7">Périodes annuelles</th></tr>
+            <tr>
+                <th onclick="sortTable(0)">Période</th>
+                <th colspan="2">Joueur</th>
+                <th onclick="sortTable(4)" id="leg-barre">Barre</th>
+                <th onclick="sortTable(4)">Points</th>
+                <th>Badge</th>
             </tr>
         {% else %}
             <tr><th colspan="4">Périodes annuelles</th></tr>
@@ -171,10 +209,28 @@
                             <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
                         {% endif %}
                     </td>
+                {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                    <td>
+                        {% if i.Emote != None %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                    </td>
                 {% endif %}
                 <td style="text-align: start;">{{ i.Nom }}</td>
                 <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ i.Color }}"></div></td>
                 <td>{{ i.Count|tempsvoice:option }}</td>
+                {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                    <td>
+                        {% if i.BadgeJeu != None %}
+                            <img src='{{ i.BadgeJeu|badgeurl }}' class='badge'>
+                        {% endif %}
+                        
+                    </td>
+                {% endif %}
             </tr>
         {% endfor %}
     </table>

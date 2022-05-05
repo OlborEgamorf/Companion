@@ -89,47 +89,35 @@
                     </td>
                 {% elif option == "emotes" or option == "reactions" %}
                     <td>
-                        {% if i.Animated %}
-                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
-                        {% else %}
-                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
-                        {% endif %}
+                        <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}?size=128" style="border-radius: 0%;">
                     </td>
                 {% endif %}
 
                 <td>{{ i.Rank }}</td>
-
-                {% if option == "messages" or option == "mots" or option == "voice" %}
-                    <td>
+                {% if i.Count2 %}
+                    {% if option == "messages" or option == "mots" or option == "voice" %}
                         {% if i.Avatar2 %}
-                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID2 }}/{{ i.Avatar2 }}.png?size=128">
-                        {% else %}
-                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
-                        {% endif %}
-                    </td>
-                {% elif option == "emotes" or option == "reactions" %}
-                    <td>
-                        {% if i.Animated2 %}
-                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID2 }}.gif?size=128" style="border-radius: 0%;">
-                        {% else %}
-                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID2 }}.png?size=128" style="border-radius: 0%;">
-                        {% endif %}
-                    </td>
-                {% endif %}
-                <td style="text-align: start;">{{ i.Nom2 }}</td>
-                <td>
-                    {% if i.Evol > 0 %}
-                        <img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png"><br> {{ i.Evol }}
+                            <td><img src="https://cdn.discordapp.com/avatars/{{ i.ID2 }}/{{ i.Avatar2 }}.png?size=128"></td>
+                        {% elif i.Count2 %}
+                            <td><img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></td>
+                        {% endif %} 
+                    {% elif option == "emotes" or option == "reactions" %}
+                        <td><img src="https://cdn.discordapp.com/emojis/{{ i.ID2 }}?size=128" style="border-radius: 0%;"></td>
+                    {% endif %}
+
+                    {% if i.Evol == 0 %}
+                        <td colspan="2" style="text-align: start;">{{ i.Nom2 }}</td>
+                    {% elif i.Evol > 0 %}
+                        <td style="text-align: start;">{{ i.Nom2 }}</td>
+                        <td><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png"><br> {{ i.Evol }}</td>
                     {% elif i.Evol < 0 %}
-                        {{ i.Evol }}<br><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png">
+                        <td style="text-align: start;">{{ i.Nom2 }}</td>
+                        <td>{{ i.Evol }}<br><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png"></td>
                     {% endif %}
-                </td>
-                <td>
-                    {% if i.Count2 %}
-                        <div class="barre" style="width:calc(100%*{{ i.Count2 }}/{{ max }}); background-color: {{ i.Color2 }}"></div>
-                    {% endif %}
-                </td>
-                <td>{{ i.Count2|tempsvoice:option }}</td>
+
+                    <td><div class="barre" style="width:calc(100%*{{ i.Count2 }}/{{ max }}); background-color: {{ i.Color2 }}"></div></td>
+                    <td>{{ i.Count2|tempsvoice:option }}</td>
+                {% endif %}
             </tr>
         {% endfor %}
     </table>

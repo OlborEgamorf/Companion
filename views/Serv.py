@@ -4,10 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from ..Getteurs import *
-from ..outils import (avatarAnim, connectSQL, dictOptions,
-                      dictRefCommands, dictRefOptions, getCommands, getGuild,
-                      getGuilds, getMoisAnnee, getPlus, getTablePerso, getUser,
-                      listeOptions, tableauMois,dictRefPlus)
+from ..outils import (connectSQL, dictOptions, dictRefCommands, dictRefOptions,
+                      dictRefPlus, getCommands, getMoisAnnee, getPlus,
+                      getTablePerso, listeOptions, tableauMois)
 
 
 @login_required(login_url="/login")
@@ -15,25 +14,19 @@ def viewServ(request,guild,option):
     obj = request.GET.get("obj")
     user=request.user
 
-    guild_full=getGuild(guild)
-
-    user_full=getUser(guild,user.id)
-    user_avatar=user_full["user"]["avatar"]
-
-    full_guilds=getGuilds(user)
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
+    guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
     
     ctx={"rankMois":None,"rankAnnee":None,"maxM":None,"maxA":None,
-    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"color":None,
-    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
+    "avatar":user_full["Avatar"],"id":user.id,"color":None,
+    "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"serv",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("evol"),"dictPlus":dictRefPlus,"plus":"",
     "selector":True,"travel":False,}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
-
-    if option!="freq":
-        connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
         
     listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
     if option in ("emotes","reactions"):

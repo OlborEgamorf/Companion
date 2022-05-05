@@ -3,8 +3,8 @@ from math import inf
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from ..outils import (avatarAnim, connectSQL, dictRefCommands, dictRefOptions,
-                      getCommands, getGuild, getGuilds, getMoisAnnee, getPlus, getTimes,
+from ..outils import (connectSQL, dictRefCommands, dictRefOptions,
+                      getCommands, getMoisAnnee, getPlus, getTimes,
                       getUser, listeOptions, tableauMois, dictRefPlus)
 from ..OutilsRapports import (anecdotesSpe, descipGlobal, descipMoyennes,
                               getEarlierAnnee, getEarlierMois, hierMAG,
@@ -24,8 +24,9 @@ def viewRapports(request,guild,option):
 
     user=request.user
     listeMois,listeAnnee=getTimes(guild,option,"Stats")
-    guild_full=getGuild(guild)
-    full_guilds=getGuilds(user)
+
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
 
     if option!="freq":
         connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)

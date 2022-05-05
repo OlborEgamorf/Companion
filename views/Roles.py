@@ -5,11 +5,11 @@ from companion.Getteurs import getChannels, getEmoteTable, getFreq
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from ..outils import (avatarAnim, colorRoles, connectSQL, dictOptions,
+from ..outils import (colorRoles, connectSQL, dictOptions,
                       dictRefCommands, dictRefOptions, dictRefPlus,
-                      getCommands, getGuild, getGuilds, getMoisAnnee,
+                      getCommands, getGuild, getMoisAnnee,
                       getMoisAnneePerso, getPlus, getTableRoles,
-                      getTableRolesMem, getTimes, getUser, listeOptions,
+                      getTableRolesMem, getTimes, listeOptions,
                       rankingClassic, tableauMois)
 
 
@@ -19,23 +19,18 @@ def viewRoles(request,guild,option):
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
     user=request.user
 
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
     guild_full=getGuild(guild)
-
-    user_full=getUser(guild,user.id)
-    user_avatar=user_full["user"]["avatar"]
     
     roles_position,roles_color,roles_name=colorRoles(guild_full)
 
-    full_guilds=getGuilds(user)
     listeMois,listeAnnee=getTimes(guild,option,"Stats")
 
     stats=[]
     maxi=-inf
 
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
-
-    if option!="freq":
-        connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
 
     listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
     if option in ("emotes","reactions"):
@@ -47,9 +42,12 @@ def viewRoles(request,guild,option):
     roles=list(map(lambda x:{"Nom":roles_name[x],"ID":x}, roles_name))
     listeObj=roles[1:]+listeObj
 
+    if len(listeObj)>300:
+        listeObj=listeObj[:300]
+
     ctx={"rank":stats,"max":maxi,
-    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),
-    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
+    "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
+    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"roles",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,

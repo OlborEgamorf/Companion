@@ -43,7 +43,7 @@
                 <th colspan="2">Joueur</th>
                 <th id="leg-barre">Barre</th>
                 <th>Points</th>
-                <th>Badges</th>
+                <th>Badge</th>
             </tr>
         {% else %}
             <tr><th colspan="4">Classement {{ mois }} {{ annee }}</th></tr>
@@ -103,12 +103,7 @@
                             {% if i.BadgeJeu != None %}
                                 <img src='{{ i.BadgeJeu|badgeurl }}' class='badge'>
                             {% endif %}
-                            {% if i.VIP == True %}
-                                <img class="badge" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515315048448/VipmotifCrop400.png" alt="Badge VIP">
-                            {% endif %}
-                            {% if i.Testeur == True %}
-                                <img class="badge" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515080183859/TesteursmotifCrop400.png" alt="Badge Testeur">
-                            {% endif %}
+                            
                         </td>
                     {% endif %}
                 </tr>

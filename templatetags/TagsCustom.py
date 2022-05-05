@@ -45,12 +45,17 @@ def getUrlBadge(badge):
     dictLvl={1:"https://cdn.discordapp.com/attachments/726034739550486618/956648534449483817/BronzeBase2Crop400.png",2:"https://cdn.discordapp.com/attachments/726034739550486618/956648515528982558/ArgentBase2Crop400.png",3:"https://cdn.discordapp.com/attachments/726034739550486618/956648534646607954/OrBase2Crop400.png",11:"https://cdn.discordapp.com/attachments/726034739550486618/956648533988094013/BadgeBronzeAnneeCrop400.png",12:"https://cdn.discordapp.com/attachments/726034739550486618/956648533723844678/BadgeArgentAnneeCrop400.png",13:"https://cdn.discordapp.com/attachments/726034739550486618/956648534189416529/BadgeOrAnneeCrop400.png",101:"https://cdn.discordapp.com/attachments/726034739550486618/956648513708625920/SaphirGlobalCrop400.png",102:"https://cdn.discordapp.com/attachments/726034739550486618/956648513498927184/RubisGlobalRec400.png",103:"https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png"}
     return dictLvl[badge]
 
+def getNomBadge(badge):
+    dictNom={1:"3eme sur un mois",2:"2eme sur un mois",3:"1er sur un mois",11:"3eme sur une année",12:"2eme sur une année",13:"1er sur une année",101:"3eme du classement général",102:"2e du classement général",103:"Premier du classement général"}
+    return dictNom[badge]
+
 
 
 register.filter("usedict", useDict)
 register.filter("tempsvoice",formatCount)
 register.filter("len",getLen)
 register.filter("badgeurl",getUrlBadge)
+register.filter("badgename",getNomBadge)
 
 register.filter("getrank",getRankRank)
 register.filter("getfirst",getRankFirst)

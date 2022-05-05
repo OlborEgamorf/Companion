@@ -1,7 +1,7 @@
 import requests
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from ..outils import avatarAnim, collapseEvol, getMoisAnnee, getGuild, getTableDay, getTableRoles, getTimes, getUser, colorRoles, connectSQL, rankingClassic, tableauMois
+from ..outils import collapseEvol, getMoisAnnee, getGuild, getTableDay, getTableRoles, getTimes, getUser, colorRoles, connectSQL, rankingClassic, tableauMois
 from math import inf
 import plotly.graph_objects as go
 from plotly.offline import plot

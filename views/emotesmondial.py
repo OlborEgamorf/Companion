@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from ..Getteurs import getGuildInfo
-from ..outils import (avatarAnim, connectSQL, getGuilds, getMoisAnnee, getUser,
+from ..outils import (connectSQL, getGuilds, getMoisAnnee, getUser,
                       tableauMois)
 
 
@@ -16,8 +16,9 @@ def emotesMondial(request):
     guilds=getGuilds(user)
     if len(guilds)==0:
         pass # FAIRE CAS OU PAS DE GUILD EN COMMUN
-    user_full=getUser(guilds[0]["ID"],user.id)
-    user_avatar=user_full["user"]["avatar"]
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
+    
     connexion,curseur=connectSQL("OT","Emotes","Stats","GL","")
     liste=[]
     for i in guilds:
@@ -28,7 +29,8 @@ def emotesMondial(request):
         
     liste.sort(key=lambda x:x["Rank"])
     maxi=liste[0]["Count"]
-    ctx={"rank":liste,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"max":maxi,"mois":mois,"annee":annee,"guilds":getGuilds(user),"type":"Classements","categs":None,"hrefs":[],"sections":["Jeux","Emotes"],"section":"Emotes","guildid":0,"guildname":"Mondial","selector":False}
+    ctx={"rank":liste,"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
+    "max":maxi,"mois":mois,"annee":annee,"guilds":guilds,"type":"Classements","categs":None,"hrefs":[],"sections":["Jeux","Emotes"],"section":"Emotes","guildid":0,"guildname":"Mondial","selector":False}
     return render(request, "companion/EmotesWW/emotesmondial.html", ctx)
 
 

@@ -26,18 +26,13 @@
             <tr class="rank">
                 {% if i.Evol > 0 %}
                     <td style="background-color: green;">{{ i.Rank }}</td>
+                    <td><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png"> {{ i.Evol }}</td>
                 {% elif i.Evol < 0 %}
                     <td style="background-color: red;">{{ i.Rank }}</td>
+                    <td> {{ i.Evol }}<img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png"></td>
                 {% else %}
-                    <td>{{ i.Rank }}</td>
+                    <td colspan="2">{{ i.Rank }}</td>
                 {% endif %}
-                <td>
-                    {% if i.Evol > 0 %}
-                        <img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png"> {{ i.Evol }}
-                    {% elif i.Evol < 0 %}
-                        {{ i.Evol }}<img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png"> 
-                    {% endif %}
-                </td>
                 <td class="date">{{ i.Jour }} / {{ i.Mois }} / {{ i.Annee }}</td>
                 <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ color }}"></div></td>
                 <td>{{ i.Count|tempsvoice:option }}</td>

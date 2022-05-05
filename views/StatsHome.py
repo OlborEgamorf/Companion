@@ -5,7 +5,7 @@ from django.shortcuts import render
 
 from ..Getteurs import *
 from ..outils import (connectSQL, dictOptions, dictRefCommands, dictRefOptions,
-                      dictRefOptionsJeux, getCommands, getGuilds,
+                      dictRefOptionsJeux, getCommands,
                       getTablePerso, listeOptions, listeOptionsJeux)
 
 def statsHomeJeux(request):
@@ -14,7 +14,6 @@ def statsHomeJeux(request):
 @login_required(login_url="/login")
 def viewStatsHome(request,guild):
     user=request.user
-    full_guilds=getGuilds(user)
 
     stats_final={}
     maxis_final={}
@@ -42,7 +41,7 @@ def viewStatsHome(request,guild):
         color=curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,user.id)).fetchone()["Color"]
         guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
         ctx={"avatar":user_avatar,"id":user.id,"nom":user_name,"color":hex(color)[2:],
-        "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],"guilds":full_guilds,
+        "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
         "commands":getCommands("home"),"dictCommands":dictRefCommands,
         "options":listeOptions,"dictOptions":dictRefOptions,"option":"home","optNotHome":listeOptions[1:],
         "travel":False,"selector":False,"obj":None}

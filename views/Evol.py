@@ -4,11 +4,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from ..Getteurs import *
-from ..outils import (avatarAnim, collapseEvol, connectSQL, dictOptions,
-                      dictRefCommands, dictRefOptions, dictRefPlus,
-                      getCommands, getGuild, getGuilds, getMoisAnnee, getPlus,
-                      getTimes, getUser, listeOptions, tableauMois)
+from ..outils import (collapseEvol, connectSQL, dictOptions, dictRefCommands,
+                      dictRefOptions, dictRefOptionsJeux, dictRefPlus,
+                      getCommands, getMoisAnnee, getPlus, getTimes,
+                      listeOptions, listeOptionsJeux, tableauMois)
 
+
+def evolJeux(request,option):
+    return viewEvol(request,"OT",option)
 
 @login_required(login_url="/login")
 def viewEvol(request,guild,option):
@@ -16,31 +19,47 @@ def viewEvol(request,guild,option):
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
     user=request.user
 
-    guild_full=getGuild(guild)
-
-    user_full=getUser(guild,user.id)
-    user_avatar=user_full["user"]["avatar"]
-
-    listeMois,listeAnnee=getTimes(guild,option,"Stats")
-
-    full_guilds=getGuilds(user)
-
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
 
-    ctx={"rank":None,"max":None,
-    "id":user.id,"color":None,"nom":user_full["user"]["username"],"avatar":user_avatar,"anim":avatarAnim(user_avatar),
-    "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
-    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
-    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"evol",
-    "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":getPlus("evol"),"dictPlus":dictRefPlus,"plus":"",
-    "travel":True,"selector":True,}
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        categ="Jeux"
+        listeMois,listeAnnee=getTimes(guild,option,"Jeux")
+        connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
 
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
+        ctx={"rank":None,"max":None,
+        "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
+        "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+        "guildname":"Olbor Track - Mondial","guildid":"jeux",
+        "commands":["ranks","periods","evol","first","badges"],"dictCommands":dictRefCommands,"command":"evol",
+        "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":option,
+        "lisPlus":getPlus("evol"),"dictPlus":dictRefPlus,"plus":"",
+        "travel":True,"selector":True}
+    else:
+        categ="Stats"
+        listeMois,listeAnnee=getTimes(guild,option,"Stats")
+        guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
+
+        ctx={"rank":None,"max":None,
+        "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
+        "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+        "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
+        "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"evol",
+        "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+        "lisPlus":getPlus("evol"),"dictPlus":dictRefPlus,"plus":"",
+        "travel":True,"selector":True}
+
+    connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
     if option in ("messages","voice","mots"):
         ctx["obj"]=None
         obj=user.id
         ctx["color"]=getColor(user.id,guild,curseurGet)
+    elif categ=="Jeux":
+        ctx["obj"]=None
+        obj=user.id
+        color=curseurGet.execute("SELECT * FROM couleurs WHERE ID={0}".format(user.id)).fetchone()
+        if color!=None:
+            ctx["color"]="#"+hex(int('%02x%02x%02x' % (color["R"], color["G"], color["B"]),base=16))[2:]
     else:
         listeObj=curseur.execute("SELECT * FROM {0}{1} WHERE Rank<150 ORDER BY Rank ASC".format(moisDB,anneeDB)).fetchall()
         if option in ("emotes","reactions"):

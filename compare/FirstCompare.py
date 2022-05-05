@@ -2,13 +2,12 @@ from math import inf
 from random import choice
 
 from django.contrib.auth.decorators import login_required
-from django.http.response import JsonResponse
 from django.shortcuts import render
 
 from ..Getteurs import *
-from ..outils import (avatarAnim, connectSQL, dictOptions, dictRefCommands,
-                      dictRefOptions, dictRefPlus, getCommands, getGuild,
-                      getGuilds, getPlus, getTimes, getUser, listeOptions)
+from ..outils import (connectSQL, dictOptions, dictRefCommands, dictRefOptions,
+                      dictRefPlus, getCommands, getPlus, getTimes,
+                      listeOptions)
 
 
 @login_required(login_url="/login")
@@ -23,18 +22,16 @@ def viewFirstCompare(request,guild,option):
     if annee2==None:
         annee2=choice(listeAnnee)
     anneeDB2=annee2[2:4]
-    print(anneeDB1,anneeDB2)
     user=request.user
 
-    guild_full=getGuild(guild)
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
+    guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
     maxi=-inf
     maxiA=-inf
     stats1=[]
     stats2=[]
-
-    if option!="freq":
-        connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
 
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","TO","GL")
 
@@ -101,17 +98,12 @@ def viewFirstCompare(request,guild,option):
             if option in ("messages","voice","mots"):
                 stats1[i]["Avatar2"]=period[0]["Avatar"]
                 stats1[i]["Color2"]=period[0]["Color"]
-            
-
-    user_full=getUser(guild,user.id)
-    user_avatar=user_full["user"]["avatar"]
-    full_guilds=getGuilds(user)
 
     ctx={"rank":stats1,"max":maxi,"maxA":maxiA,
-    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),
-    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
+    "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
+    "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
     "mois1":"Total","annee1":annee1,"mois2":"Total","annee2":annee2,"listeMois":["Total"],"listeAnnee":listeAnnee,
-    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
+    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"first",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("first"),"dictPlus":dictRefPlus,"plus":"compare",
     "travel":False,"selector":True,"obj":None}

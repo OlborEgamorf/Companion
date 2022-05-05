@@ -110,34 +110,48 @@
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
             <span id="OT" class="text-bar">Olbor Track - Accueil</span>
         </a>
+        {% if guildid == 'jeux' %}
+            <a href="/companion/jeux/home" class="ot-logo" style="background-color: #696969;" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img style="border-radius: 0;" src="https://cdn.discordapp.com/attachments/752150155276451993/971138748349812816/Alldf.png"></span>
+                <span id="0" class="text-bar">Classements jeux</span>
+            </a>
+        {% else %}
+            <a href="/companion/jeux/home" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img style="border-radius: 0;" src="https://cdn.discordapp.com/attachments/752150155276451993/971138748349812816/Alldf.png"></span>
+                <span id="0" class="text-bar">Classements jeux</span>
+            </a>
+        {% endif %}
         <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}?size=128"></span>
             <span id="Focus" class="text-bar">{{ nom }}</span>
         </a>
-        {% if guildid == 'jeux' %}
-            <a href="/companion/" class="ot-logo" style="background-color: #696969;" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png"></span>
-                <span id="0" class="text-bar">Classements jeux</span>
+        {% if guildid != 'jeux' %}
+            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Stats')" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png"></span>
+                <span id="Stats" class="text-bar">Statistiques</span>
             </a>
-        {% else %}
-            <a href="/companion/" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png"></span>
-                <span id="0" class="text-bar">Classements jeux</span>
+            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Sondages')" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604052315136050/poll.png"></span>
+                <span id="Sondages" class="text-bar">Sondages</span>
+            </a>
+            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604056203231252/sv.png"></span>
+                <span id="SV" class="text-bar">Savez-Vous ?</span>
+            </a>
+            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888141462066303056/anniv.png"></span>
+                <span id="Anniv" class="text-bar">Anniversaires</span>
+            </a>
+            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604051069407272/outils.png"></span>
+                <span id="Outils" class="text-bar">Outils</span>
+            </a>
+            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604058883420170/admin.png"></span>
+                <span id="Admin" class="text-bar">Administration</span>
             </a>
         {% endif %}
-
-        {% for guild in guilds %}
-            {% if guild.Icon != None %}
-                {% if guild.ID == guildid %}
-                    <a href="/companion/{{ guild.ID }}/home" style="background-color: #696969;" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')">
-                {% else %}
-                    <a href="/companion/{{ guild.ID }}/home" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')" onclick="clickServ(this)">
-                {% endif %}
-                        <img src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}.{{ guild.Anim }}?size=128" alt="Icone du serveur {{ guild.Nom }}" >
-                        <span id="{{ guild.ID }}" class="text-bar">{{ guild.Nom }}</span>
-                    </a>
-            {% endif %}
-        {% endfor %}
+        
 
         <a href="/companion/" id="nones">
             <span class="little-icon-guild"></span>
@@ -148,7 +162,7 @@
     <div class="profil-infos">
         <div>
             {% if guildid == 'jeux' %}
-                <img class="profil-avatar" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
+                <img class="profil-avatar" src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png">
             {% else %}
                 <img class="profil-avatar" src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}">
             {% endif %}

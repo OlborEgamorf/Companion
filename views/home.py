@@ -4,9 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from ..Getteurs import getGuildInfo
-from ..outils import avatarAnim, connectSQL, createPhrase
-
-from discord_login.views import refresh
+from ..outils import connectSQL, createPhrase
 
 @login_required(login_url="/login")
 def home(request):
@@ -18,13 +16,8 @@ def home(request):
     bguild_json=bot_guilds.json()
     bot_ids=list(map(lambda x:x["id"], bguild_json))
 
-    user_avatar=requests.get("https://discord.com/api/v9/users/@me",headers={"Authorization":"Bearer {0}".format(user.token)})
-    if user_avatar.status_code==401:
-        user.token=refresh(user.refresh)
-        return home(request)
-    user_avatar=user_avatar.json()
-    
-    user_avatar=user_avatar["avatar"]
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
 
     user_guild=requests.get("https://discord.com/api/v9/users/@me/guilds",headers={"Authorization":"Bearer {0}".format(user.token)})
     uguild_json=user_guild.json()
@@ -32,18 +25,13 @@ def home(request):
     common=list(filter(lambda x: x["id"] in bot_ids, uguild_json))
     final_guilds=[]
     connexion,curseur=connectSQL("OT","Mixes","Guild",None,None)
-    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
-
+    
     if request.method=="POST":
         liste=[]
         for guild in common:
-            if guild["icon"]!=None:
-                end=avatarAnim(guild["icon"][0:2])
-            final_guilds.append({"ID":guild["id"],"Nom":guild["name"],"Icon":guild["icon"],"Anim":end})
-            print(request.POST.get(str(guild["id"])))
+            final_guilds.append({"ID":guild["id"],"Nom":guild["name"],"Icon":guild["icon"]})
             if request.POST.get(str(guild["id"]))=="on":
                 liste.append(guild["id"])
-        print(liste)
         if len(liste)>5 or len(liste)<2:
             mixalert=False
         else:
@@ -66,9 +54,7 @@ def home(request):
 
     else:
         for guild in common:
-            if guild["icon"]!=None:
-                end=avatarAnim(guild["icon"][0:2])
-            final_guilds.append({"ID":guild["id"],"Nom":guild["name"],"Icon":guild["icon"],"Anim":end})
+            final_guilds.append({"ID":guild["id"],"Nom":guild["name"],"Icon":guild["icon"]})
 
     mixes_final=[]
     try:
@@ -84,7 +70,7 @@ def home(request):
 
     final_guilds.sort(key=lambda x:x["Nom"])
     
-    ctx={"guilds":final_guilds,"avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"mixalert":mixalert,"mixes":mixes_final}
+    ctx={"guilds":final_guilds,"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"mixalert":mixalert,"mixes":mixes_final}
     return render(request, "companion/home.html", ctx)
 
 #print(request.POST.get(str(guild["id"])))

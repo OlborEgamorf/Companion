@@ -1,42 +1,54 @@
 from math import inf
 
-import requests
 from django.contrib.auth.decorators import login_required
-from django.http.response import JsonResponse
 from django.shortcuts import render
 
 from ..Getteurs import *
-from ..outils import (avatarAnim, collapseEvol, connectSQL, dictOptions,
-                      dictRefCommands, dictRefOptions, getCommands, getGuild,
-                      getGuilds, getMoisAnnee, getPlus, getUser, listeOptions,
-                      tableauMois,dictRefPlus)
+from ..outils import (collapseEvol, connectSQL, dictOptions, dictRefCommands,
+                      dictRefOptions, dictRefOptionsJeux, dictRefPlus,
+                      getCommands, getMoisAnnee, getPlus, listeOptions,
+                      listeOptionsJeux, tableauMois)
 
+
+def firstJeux(request,option):
+    return viewFirst(request,"OT",option)
+
+def iFrameFirstJeux(request,option):
+    return iFrameFirst(request,"OT",option)
 
 @login_required(login_url="/login")
 def viewFirst(request,guild,option):
     user=request.user
 
-    guild_full=getGuild(guild)
-
-    user_full=getUser(guild,user.id)
-    user_avatar=user_full["user"]["avatar"]
-
     maxiM,maxiA=-inf,-inf
     statsM,statsA=[],[]
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
 
-    if option!="freq":
-        connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        categ="Jeux"
+        connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
 
-    full_guilds=getGuilds(user)
+        ctx={"rankMois":statsM,"rankAnnee":statsA,"maxM":maxiM,"maxA":maxiA,
+        "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
+        "guildname":"Olbor Track - Mondial","guildid":"jeux",
+        "commands":["ranks","periods","evol","first","badges"],"dictCommands":dictRefCommands,"command":"first",
+        "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":option,
+        "lisPlus":getPlus("first"),"dictPlus":dictRefPlus,"plus":"",
+        "travel":False,"selector":True}
+    else:
+        categ="Stats"
+        guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
-    ctx={"rankMois":statsM,"rankAnnee":statsA,"maxM":maxiM,"maxA":maxiA,
-    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),
-    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
-    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"first",
-    "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":getPlus("first"),"dictPlus":dictRefPlus,"plus":"",
-    "travel":False,"selector":True}
+        ctx={"rankMois":statsM,"rankAnnee":statsA,"maxM":maxiM,"maxA":maxiA,
+        "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
+        "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
+        "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"first",
+        "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+        "lisPlus":getPlus("first"),"dictPlus":dictRefPlus,"plus":"",
+        "travel":False,"selector":True}
+
+    connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
 
     for i in curseur.execute("SELECT * FROM firstM ORDER BY Count DESC").fetchall():
         i["Rank"]=0
@@ -52,6 +64,9 @@ def viewFirst(request,guild,option):
 
         elif option=="freq":
             ligne=getFreq(i)
+        
+        elif categ=="Jeux":
+            ligne=getUserJeux(i,curseurGet,option)
 
         ligne["Mois"]=i["Mois"]
         ligne["Annee"]=i["Annee"]
@@ -73,6 +88,9 @@ def viewFirst(request,guild,option):
 
         elif option=="freq":
             ligne=getFreq(i)
+
+        elif categ=="Jeux":
+            ligne=getUserJeux(i,curseurGet,option)
 
         ligne["Mois"]=i["Mois"]
         ligne["Annee"]=i["Annee"]
@@ -96,9 +114,13 @@ def iFrameFirst(request,guild,option):
         annee="20"+annee
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
     user=request.user
-     
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
-    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        connexion,curseur=connectSQL(guild,dictOptions[option],"Jeux",tableauMois[moisDB],anneeDB)
+        connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
+    else:
+        connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
+        connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
 
     table=curseur.execute("SELECT * FROM evol{0}{1}{2}".format(moisDB,anneeDB,id)).fetchall()
     table=collapseEvol(table)
@@ -107,9 +129,26 @@ def iFrameFirst(request,guild,option):
     ctx={"rank":table,"id":user.id,"color":None,"max":None,"mois":mois,"annee":annee,"nom":None,"option":option}
 
     if option in ("messages","voice","mots"):
-        user_full=getUser(guild,id)
+        user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(id)).fetchone()
         ctx["color"]=getColor(id,guild,curseurGet)
-        ctx["nom"]=user_full["user"]["username"]
+        ctx["nom"]=user_full["Nom"]
+    else:
+        titre=curseurGet.execute("SELECT titres.Nom FROM active JOIN titres ON active.TitreID=titres.ID WHERE MembreID={0}".format(id)).fetchone()
+        custom=curseurGet.execute("SELECT Custom FROM custom WHERE ID={0}".format(id)).fetchone()
+        color=curseurGet.execute("SELECT * FROM couleurs WHERE ID={0}".format(id)).fetchone()
+        if titre!=None:
+            titre=titre["Nom"]
+        else:
+            titre="Inconnu"
+        if custom!=None:
+            custom=custom["Custom"]
+            full=custom+", "+titre
+        else:
+            full=titre
+        if color!=None:
+            color="#"+hex(int('%02x%02x%02x' % (color["R"], color["G"], color["B"]),base=16))[2:]
+        ctx["color"]=color
+        ctx["nom"]=full
 
     ctx["max"]=max(list(map(lambda x:x["Count"],table)))
 

@@ -5,9 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from ..Getteurs import getUserTable
-from ..outils import (avatarAnim, connectSQL, dictOptions, dictRefCommands,
-                      dictRefOptions, getCommands, getGuild, getGuilds,
-                      getMoisAnnee, getPlus, getTableDay, getTimes, getUser,
+from ..outils import (connectSQL, dictOptions, dictRefCommands,
+                      dictRefOptions, getCommands,
+                      getMoisAnnee, getPlus, getTableDay, getTimes,
                       listeOptions, tableauMois,dictRefPlus)
 
 
@@ -17,19 +17,17 @@ def viewJours(request,guild,option):
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
     user=request.user
 
-    guild_full=getGuild(guild)
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
+    guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
-    user_full=getUser(guild,user.id)
-    user_avatar=user_full["user"]["avatar"]
-
-    full_guilds=getGuilds(user)
     listeMois,listeAnnee=getTimes(guild,option,"Stats")
 
     maxi=-inf
 
     ctx={"rank":None,"max":maxi,
-    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),
-    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
+    "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
+    "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"jours",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,

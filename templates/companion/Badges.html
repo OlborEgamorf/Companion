@@ -1,0 +1,36 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+<div class="guild-stats">Tableau jeux</div>
+
+<div class="div-profil">
+    {% for i in levels %}
+        {% if badges|getbadges:i|len != 0 %}
+            <table class="table-jeux">
+                <tr><th colspan="2"><img src='{{ i|badgeurl }}' class='badge'></th></tr>
+                <tr><th colspan="2">{{ i|badgename }}</th></tr>
+                
+                {% for j in badges|getbadges:i %}
+                    {% if j.ID == id %}
+                        <tr class="user">
+                    {% else %}
+                        <tr>
+                    {% endif %}
+                    <td>
+                        {% if j.Emote != None %}
+                            <a href="/companion/profil/{{ j.ID }}">
+                            <img src="https://cdn.discordapp.com/emojis/{{ j.Emote }}"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ j.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: start;">{{ j.Titre }}</td>
+                    </tr>
+                    {% endfor %}
+            </table>
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock stats %}

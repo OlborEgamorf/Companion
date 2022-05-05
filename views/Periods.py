@@ -5,7 +5,7 @@ from django.shortcuts import render
 
 from ..Getteurs import *
 from ..outils import (connectSQL, dictOptions, dictRefCommands, dictRefOptions,
-                      dictRefOptionsJeux, dictRefPlus, getCommands, getGuilds,
+                      dictRefOptionsJeux, dictRefPlus, getCommands,
                       getMoisAnnee, getPlus, getTablePerso, listeOptions,
                       listeOptionsJeux, tableauMois)
 
@@ -21,7 +21,6 @@ def viewPeriods(request,guild,option):
     obj = request.GET.get("obj")
     user=request.user
 
-    full_guilds=getGuilds(user)
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     user_avatar=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Avatar"]
     user_name=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Nom"]
@@ -36,7 +35,7 @@ def viewPeriods(request,guild,option):
         ctx={"rankMois":None,"rankAnnee":None,"maxM":None,"maxA":None,
         "avatar":user_avatar,"id":user.id,"color":color,"nom":user_name,
         "guildname":"Olbor Track - Mondial","guildid":"jeux",
-        "commands":["ranks","periods","evol","first"],"dictCommands":dictRefCommands,"command":"periods",
+        "commands":["ranks","periods","evol","first","badges"],"dictCommands":dictRefCommands,"command":"periods",
         "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":option,
         "lisPlus":getPlus("periods"),"dictPlus":dictRefPlus,"plus":"",
         "travel":False,"selector":True}
@@ -46,8 +45,8 @@ def viewPeriods(request,guild,option):
         color=curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,user.id)).fetchone()["Color"]
 
         ctx={"rankMois":None,"rankAnnee":None,"maxM":None,"maxA":None,
-        "avatar":user_avatar,"id":user.id,"color":hex(color)[2:],"nom":user_name,
-        "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],"guilds":full_guilds,
+        "avatar":user_avatar,"id":user.id,"color":"#"+hex(color)[2:],"nom":user_name,
+        "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
         "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"periods",
         "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
         "lisPlus":getPlus("periods"),"dictPlus":dictRefPlus,"plus":"",
@@ -69,6 +68,9 @@ def viewPeriods(request,guild,option):
 
         if obj==None:
             obj=listeObj[0]["ID"]
+
+        if len(listeObj)>150:
+            listeObj=listeObj[:150]
     
         ctx["obj"]=int(obj)
         ctx["listeObjs"]=listeObj

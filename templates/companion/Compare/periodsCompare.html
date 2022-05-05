@@ -3,9 +3,6 @@
 
 {% block stats %}
 {% load TagsCustom %}
-<div class="searchTable">
-    <input type="text" id="searchTable" onkeyup="searchName(3)" placeholder="Recherchez une période">
-</div>
 
 <script>
     function sortTable(n) {
@@ -74,6 +71,37 @@
 }
 </script>
 
+{% if option == "emotes" or option == "reactions" or option == "freq" or option == "salons" or option == "voicechan" %}
+    <form action="" method="get" class="form-example">
+        <div class="navbar">
+            <select name="obj">
+                {% for i in listeObjs %}
+                    {% if i.ID == user1ID %}
+                        <option value="{{ i.ID }}" selected>{{ i.Nom }}</option>
+                    {% else %}
+                        <option value="{{ i.ID }}">{{ i.Nom }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            VS
+            <select name="obj2">
+                {% for i in listeObjs %}
+                    {% if i.ID == user2ID %}
+                        <option value="{{ i.ID }}" selected>{{ i.Nom }}</option>
+                    {% else %}
+                        <option value="{{ i.ID }}">{{ i.Nom }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+                <input type="submit" value="Parcourir" onclick="clickServ(this)">
+        </div>
+    </form>
+{% endif %}
+
+<div class="searchTable">
+    <input type="text" id="searchTable" onkeyup="searchName(3)" placeholder="Recherchez une période">
+</div>
+
 <div class="stats" style="width:80%">
     <table id="tablecompare">
         {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
@@ -110,29 +138,28 @@
                     {% endif %}
                 {{ user2Nom }}</th>
             </tr>
-            <tr>
-                <th style="width:10%" onclick="sortTable(0)">Messages</th>
-                <th style="width:31%" id="leg-barre" onclick="sortTable(0)">Barre</th>
-                <th style="width:5%" onclick="sortTable(2)">Rang</th>
-                <th style="width:8%" onclick="sortTable(3)">Date</th>
-                <th style="width:5%" onclick="sortTable(4)">Rang</th>
-                <th style="width:31%" id="leg-barre" onclick="sortTable(6)">Barre</th>
-                <th style="width:10%" onclick="sortTable(6)">Messages</th>
-            </tr>
         {% else %}
-            <tr><th colspan="4">Classement {{ mois }} {{ annee }}</th></tr>
-            <tr>
-                <th>Rang</th>
-                <th>Emote</th>
-                <th id="leg-barre">Barre</th>
-                <th>Utilisations</th>
-            </tr>
+        <tr>
+            <th style="width:45%" colspan="3">{{ user1Nom }}</th>
+            <th style="width:10%">VS</th>
+            <th style="width:45%" colspan="4">{{ user2Nom }}</th>
+        </tr>
         {% endif %}
+
+        <tr>
+            <th style="width:10%" onclick="sortTable(0)">Messages</th>
+            <th style="width:31%" id="leg-barre" onclick="sortTable(0)">Barre</th>
+            <th style="width:5%" onclick="sortTable(2)">Rang</th>
+            <th style="width:8%" onclick="sortTable(3)">Date</th>
+            <th style="width:5%" onclick="sortTable(4)">Rang</th>
+            <th style="width:31%" id="leg-barre" onclick="sortTable(6)">Barre</th>
+            <th style="width:10%" onclick="sortTable(6)">Messages</th>
+        </tr>
 
         {% for i in rankMois %}
             <tr>
                 <td>{{ i.Count|tempsvoice:option }}</td>
-                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ user1Color }}"></div></td>
+                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ user1Color }} ; margin-top:10px"></div></td>
 
                 {% if i.Rank < i.Rank2 %}
                     <td style="text-align: center;font-style: italic;font-weight: bolder; ">{{ i.Rank }}</td>
@@ -160,7 +187,7 @@
         {% for i in rankAnnee %}
             <tr>
                 <td>{{ i.Count|tempsvoice:option }}</td>
-                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ user1Color }}"></div></td>
+                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ user1Color }}; margin-top:10px"></div></td>
 
                 {% if i.Rank < i.Rank2 %}
                     <td style="text-align: center;font-style: italic;font-weight: bolder; ">{{ i.Rank }}</td>

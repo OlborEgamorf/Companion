@@ -25,12 +25,56 @@
 
 {% block stats %}
 {% load TagsCustom %}
-<div class="searchTable">
-    <input type="text" id="searchTable" onkeyup="searchName(3)" placeholder="Recherchez une période">
-</div>
+
+{% if option == "emotes" or option == "reactions" or option == "freq" or option == "salons" or option == "voicechan" %}
+    <form action="" method="get" class="form-example">
+        <div class="navbar">
+            <select name="mois">
+                {% for i in listeMois %}
+                    {% if i == mois %}
+                        <option selected>{{ i }}</option>
+                    {% else %}
+                        <option>{{ i }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <select name="annee">
+                {% for i in listeAnnee %}
+                    {% if i == annee %}
+                        <option selected>{{ i }}</option>
+                    {% else %}
+                        <option>{{ i }}</option>
+                    {% endif %}
+                    {% endfor %}
+            </select>
+        </div>
+        <div class="navbar">
+            <select name="obj">
+                {% for i in listeObjs %}
+                    {% if i.ID == user1ID %}
+                        <option value="{{ i.ID }}" selected>{{ i.Nom }}</option>
+                    {% else %}
+                        <option value="{{ i.ID }}">{{ i.Nom }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            VS
+            <select name="obj2">
+                {% for i in listeObjs %}
+                    {% if i.ID == user2ID %}
+                        <option value="{{ i.ID }}" selected>{{ i.Nom }}</option>
+                    {% else %}
+                        <option value="{{ i.ID }}">{{ i.Nom }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+                <input type="submit" value="Parcourir" onclick="clickServ(this)">
+        </div>
+    </form>
+{% endif %}
 
 <div class="navbar" style="width: 400px;">
-    <input type="text" id="searchTable" onkeyup="searchName(1)" placeholder="Recherchez une date">
+    <input type="text" id="searchTable" onkeyup="searchName(3)" placeholder="Recherchez une date">
     <input id="input-collapse" type="checkbox" onclick="toggle(this)" name="ytes"> <label for="input-collapse">Affiner</label>
 </div>
 
@@ -92,17 +136,17 @@
         {% for i in rank %}
             <tr class="evol" data-collapse={{ i.Collapse }}>
                 <td>{{ i.Count|tempsvoice:option }}</td>
-                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ user1Color }}"></div></td>
+                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ user1Color }}; margin-top:10px"></div></td>
                 
                 {% if i.Evol > 0 %}
                     <td><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png"><br>{{ i.Evol }}</td>
-                    <td style="background-color: green;">{{ i.Rank }}</td>
+                    <td style="background-color: green;">{{ i.Rank }}</td>   
                 {% elif i.Evol < 0 %}
                     <td>{{ i.Evol }}<br><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png"></td>
                     <td style="background-color: red;">{{ i.Rank }}</td>
+                    
                 {% else %}
-                    <td></td>
-                    <td>{{ i.Rank }}</td>
+                    <td colspan="2">{{ i.Rank }}</td>
                 {% endif %}
 
                 <td>{{ i.Jour }}/{{ i.Mois }}/{{ i.Annee }}</td>
@@ -114,8 +158,7 @@
                     <td style="background-color: red;">{{ i.Rank2 }}</td>
                     <td>{{ i.Evol2 }}<br><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png"></td>
                 {% else %}
-                    <td>{{ i.Rank2 }}</td>
-                    <td></td>
+                    <td colspan="2">{{ i.Rank2 }}</td>
                 {% endif %}
 
                 <td>

@@ -9,14 +9,10 @@ from ..outils import (connectSQL, dictOptions,
                       getPlus, getTablePerso, listeOptions, dictRefPlus)
 
 @login_required(login_url="/login")
-def viewPeriodsCompare(request,guild,option):
+def viewServCompare(request,guild,option):
     user=request.user
-    if option in ("messages","voice","mots"):
-        obj1=user.id
-        obj2 = request.GET.get("obj")
-    else:
-        obj1 = request.GET.get("obj")
-        obj2 = request.GET.get("obj2")
+    obj1 = request.GET.get("obj")
+    obj2 = request.GET.get("obj2")
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
@@ -30,8 +26,6 @@ def viewPeriodsCompare(request,guild,option):
         listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
     elif option=="freq":
         listeObj=list(map(lambda x:getFreq(x),listeObj))
-    elif option in ("messages","voice","mots"):
-        listeObj=list(map(lambda x:getUserTable(x,curseurGet,guild),listeObj))
 
     listeObj=list(filter(lambda x:x["ID"]!=user.id,listeObj))
     listeObj=list(filter(lambda x:x["Nom"]!="Ancien membre",listeObj))
@@ -44,10 +38,10 @@ def viewPeriodsCompare(request,guild,option):
     if obj2==None:
         obj2=listeObj[0]["ID"]
 
-    rankMois1=getTablePerso(guild,dictOptions[option],user.id,obj1,"M","countDesc")
-    rankAnnee1=getTablePerso(guild,dictOptions[option],user.id,obj1,"A","countDesc")
-    rankMois2=getTablePerso(guild,dictOptions[option],user.id,obj2,"M","countDesc")
-    rankAnnee2=getTablePerso(guild,dictOptions[option],user.id,obj2,"A","countDesc")
+    rankMois1=getTablePerso(guild,dictOptions[option],obj1,False,"M","countDesc")
+    rankAnnee1=getTablePerso(guild,dictOptions[option],obj1,False,"A","countDesc")
+    rankMois2=getTablePerso(guild,dictOptions[option],obj2,False,"M","countDesc")
+    rankAnnee2=getTablePerso(guild,dictOptions[option],obj2,False,"A","countDesc")
 
     maxiM=max(list(map(lambda x:x["Count"],rankMois1))+list(map(lambda x:x["Count"],rankMois2)))
     maxiA=max(list(map(lambda x:x["Count"],rankAnnee1))+list(map(lambda x:x["Count"],rankAnnee2)))
@@ -72,28 +66,8 @@ def viewPeriodsCompare(request,guild,option):
     "travel":False,"selector":True,"listeObjs":listeObj,"obj":int(obj2),
     "user1ID":int(obj1),"user2ID":int(obj2)}
 
-    if option in ("messages","voice","mots"):
-        infos1=getUserInfo(obj1,curseurGet,guild)
-        if infos1!=None:
-            ctx["user1Color"]="#"+hex(infos1["Color"])[2:]
-            ctx["user1Avatar"]=infos1["Avatar"]
-            ctx["user1Nom"]=infos1["Nom"]
-        else:
-            ctx["user1Nom"]="Vous"
-    
-        infos2=getUserInfo(obj2,curseurGet,guild)
-        if infos2!=None:
-            ctx["user2Color"]="#"+hex(infos2["Color"])[2:]
-            ctx["user2Avatar"]=infos2["Avatar"]
-            ctx["user2Nom"]=infos2["Nom"]
-        else:
-            ctx["user2Nom"]="Ancien membre"
-    else:
-        ctx["user1Nom"]=getNom(obj1,option,curseurGet,False)
-        ctx["user2Nom"]=getNom(obj2,option,curseurGet,False)
-        color=getColor(user.id,guild,curseurGet)
-        ctx["user1Color"]=color
-        ctx["user2Color"]=color
-        ctx["obj"]=None
+    ctx["user1Nom"]=getNom(obj1,option,curseurGet,False)
+    ctx["user2Nom"]=getNom(obj2,option,curseurGet,False)
+    ctx["obj"]=None
 
     return render(request, "companion/Compare/periodsCompare.html", ctx)

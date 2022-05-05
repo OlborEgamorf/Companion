@@ -37,23 +37,24 @@
 <body>
     <div class="sidenav" id="side">
         <a href="/companion/" class="ot-logo" onmouseenter="showBar('OT')" onmouseleave="hideBar('OT')" onclick="clickServ(this)">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
+            <span class="little-icon-guild"><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
             <span id="OT" class="text-bar">Olbor Track - Accueil</span>
+        </a>
+        <a href="/companion/jeux/home" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
+            <span class="little-icon-guild"><img style="border-radius: 0;" src="https://cdn.discordapp.com/attachments/752150155276451993/971138748349812816/Alldf.png"></span>
+            <span id="0" class="text-bar">Classements jeux</span>
         </a>
         {% if id == idprofil %}
             <a href="/companion/profil/{{ id }}" style="background-color: {{ color }};" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}"></span>
-            <span id="Focus" class="text-bar">Focus et profil</span>
+            <span class="little-icon-guild"><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}"></span>
+            <span id="Focus" class="text-bar">{{ nom }}</span>
         {% else %}
             <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}"></span>
-            <span id="Focus" class="text-bar">Focus et profil</span>
+            <span class="little-icon-guild"><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}"></span>
+            <span id="Focus" class="text-bar">{{ nom }}</span>
         {% endif %}
         </a>
-        <a href="/companion/" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png"></span>
-            <span id="0" class="text-bar">Classements jeux</span>
-        </a>
+        
     </div>
 
     <div class="profil-infos">

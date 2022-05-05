@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://media.discordapp.net/attachments/726034739550486618/908452059496448000/capucheB.png">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
+    
+    <title>{{ guildname }} - OT Companion</title>
+    <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
+</head>
+
+<script type="text/javascript">
+
+    function sleep (time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    function showBar(id) {
+        document.getElementById(id).style.opacity = 100;
+        sleep(500).then(() => {document.getElementById(id).style.fontSize = "20px"})
+    }    
+
+    function hideBar(id) {
+        document.getElementById(id).style.opacity = 0;
+        sleep(500).then(() => {document.getElementById(id).style.fontSize = "0"})
+    }  
+
+</script>
+
+<body>
+    <div class="sidenav" id="side">
+        <a href="/companion/" class="ot-logo" onmouseenter="showBar('OT')" onmouseleave="hideBar('OT')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
+            <span id="OT" class="text-bar">Olbor Track - Accueil</span>
+        </a>
+        <a href="/companion/jeux/home" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img style="border-radius: 0;" src="https://cdn.discordapp.com/attachments/752150155276451993/971138748349812816/Alldf.png"></span>
+            <span id="0" class="text-bar">Classements jeux</span>
+        </a>
+        <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}?size=128"></span>
+            <span id="Focus" class="text-bar">{{ nom }}</span>
+        </a>
+
+        {% for guild in guilds %}
+            {% if guild.Icon != None %}
+                {% if guild.ID == guildid %}
+                    <a href="/companion/{{ guild.ID }}" style="background-color: #696969;" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')">
+                {% else %}
+                    <a href="/companion/{{ guild.ID }}" onmouseenter="showBar('{{ guild.ID }}')" onmouseleave="hideBar('{{ guild.ID }}')" onclick="clickServ(this)">
+                {% endif %}
+                        <img src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}?size=128" alt="Icone du serveur {{ guild.Nom }}" >
+                        <span id="{{ guild.ID }}" class="text-bar">{{ guild.Nom }}</span>
+                    </a>
+            {% endif %}
+        {% endfor %}
+
+        <a href="/companion/" id="nones">
+            <span class="little-icon-guild"></span>
+            <span id="0" class="text-bar"></span>
+        </a>
+    </div>
+
+    <div class="profil-infos">
+        <div>
+            <img class="profil-avatar" src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}">
+            <div class="profil-texte">
+                <div class="texte-gros">
+                    {{ guildname }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="guild-stats">Où souhaitez-vous aller ?</div>
+    <div class="all-guilds">
+        {% if stats %}
+            <a href="/companion/{{ guildid }}/home">
+                <div class="card-guild">
+                    <span class="icon-guild">
+                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png">
+                    </span>
+                    <span class="guild-name">Statistiques d'activité du serveur</span>
+                </div>
+            </a>
+        {% endif %}
+        {% if polls %}
+            <a href="/companion/jeux/home">
+                <div class="card-guild">
+                    <span class="icon-guild">
+                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604052315136050/poll.png">
+                    </span>
+                    <span class="guild-name">Création d'un sondage</span>
+                </div>
+            </a>
+        {% endif %}
+        {% if sv %}
+            <a href="https://discord.com/oauth2/authorize?client_id=699728606493933650&permissions=120259472576&scope=bot">
+                <div class="card-guild">
+                    <span class="icon-guild">
+                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604056203231252/sv.png">
+                    </span>
+                    <span class="guild-name">Boîte de connaissances du serveur</span>
+                </div>
+            </a>
+        {% endif %}
+        {% if anniv %} 
+            <a href="https://discord.com/oauth2/authorize?client_id=699728606493933650&permissions=120259472576&scope=bot">
+                <div class="card-guild">
+                    <span class="icon-guild">
+                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/888141462066303056/anniv.png">
+                    </span>
+                    <span class="guild-name">Anniversaires</span>
+                </div>
+            </a>
+        {% endif %}
+        {% if outils %}
+            <a href="https://discord.com/oauth2/authorize?client_id=699728606493933650&permissions=120259472576&scope=bot">
+                <div class="card-guild">
+                    <span class="icon-guild">
+                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604051069407272/outils.png">
+                    </span>
+                    <span class="guild-name">Gestion des outils</span>
+                </div>
+            </a>
+        {% endif %}
+        {% if admin %}
+            <a href="https://discord.com/oauth2/authorize?client_id=699728606493933650&permissions=120259472576&scope=bot">
+                <div class="card-guild">
+                    <span class="icon-guild">
+                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604058883420170/admin.png">
+                    </span>
+                    <span class="guild-name">Administration</span>
+                </div>
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="footer-ot" style="margin-bottom: 0;">
+        <span class="footer-links">
+            <a href="/companion"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png"></a>
+            <a href="https://twitter.com/OlborTrack"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575596027768943/580b57fcd9996e24bc43c53e.png"></a>
+            <a href="https://instagram.com/OlborTrack"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575617326424095/zerdsfsf.png"></a>
+            <a href="https://github.com/OlborEgamorf/OlborTrack-Bot"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575617653583922/25231.png"></a>
+        </span>
+    </div>
+
+    <div class="footer-ot" style="margin-top: 0;width: 250px;">
+        <span class="footer-credits">
+            Olbor Track Companion <br>Par OlborEgamorf
+        </span>
+    </div>
+
+</body>
+</html>

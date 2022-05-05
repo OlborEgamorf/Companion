@@ -12,7 +12,7 @@ dictOptions={"messages":"Messages","voice":"Voice","salons":"Salons","voicechan"
 listeCommands=["ranks","perso","periods","serv","evol","first","roles","jours","rapport"]
 listeOptions=["home","messages","voice","emotes","freq","salons","voicechan","reactions","mots"]
 listePlus=["","graphs","compare"]
-dictRefCommands={"ranks":"Classements","periods":"Périodes","serv":"Serveur","perso":"Perso","evol":"Évolutions","first":"Premiers","roles":"Rôles","jours":"Jours","moy":"Moyennes","rapport":"Rapports","mondial":"Mondial"}
+dictRefCommands={"ranks":"Classements","periods":"Périodes","serv":"Serveur","perso":"Perso","evol":"Évolutions","first":"Premiers","roles":"Rôles","jours":"Jours","moy":"Moyennes","rapport":"Rapports","mondial":"Mondial","badges":"Badges"}
 dictRefOptions={"home":"Accueil","messages":"Messages","voice":"Vocal","salons":"Salons","voicechan":"Salons vocaux","emotes":"Emotes","reactions":"Réactions","mots":"Mots","freq":"Fréquences"}
 dictRefPlus={"":"Tableaux","graphs":"Graphiques","compare":"Comparateur"}
 
@@ -92,14 +92,6 @@ def connectSQL(guild,db,option,mois,annee):
     connexion.row_factory = dict_factory
     curseur = connexion.cursor()
     return connexion,curseur
-
-
-def avatarAnim(user_avatar):
-    if user_avatar[0:2]=="a_":
-        return "gif"
-    else:
-        return "png"
-
 
 def getMoisAnnee(mois,annee):
     if mois==None or annee==None:
@@ -286,9 +278,7 @@ def getGuilds(user):
     final_guilds=[]
 
     for guild in common:
-        if guild["icon"]!=None:
-            end=avatarAnim(guild["icon"][0:2])
-        final_guilds.append({"ID":int(guild["id"]),"Nom":guild["name"],"Icon":guild["icon"],"Anim":end})
+        final_guilds.append({"ID":int(guild["id"]),"Nom":guild["name"],"Icon":guild["icon"]})
 
     final_guilds.sort(key=lambda x:x["Nom"])
     return final_guilds

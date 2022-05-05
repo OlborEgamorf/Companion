@@ -4,10 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from ..Getteurs import *
-from ..outils import (avatarAnim, connectSQL, dictOptions, dictRefCommands,
-                      dictRefOptions, dictRefPlus, getCommands, getGuild,
-                      getGuilds, getMoisAnnee, getMoisAnneePerso, getPlus,
-                      getTablePerso, getTimes, getUser, listeOptions)
+from ..outils import (connectSQL, dictOptions, dictRefCommands, dictRefOptions,
+                      dictRefPlus, getCommands, getMoisAnnee,
+                      getMoisAnneePerso, getPlus, getTablePerso, getTimes,
+                      listeOptions)
 
 
 @login_required(login_url="/login")
@@ -17,12 +17,10 @@ def viewPerso(request,guild,option):
     moisGen,anneeGen,moisDBGen,anneeDBGen=getMoisAnnee(mois,annee)
     user=request.user
 
-    guild_full=getGuild(guild)
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
+    guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
-    user_full=getUser(guild,user.id)
-    user_avatar=user_full["user"]["avatar"]
-
-    full_guilds=getGuilds(user)
     listeMois,listeAnnee=getTimes(guild,option,"Stats")
 
     stats=[]
@@ -31,15 +29,13 @@ def viewPerso(request,guild,option):
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     
     ctx={"rank":stats,"max":None,
-    "avatar":user_avatar,"id":user.id,"anim":avatarAnim(user_avatar),"color":getColor(user.id,guild,curseurGet),
-    "guildname":guild_full["name"],"guildid":guild,"guildicon":guild_full["icon"],"guilds":full_guilds,
+    "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"color":getColor(user.id,guild,curseurGet),
+    "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"perso",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("perso"),"dictPlus":dictRefPlus,"plus":"",
     "travel":True,"selector":True}
-
-    print(moisDB,anneeDB)
 
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",moisDB,anneeDB)
 
