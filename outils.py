@@ -9,12 +9,12 @@ tableauMois={"01":"Janvier","02":"Février","03":"Mars","04":"Avril","05":"Mai",
 
 dictOptions={"messages":"Messages","voice":"Voice","salons":"Salons","voicechan":"Voicechan","emotes":"Emotes","reactions":"Reactions","mots":"Mots","freq":"Freq","p4":"P4","tortues":"Tortues","tortuesduo":"TortuesDuo","trivialversus":"TrivialVersus","trivialbr":"TrivialBR","trivialparty":"TrivialParty","morpion":"Morpion","matrice":"Matrice"}
 
-listeCommands=["ranks","perso","periods","serv","evol","first","roles","jours","rapport"]
+listeCommands=["ranks","periods","evol","first","roles","jours","rapport"]
 listeOptions=["home","messages","voice","emotes","freq","salons","voicechan","reactions","mots"]
 listePlus=["","graphs","compare"]
 dictRefCommands={"ranks":"Classements","periods":"Périodes","serv":"Serveur","perso":"Perso","evol":"Évolutions","first":"Premiers","roles":"Rôles","jours":"Jours","moy":"Moyennes","rapport":"Rapports","mondial":"Mondial","badges":"Badges"}
 dictRefOptions={"home":"Accueil","messages":"Messages","voice":"Vocal","salons":"Salons","voicechan":"Salons vocaux","emotes":"Emotes","reactions":"Réactions","mots":"Mots","freq":"Fréquences"}
-dictRefPlus={"":"Tableaux","graphs":"Graphiques","compare":"Comparateur"}
+dictRefPlus={"":"Tableaux","graphs":"Graphiques","compare":"Comparateur","perso":"Pour vous","serv":"Pour le serveur","compareperso":"Comparateur personnel","obj":"Pour un objet"}
 
 listeOptionsJeux=["home","p4","tortues","tortuesduo","trivialversus","trivialbr","trivialparty","morpion","matrice",]
 dictRefOptionsJeux={"home":"Accueil","p4":"P4","tortues":"Tortues","tortuesduo":"TortuesDuo","trivialversus":"Trivial VS","trivialbr":"Trivial BR","trivialparty":"Trivial Party","morpion":"Morpion","matrice":"Matrice"}
@@ -23,21 +23,23 @@ def getCommands(option):
     liste=listeCommands.copy()
     if option not in ("messages","voice"):
         liste.remove("jours")
-    if option in ("messages","voice","mots"):
-        liste.remove("serv")
-        liste.remove("perso")
     if option=="emotes":
         liste.append("mondial")
     if option=="home":
         liste=[]
     return liste
 
-def getPlus(command):
-    liste=listePlus.copy()
+def getPlus(command,option):
     if command in ("jours","roles"):
         liste=["","graphs"]
     elif command=="rapport":
         liste=[""]
+    elif command=="periods" and option in ("emotes","salons","voicechan","reactions","freq"):
+        liste=["serv","perso","graphs","compare","compareperso"]
+    elif command=="periods" and option not in ("emotes","salons","voicechan","reactions","freq"):
+        liste=["serv","perso","graphs","compareperso"]
+    elif command=="ranks" and option in ("emotes","salons","voicechan","reactions","freq"):
+        liste=["serv","perso","obj","graphs","compare","compareperso"]
     else:
         liste=listePlus.copy()
     return liste
@@ -248,7 +250,9 @@ def getTablePerso(guild,option,id,idobj,period,tri):
     for i in curseurF.execute("SELECT Mois,Annee FROM first{0}".format(period)).fetchall():
         try:
             connection,curseur=connectSQL(guild,option,categ,i["Mois"],i["Annee"])
-            if not idobj:
+            if id==guild:
+                stat=curseur.execute("SELECT Mois,Annee,SUM(Count) AS Count FROM {0}{1}".format(tableauMois[i["Mois"]],i["Annee"])).fetchone()
+            elif not idobj:
                 stat=curseur.execute("SELECT Rank,Count,Mois,Annee,ID FROM {0}{1} WHERE ID={2}".format(tableauMois[i["Mois"]],i["Annee"],id)).fetchone()
             else:
                 stat=curseur.execute("SELECT Rank,Count,Mois,Annee,ID FROM perso{0}{1}{2} WHERE ID={3}".format(i["Mois"],i["Annee"],id,idobj)).fetchone()

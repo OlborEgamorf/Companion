@@ -1,6 +1,15 @@
 {% extends "companion/Profil/BaseProfil.html" %}
 {% block page %}
 {% load TagsCustom %}
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/a-color-picker@1.1.8/dist/acolorpicker.js"></script>
+<script>
+    console.log(AColorPicker)
+    AColorPicker.from('.div-profil')
+    .on('change', (picker, color) => {
+    document.body.style.backgroundColor = color;
+    });
+</script>
+
 <div class="guild-stats">Surnom</div>
 
 <div class="div-profil">
@@ -10,4 +19,11 @@
         <input type="text" name="surnom" value="{{ custom }}" disabled="true">
     {% endif %}
 </div>
+
+
+
+<div class="div-profil" acp-color="#EFE9E7">
+</div>
+
+
 {% endblock page %}

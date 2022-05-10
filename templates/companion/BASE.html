@@ -220,7 +220,7 @@
                     {% if plus == p %}
                         <a class="select">{{ p|usedict:dictPlus }}</a>
                     {% else %} 
-                        {% if p == "" %}
+                        {% if p == "" or p == "serv" %}
                             <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}" onclick="clickServ(this)">{{ p|usedict:dictPlus }}</a>
                         {% else %}
                             <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}/{{ p }}" onclick="clickServ(this)">{{ p|usedict:dictPlus }}</a>

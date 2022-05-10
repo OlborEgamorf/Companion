@@ -75,7 +75,7 @@ def viewEvolCompare(request,guild,option):
     "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"evol",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":getPlus("evol"),"dictPlus":dictRefPlus,"plus":"compare",
+    "lisPlus":getPlus("evol",option),"dictPlus":dictRefPlus,"plus":"compare",
     "travel":True,"selector":True,"listeObjs":listeObj,"obj":int(obj2),
     "user1ID":int(obj1),"user2ID":int(obj2)}
 

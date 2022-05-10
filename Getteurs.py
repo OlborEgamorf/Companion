@@ -1,5 +1,3 @@
-import requests
-
 from companion.outils import connectSQL,dictOptions
 
 
@@ -65,7 +63,7 @@ def getUserJeux(i,curseurGet,jeu):
     badgeJeu=curseurUser.execute("SELECT * FROM badges WHERE Type='{0}' ORDER BY Valeur DESC".format(dictOptions[jeu])).fetchone()
     if badgeJeu!=None:
         badgeJeu=badgeJeu["Valeur"]
-    return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Full"],"Color":infos["Couleur"],"Emote":infos["Emote"],"ID":i["ID"],"VIP":infos["VIP"],"Testeur":infos["Testeur"],"BadgeJeu":badgeJeu}
+    return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Full"],"Color":infos["Couleur"],"Emote":infos["Emote"],"ID":i["ID"],"VIP":infos["VIP"],"Testeur":infos["Testeur"],"BadgeJeu":badgeJeu,"Win":i["W"],"Lose":i["L"]}
 
 def createAccount(connexion,curseur):
     curseur.execute("CREATE TABLE IF NOT EXISTS titresUser (ID INT, Nom TEXT, Rareté INT, PRIMARY KEY(ID))")
@@ -75,6 +73,7 @@ def createAccount(connexion,curseur):
         curseur.execute("INSERT INTO coins VALUES(0)")
     connexion.commit()
 def getAllInfos(curseur,curseurUser,connexionUser,user):
+    createAccount(connexionUser,curseurUser)
     try:
         coins=curseurUser.execute("SELECT * FROM coins").fetchone()["Coins"]
     except:

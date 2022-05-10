@@ -19,7 +19,9 @@
             <tr>
                 <th>Rang</th>
                 <th colspan="2">Membre</th>
-                <th id="leg-barre">Barre</th>
+                {% if plus != "graph" %}
+                    <th id="leg-barre">Barre</th>
+                {% endif %}
                 <th>Messages</th>
             </tr>
             {% for i in rank %}
@@ -51,7 +53,9 @@
                     {% endif %}
     
                     <td style="text-align: start;">{{ i.Nom }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
+                    {% if plus != "graph" %}
+                        <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
+                    {% endif %}
                     <td>{{ i.Count|tempsvoice:option }}</td>
                 </tr>
             {% endfor %}

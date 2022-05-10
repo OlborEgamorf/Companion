@@ -31,7 +31,7 @@ def viewJours(request,guild,option):
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"jours",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":getPlus("jours"),"dictPlus":dictRefPlus,"plus":"",
+    "lisPlus":getPlus("jours",option),"dictPlus":dictRefPlus,"plus":"",
     "travel":True,"selector":True}
     
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL",None)

@@ -44,10 +44,16 @@ def viewPeriodsCompare(request,guild,option):
     if obj2==None:
         obj2=listeObj[0]["ID"]
 
-    rankMois1=getTablePerso(guild,dictOptions[option],user.id,obj1,"M","countDesc")
-    rankAnnee1=getTablePerso(guild,dictOptions[option],user.id,obj1,"A","countDesc")
-    rankMois2=getTablePerso(guild,dictOptions[option],user.id,obj2,"M","countDesc")
-    rankAnnee2=getTablePerso(guild,dictOptions[option],user.id,obj2,"A","countDesc")
+    if option in ("messages","voice","mots"): 
+        rankMois1=getTablePerso(guild,dictOptions[option],user.id,False,"M","countDesc")
+        rankAnnee1=getTablePerso(guild,dictOptions[option],user.id,False,"A","countDesc")
+        rankMois2=getTablePerso(guild,dictOptions[option],obj2,False,"M","countDesc")
+        rankAnnee2=getTablePerso(guild,dictOptions[option],obj2,False,"A","countDesc")
+    else:
+        rankMois1=getTablePerso(guild,dictOptions[option],user.id,obj1,"M","countDesc")
+        rankAnnee1=getTablePerso(guild,dictOptions[option],user.id,obj1,"A","countDesc")
+        rankMois2=getTablePerso(guild,dictOptions[option],user.id,obj2,"M","countDesc")
+        rankAnnee2=getTablePerso(guild,dictOptions[option],user.id,obj2,"A","countDesc")
 
     maxiM=max(list(map(lambda x:x["Count"],rankMois1))+list(map(lambda x:x["Count"],rankMois2)))
     maxiA=max(list(map(lambda x:x["Count"],rankAnnee1))+list(map(lambda x:x["Count"],rankAnnee2)))
@@ -68,7 +74,7 @@ def viewPeriodsCompare(request,guild,option):
     "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"periods",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":getPlus("periods"),"dictPlus":dictRefPlus,"plus":"compare",
+    "lisPlus":getPlus("periods",option),"dictPlus":dictRefPlus,"plus":"compareperso",
     "travel":False,"selector":True,"listeObjs":listeObj,"obj":int(obj2),
     "user1ID":int(obj1),"user2ID":int(obj2)}
 

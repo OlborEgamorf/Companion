@@ -48,7 +48,7 @@ def viewBadges(request,option):
         "guildname":"Olbor Track - Mondial","guildid":"jeux",
         "commands":["ranks","periods","evol","first","badges"],"dictCommands":dictRefCommands,"command":"badges",
         "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":option,
-        "lisPlus":getPlus("periods"),"dictPlus":dictRefPlus,"plus":"",
+        "lisPlus":getPlus("periods",option),"dictPlus":dictRefPlus,"plus":"",
         "travel":False,"selector":True}    
 
     return render(request, "companion/Badges.html", ctx)

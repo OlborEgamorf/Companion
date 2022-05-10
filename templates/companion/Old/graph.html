@@ -2,16 +2,47 @@
 
 {% block stats %}
 <div class="stats" style="justify-content: center;">
-    {% autoescape off %}
-    {{ fig }}
-    {% endautoescape %}
-    {% autoescape off %}
-    {{ fig2 }}
-    {% endautoescape %}
-</div>
-<div class="stats" style="justify-content: center;">
-    {% autoescape off %}
-    {{ fig3 }}
-    {% endautoescape %}
+    <div id="tableot">
+        {% if fig != None %}
+        <div class="graphs">
+            {% autoescape off %}
+            {{ fig }}
+            {% endautoescape %}
+        </div>
+        {% endif %}
+
+        {% if fig2 != None %}
+        <div class="graphs">
+            {% autoescape off %}
+            {{ fig2 }}
+            {% endautoescape %}
+        </div>
+        {% endif %}
+
+        {% if fig3 != None %}
+        <div class="graphs">
+            {% autoescape off %}
+            {{ fig3 }}
+            {% endautoescape %}
+        </div>
+        {% endif %}
+
+        {% if fig4 != None %}
+        <div class="graphs">
+            {% autoescape off %}
+            {{ fig4 }}
+            {% endautoescape %}
+        </div>
+        {% endif %}
+
+        {% if fig5 != None %}
+        <div class="graphs">
+            {% autoescape off %}
+            {{ fig5 }}
+            {% endautoescape %}
+        </div>
+        {% endif %}
+    </div>
+    <iframe id="iframeevol" src="/companion/{{ guildid }}/{{ option }}/iframeranks/graphs?data={{ mois }}?{{ annee }}?{{ obj }}" scrolling="no" onload="resizeIframe(this)"></iframe>
 </div>
 {% endblock stats %}

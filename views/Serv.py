@@ -6,7 +6,7 @@ from django.shortcuts import render
 from ..Getteurs import *
 from ..outils import (connectSQL, dictOptions, dictRefCommands, dictRefOptions,
                       dictRefPlus, getCommands, getMoisAnnee, getPlus,
-                      getTablePerso, listeOptions, tableauMois)
+                      getTablePerso, listeOptions, rankingClassic, tableauMois)
 
 
 @login_required(login_url="/login")
@@ -21,29 +21,37 @@ def viewServ(request,guild,option):
     ctx={"rankMois":None,"rankAnnee":None,"maxM":None,"maxA":None,
     "avatar":user_full["Avatar"],"id":user.id,"color":None,
     "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
-    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"serv",
+    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"periods",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":getPlus("evol"),"dictPlus":dictRefPlus,"plus":"",
-    "selector":True,"travel":False,}
+    "lisPlus":getPlus("periods",option),"dictPlus":dictRefPlus,"plus":"serv",
+    "selector":True,"travel":False}
 
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
+    if option in ("emotes","salons","voicechan","reactions","freq"):
+        connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
         
-    listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
-    if option in ("emotes","reactions"):
-        listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
-    elif option in ("salons","voicechan"):
-        listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
-    elif option=="freq":
-        listeObj=list(map(lambda x:getFreq(x),listeObj))
+        listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
+        if option in ("emotes","reactions"):
+            listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
+        elif option in ("salons","voicechan"):
+            listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
+        elif option=="freq":
+            listeObj=list(map(lambda x:getFreq(x),listeObj))
 
-    if obj==None:
-        obj=listeObj[0]["ID"]
-    
-    ctx["obj"]=int(obj)
-    ctx["listeObjs"]=listeObj
+        if obj==None:
+            obj=listeObj[0]["ID"]
+        
+        ctx["obj"]=int(obj)
+        ctx["listeObjs"]=listeObj
 
-    ctx["rankMois"]=getTablePerso(guild,dictOptions[option],obj,False,"M","countDesc")
-    ctx["rankAnnee"]=getTablePerso(guild,dictOptions[option],obj,False,"A","countDesc")
+        ctx["rankMois"]=getTablePerso(guild,dictOptions[option],obj,False,"M","countDesc")
+        ctx["rankAnnee"]=getTablePerso(guild,dictOptions[option],obj,False,"A","countDesc")
+    else:
+        tableMois=getTablePerso(guild,dictOptions[option],guild,False,"M","countDesc")
+        rankingClassic(tableMois)
+        tableAnnee=getTablePerso(guild,dictOptions[option],guild,False,"A","countDesc")
+        rankingClassic(tableAnnee)
+        ctx["rankMois"]=tableMois
+        ctx["rankAnnee"]=tableAnnee
 
     ctx["maxM"]=max(list(map(lambda x:x["Count"],ctx["rankMois"])))
     ctx["maxA"]=max(list(map(lambda x:x["Count"],ctx["rankAnnee"])))

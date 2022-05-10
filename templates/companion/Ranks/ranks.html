@@ -28,7 +28,7 @@
 
 <div class="stats">
     <table id="tableot">
-        {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
+        {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" or obj != None %}
             <tr><th colspan="5">Classement {{ mois }} {{ annee }}</th></tr>
             <tr>
                 <th>Rang</th>
@@ -43,6 +43,7 @@
                 <th colspan="2">Joueur</th>
                 <th id="leg-barre">Barre</th>
                 <th>Points</th>
+                <th>W/L</th>
                 <th>Badge</th>
             </tr>
         {% else %}
@@ -62,7 +63,7 @@
                 <tr onClick="newSite('{{ i.ID }}',this)">
             {% endif %}
                     <td>{{ i.Rank }}</td>
-                    {% if option == "messages" or option == "mots" or option == "voice" %}
+                    {% if option == "messages" or option == "mots" or option == "voice" or obj != None %}
                         <td>
                             {% if i.Avatar %}
                                 <a href="/companion/profil/{{ i.ID }}">
@@ -99,6 +100,7 @@
                     <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
                     <td>{{ i.Count|tempsvoice:option }}</td>
                     {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                        <td>{{ i.Win }}/{{ i.Lose }}</td>
                         <td>
                             {% if i.BadgeJeu != None %}
                                 <img src='{{ i.BadgeJeu|badgeurl }}' class='badge'>

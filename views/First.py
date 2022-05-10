@@ -34,7 +34,7 @@ def viewFirst(request,guild,option):
         "guildname":"Olbor Track - Mondial","guildid":"jeux",
         "commands":["ranks","periods","evol","first","badges"],"dictCommands":dictRefCommands,"command":"first",
         "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":option,
-        "lisPlus":getPlus("first"),"dictPlus":dictRefPlus,"plus":"",
+        "lisPlus":getPlus("first",option),"dictPlus":dictRefPlus,"plus":"",
         "travel":False,"selector":True}
     else:
         categ="Stats"
@@ -45,7 +45,7 @@ def viewFirst(request,guild,option):
         "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
         "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"first",
         "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-        "lisPlus":getPlus("first"),"dictPlus":dictRefPlus,"plus":"",
+        "lisPlus":getPlus("first",option),"dictPlus":dictRefPlus,"plus":"",
         "travel":False,"selector":True}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
@@ -66,6 +66,8 @@ def viewFirst(request,guild,option):
             ligne=getFreq(i)
         
         elif categ=="Jeux":
+            i["W"]=0
+            i["L"]=0
             ligne=getUserJeux(i,curseurGet,option)
 
         ligne["Mois"]=i["Mois"]
@@ -90,6 +92,8 @@ def viewFirst(request,guild,option):
             ligne=getFreq(i)
 
         elif categ=="Jeux":
+            i["W"]=0
+            i["L"]=0
             ligne=getUserJeux(i,curseurGet,option)
 
         ligne["Mois"]=i["Mois"]

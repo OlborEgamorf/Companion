@@ -105,7 +105,7 @@ def viewFirstCompare(request,guild,option):
     "mois1":"Total","annee1":annee1,"mois2":"Total","annee2":annee2,"listeMois":["Total"],"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"first",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":getPlus("first"),"dictPlus":dictRefPlus,"plus":"compare",
+    "lisPlus":getPlus("first",option),"dictPlus":dictRefPlus,"plus":"compare",
     "travel":False,"selector":True,"obj":None}
 
     return render(request, "companion/Compare/firstCompare.html", ctx)

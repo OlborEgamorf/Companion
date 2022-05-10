@@ -121,7 +121,7 @@ def viewRapports(request,guild,option):
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"rapport",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":getPlus("rapport"),"dictPlus":dictRefPlus,"plus":"",
+    "lisPlus":getPlus("rapport",option),"dictPlus":dictRefPlus,"plus":"",
     "travel":True,"selector":False,"obj":None}
 
     return render(request, "companion/Rapports.html", ctx)

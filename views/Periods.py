@@ -37,7 +37,7 @@ def viewPeriods(request,guild,option):
         "guildname":"Olbor Track - Mondial","guildid":"jeux",
         "commands":["ranks","periods","evol","first","badges"],"dictCommands":dictRefCommands,"command":"periods",
         "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":option,
-        "lisPlus":getPlus("periods"),"dictPlus":dictRefPlus,"plus":"",
+        "lisPlus":["","graphs","compare"],"dictPlus":dictRefPlus,"plus":"",
         "travel":False,"selector":True}
     else:
         categ="Stats"
@@ -49,7 +49,7 @@ def viewPeriods(request,guild,option):
         "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
         "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"periods",
         "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-        "lisPlus":getPlus("periods"),"dictPlus":dictRefPlus,"plus":"",
+        "lisPlus":getPlus("periods",option),"dictPlus":dictRefPlus,"plus":"perso",
         "travel":False,"selector":True}
     
 

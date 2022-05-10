@@ -86,8 +86,8 @@ def viewPersoCompare(request,guild,option):
     "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"color":color,
     "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
     "mois1":mois1,"annee1":annee1,"mois2":mois2,"annee2":annee2,"listeMois":listeMois,"listeAnnee":listeAnnee,
-    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"perso",
-    "lisPlus":getPlus("perso"),"dictPlus":dictRefPlus,"plus":"compare",
+    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
+    "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"compareperso",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "travel":False,"selector":True,"obj":None}
 

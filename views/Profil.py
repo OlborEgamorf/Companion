@@ -366,6 +366,7 @@ def viewProfilPerso(request,user):
         user_name=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Nom"]
         user_avatar_profil=user_avatar
         user_name_profil=user_name
+        coins=infos["Coins"]
 
     ctx={"avatarprofil":user_avatar_profil,"idprofil":user,"nomprofil":user_name_profil,
         "avatar":user_avatar,"id":request.user.id,"nom":user_name,

@@ -32,9 +32,9 @@ def viewPerso(request,guild,option):
     "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"color":getColor(user.id,guild,curseurGet),
     "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
-    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"perso",
+    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":getPlus("perso"),"dictPlus":dictRefPlus,"plus":"",
+    "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"perso",
     "travel":True,"selector":True}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",moisDB,anneeDB)

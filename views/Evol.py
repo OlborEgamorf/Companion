@@ -33,7 +33,7 @@ def viewEvol(request,guild,option):
         "guildname":"Olbor Track - Mondial","guildid":"jeux",
         "commands":["ranks","periods","evol","first","badges"],"dictCommands":dictRefCommands,"command":"evol",
         "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":option,
-        "lisPlus":getPlus("evol"),"dictPlus":dictRefPlus,"plus":"",
+        "lisPlus":getPlus("evol",option),"dictPlus":dictRefPlus,"plus":"",
         "travel":True,"selector":True}
     else:
         categ="Stats"
@@ -46,7 +46,7 @@ def viewEvol(request,guild,option):
         "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
         "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"evol",
         "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-        "lisPlus":getPlus("evol"),"dictPlus":dictRefPlus,"plus":"",
+        "lisPlus":getPlus("evol",option),"dictPlus":dictRefPlus,"plus":"",
         "travel":True,"selector":True}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)

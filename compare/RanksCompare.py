@@ -93,7 +93,7 @@ def viewRankCompare(request,guild,option):
     "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
     "mois1":mois1,"annee1":annee1,"mois2":mois2,"annee2":annee2,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
-    "lisPlus":getPlus("ranks"),"dictPlus":dictRefPlus,"plus":"compare",
+    "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"compare",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "travel":False,"selector":True,"obj":None}
 

@@ -71,7 +71,7 @@ def viewRank(request,guild,option):
         "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
         "commands":["ranks","periods","evol","first","badges"],"dictCommands":dictRefCommands,"command":"ranks",
         "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":option,
-        "lisPlus":getPlus("ranks"),"dictPlus":dictRefPlus,"plus":"",
+        "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"",
         "travel":True,"selector":True,"obj":None}
         return render(request, "companion/Ranks/ranks.html", ctx)
     else:
@@ -83,10 +83,64 @@ def viewRank(request,guild,option):
         "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
         "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
         "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-        "lisPlus":getPlus("ranks"),"dictPlus":dictRefPlus,"plus":"",
+        "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"" if option in ("messages","voice","mots") else "serv",
         "travel":True,"selector":True,"obj":None}
 
         return render(request, "companion/Ranks/ranks.html", ctx)
+
+@login_required(login_url="/login")
+def viewRankObj(request,guild,option):
+    mois,annee,obj = request.GET.get("mois"),request.GET.get("annee"),request.GET.get("obj")
+    mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
+    user=request.user
+
+    maxi=-inf
+    stats=[]
+
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
+    guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
+
+    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
+    
+    listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
+    if option in ("emotes","reactions"):
+        listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
+    elif option in ("salons","voicechan"):
+        listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
+    elif option=="freq":
+        listeObj=list(map(lambda x:getFreq(x),listeObj))
+
+    if obj==None:
+        obj=listeObj[0]["ID"]
+
+    if len(listeObj)>150:
+        listeObj=listeObj[:150]
+    
+    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
+
+    for i in curseur.execute("SELECT * FROM {0}{1}{2} ORDER BY Rank ASC LIMIT 150".format(moisDB,anneeDB,obj)).fetchall():
+
+        stats.append(getUserTable(i,curseurGet,guild))
+        maxi=max(maxi,i["Count"])
+
+    connexion.close()
+
+    if maxi<=0:
+        maxi=1
+
+    listeMois,listeAnnee=getTimes(guild,option,"Stats")
+
+    ctx={"rank":stats,"max":maxi,
+    "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
+    "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
+    "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+    "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
+    "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
+    "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"obj",
+    "travel":True,"selector":True,"obj":int(obj),"listeObjs":listeObj}
+
+    return render(request, "companion/Ranks/ranks.html", ctx)
 
 
 @login_required(login_url="/login")

@@ -51,7 +51,7 @@ def viewRoles(request,guild,option):
     "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"roles",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":getPlus("roles"),"dictPlus":dictRefPlus,"plus":"",
+    "lisPlus":getPlus("roles",option),"dictPlus":dictRefPlus,"plus":"",
     "travel":True,"selector":True,"obj":None,"listeObjs":listeObj}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
