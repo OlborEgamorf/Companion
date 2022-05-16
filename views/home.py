@@ -23,6 +23,10 @@ def home(request):
     uguild_json=user_guild.json()
 
     common=list(filter(lambda x: x["id"] in bot_ids, uguild_json))
+
+    if len(common)==0:
+        return render(request, "companion/homeNoGuild.html")
+
     final_guilds=[]
     connexion,curseur=connectSQL("OT","Mixes","Guild",None,None)
     
@@ -48,7 +52,6 @@ def home(request):
             try:
                 curseur.execute("INSERT INTO mixes_{0} VALUES ({1},'{2}',{3})".format(user.id,nb+1,nom,descip))
             except Exception as er:
-                print(er)
                 mixalert=False
             connexion.commit()
 

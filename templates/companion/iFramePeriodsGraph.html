@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://cdn.discordapp.com/avatars/699728606493933650/0859eb6e97dd8d92e6668c397bf4b311.webp?size=256">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
+    
+    <title>Olbor Track Companion</title>
+</head>
+
+<script>
+    function searchName(n) {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchTable");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("table-iframe");
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[n];
+            if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+            }
+        }
+    }
+</script>
+
+<body class="bodyiframe">
+    {% load TagsCustom %}
+    <table class="table-iframe" id="table-iframe">
+        <tr><th colspan="3">Périodes mensuelles pour vous</th></tr>
+        <tr>
+            <th>Date</th>
+            <th>Rang</th>
+            <th>Messages</th>
+        </tr>
+        {% for i in user %}
+            <tr>
+                <td id="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
+                <td>{{ i.Rank }}</td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <table class="table-iframe" id="table-iframe">
+        <tr><th colspan="2">Périodes mensuelles pour le serveur</th></tr>
+        <tr>
+            <th>Date</th>
+            <th>Messages</th>
+        </tr>
+        {% for i in serv %}
+            <tr>
+                <td id="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>

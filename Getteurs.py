@@ -42,7 +42,12 @@ def getGuildInfo(id,curseurGet):
     return curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(id)).fetchone()
 
 def getUserInfo(id,curseurGet,guild):
-    return curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,id)).fetchone()
+    infos=curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,id)).fetchone()
+    if infos==None:
+        return {"ID":id,"Nom":"Ancien membre","Color":239100}
+    if len(infos["Nom"])>15:
+        infos["Nom"]=infos["Nom"][:15]+"..."
+    return infos
 
 def getNom(id,option,curseurGet,obj):
     if option in ("messages","voice","mots") or obj:

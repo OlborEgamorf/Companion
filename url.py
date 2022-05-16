@@ -12,7 +12,7 @@ from .views.emotesmondial import emotesMondial, iframeEmotes
 from .views.EmotesWW import emotesMondialGuild
 from .views.Evol import evolJeux, iFrameEvol, viewEvol
 from .views.First import firstJeux, iFrameFirst, iFrameFirstJeux, viewFirst
-from .views.graphiques import graphRanks, iFrameGraphRanks
+from .views.graphiques import graphEvol, graphPeriods, graphRanks, iFrameGraphEvol, iFrameGraphPeriods, iFrameGraphRanks
 from .views.GuildHome import viewGuildHome
 from .views.HallOfBadges import viewBadges
 from .views.home import home
@@ -61,7 +61,11 @@ urlpatterns = [
     path("<int:emote>/iframeemotesww",iframeEmotes,name="iframe-emotesww"),
 
     path("<int:guild>/<str:option>/ranks/graphs",graphRanks,name="graphs-ranks"),
+    path("<int:guild>/<str:option>/periods/graphs",graphPeriods,name="graphs-periods"),
+    path("<int:guild>/<str:option>/evol/graphs",graphEvol,name="graphs-periods"),
     path("<int:guild>/<str:option>/iframeranks/graphs",iFrameGraphRanks,name="iframe-graphs-ranks"),
+    path("<int:guild>/<str:option>/iframeperiods/graphs",iFrameGraphPeriods,name="iframe-graphs-ranks"),
+    path("<int:guild>/<str:option>/iframeevol/graphs",iFrameGraphEvol,name="iframe-graphs-ranks"),
 
     path("<int:guild>/<str:option>/ranks/compare",viewRankCompare,name="compare-ranks"),
     path("<int:guild>/<str:option>/ranks/compareperso",viewPersoCompare,name="compare-perso"),

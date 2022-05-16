@@ -30,9 +30,9 @@ def getCommands(option):
     return liste
 
 def getPlus(command,option):
-    if command in ("jours","roles"):
+    if command=="jours":
         liste=["","graphs"]
-    elif command=="rapport":
+    elif command in ("rapport","roles"):
         liste=[""]
     elif command=="periods" and option in ("emotes","salons","voicechan","reactions","freq"):
         liste=["serv","perso","graphs","compare","compareperso"]

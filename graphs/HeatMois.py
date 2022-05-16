@@ -53,7 +53,8 @@ def heatMois(guild,option,mois,annee):
                     colorscale="YlGnBu"))
                     
     fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",width=1000,height=500,title="Calendrier des messages envoyés")
-    fig.update_yaxes(automargin=True)
+    fig.update_yaxes(automargin=True, showgrid=False, zeroline=False)
+    fig.update_xaxes(showgrid=False, zeroline=False)
     return plot(fig,output_type='div')
     
     

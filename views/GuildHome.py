@@ -13,10 +13,9 @@ def viewGuildHome(request,guild):
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
     guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
-    full_guilds=getGuilds(user)
 
     ctx={"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
-    "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],"guilds":full_guilds,
+    "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
     "stats":True,"outils":True,"sv":True,"polls":True,"admin":True,"anniv":True,
     "travel":False,"selector":False}
     

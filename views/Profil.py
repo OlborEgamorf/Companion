@@ -323,7 +323,7 @@ def viewProfilTitres(request,user):
         connexion.commit()
         connexionUser.commit()
     
-    titresUser=curseurUser.execute("SELECT * FROM titresUser").fetchall()
+    titresUser=curseurUser.execute("SELECT * FROM titresUser ORDER BY Rareté ASC").fetchall()
     boutique=curseur.execute("SELECT marketplace.ID,marketplace.Stock,titres.Rareté,titres.Nom,marketplace.Known,titres.Description,titres.Collection FROM marketplace JOIN titres ON marketplace.ID=titres.ID ORDER BY Rareté DESC").fetchall()
     for i in titresUser:
         plus=curseur.execute("SELECT * FROM titres WHERE ID={0}".format(i["ID"])).fetchone()

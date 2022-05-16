@@ -110,23 +110,23 @@
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
             <span id="OT" class="text-bar">Olbor Track - Accueil</span>
         </a>
+        <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}?size=128"></span>
+            <span id="Focus" class="text-bar">{{ nom }}</span>
+        </a>
         {% if guildid == 'jeux' %}
             <a href="/companion/jeux/home" class="ot-logo" style="background-color: #696969;" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img style="border-radius: 0;" src="https://cdn.discordapp.com/attachments/752150155276451993/971138748349812816/Alldf.png"></span>
                 <span id="0" class="text-bar">Classements jeux</span>
             </a>
         {% else %}
-            <a href="/companion/jeux/home" class="ot-logo" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img style="border-radius: 0;" src="https://cdn.discordapp.com/attachments/752150155276451993/971138748349812816/Alldf.png"></span>
-                <span id="0" class="text-bar">Classements jeux</span>
+            <a href="/companion/{{ guildid }}" onmouseenter="showBar('Guild')" onmouseleave="hideBar('Guild')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}"></span>
+                <span id="Guild" class="text-bar">{{ guildname }}</span>
             </a>
         {% endif %}
-        <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}?size=128"></span>
-            <span id="Focus" class="text-bar">{{ nom }}</span>
-        </a>
         {% if guildid != 'jeux' %}
-            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Stats')" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
+            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Stats')" style="background-color: #696969;" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png"></span>
                 <span id="Stats" class="text-bar">Statistiques</span>
             </a>

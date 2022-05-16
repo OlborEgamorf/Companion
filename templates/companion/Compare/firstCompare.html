@@ -88,9 +88,9 @@
             <tr>
                 <td>{{ i.Count|tempsvoice:option }}</td>
                 {% if i.Mois == "TO" %}
-                    <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ i.Color }} ; margin-top:10px"></div></td>
+                    <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ i.Color }} ; margin-top:15px"></div></td>
                 {% else %}
-                    <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }} ; margin-top:10px"></div></td>
+                    <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }} ; margin-top:15px"></div></td>
                 {% endif %}
                 <td style="text-align: end;">{{ i.Nom }}</td>
                 {% if option == "messages" or option == "mots" or option == "voice" %}

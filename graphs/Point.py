@@ -1,20 +1,21 @@
 import plotly.graph_objects as go
 from companion.Getteurs import getUserInfo
-from companion.outils import getTablePerso
+from companion.outils import getTablePerso,dictOptions
 from plotly.offline import plot
 
 
 def graphPoint(guild,option,curseur,curseurGet,moisDB,anneeDB):
     listeNow,listeMed,listeMax,listeMoy,listeNoms=[],[],[],[],[]
     listeRankNow,listeRankMed,listeRankMax,listeRankMoy=[],[],[],[]
+    listeIDs=[]
     moisPoint=curseur.execute("SELECT * FROM {0}{1} WHERE Rank<=15 ORDER BY Rank DESC".format(moisDB,anneeDB)).fetchall()
     
     for i in moisPoint:
         infos=getUserInfo(i["ID"],curseurGet,guild)
         if moisDB=="to":
-            table=getTablePerso(guild,option,i["ID"],False,"A","countDesc")
+            table=getTablePerso(guild,dictOptions[option],i["ID"],False,"A","countDesc")
         else:
-            table=getTablePerso(guild,option,i["ID"],False,"M","countDesc")
+            table=getTablePerso(guild,dictOptions[option],i["ID"],False,"M","countDesc")
 
         listeNow.append(i["Count"])
         listeMax.append(table[0]["Count"])
@@ -27,31 +28,31 @@ def graphPoint(guild,option,curseur,curseurGet,moisDB,anneeDB):
         listeRankMed.append((table[len(table)//2]["Rank"]))
         listeRankMoy.append(sum(list(map(lambda x:x["Rank"],table)))/len(table))
 
-        if infos!=None:
-            listeNoms.append(infos["Nom"])
-        else:
-            listeNoms.append("Ancien membre")
+        listeNoms.append(infos["Nom"])
+        listeIDs.append(str(i["ID"]))
 
     figCount = go.Figure()   
     figRank = go.Figure() 
     
     if moisDB=="to": 
-        figCount.add_trace(go.Scatter(x=listeNow,y=listeNoms,marker=dict(color="crimson", size=12),mode="markers",name="Cette année"))
-        figRank.add_trace(go.Scatter(x=listeRankNow,y=listeNoms,marker=dict(color="crimson", size=12),mode="markers",name="Cette année"))
+        figCount.add_trace(go.Scatter(x=listeNow,y=listeIDs,marker=dict(color="crimson", size=12),mode="markers",name="Cette année"))
+        figRank.add_trace(go.Scatter(x=listeRankNow,y=listeIDs,marker=dict(color="crimson", size=12),mode="markers",name="Cette année"))
     else:
-        figCount.add_trace(go.Scatter(x=listeNow,y=listeNoms,marker=dict(color="crimson", size=12),mode="markers",name="Ce mois-ci"))
-        figRank.add_trace(go.Scatter(x=listeRankNow,y=listeNoms,marker=dict(color="crimson", size=12),mode="markers",name="Ce mois-ci"))
+        figCount.add_trace(go.Scatter(x=listeNow,y=listeIDs,marker=dict(color="crimson", size=12),mode="markers",name="Ce mois-ci"))
+        figRank.add_trace(go.Scatter(x=listeRankNow,y=listeIDs,marker=dict(color="crimson", size=12),mode="markers",name="Ce mois-ci"))
 
-    figCount.add_trace(go.Scatter(x=listeMed,y=listeNoms,marker=dict(color="gold", size=8),mode="markers",name="Médiane"))
-    figCount.add_trace(go.Scatter(x=listeMoy,y=listeNoms,marker=dict(color="cyan", size=8),mode="markers",name="Moyenne"))
-    figCount.add_trace(go.Scatter(x=listeMax,y=listeNoms,marker=dict(color="green", size=8),mode="markers",name="Maximum"))
+    figCount.add_trace(go.Scatter(x=listeMed,y=listeIDs,marker=dict(color="gold", size=8),mode="markers",name="Médiane"))
+    figCount.add_trace(go.Scatter(x=listeMoy,y=listeIDs,marker=dict(color="cyan", size=8),mode="markers",name="Moyenne"))
+    figCount.add_trace(go.Scatter(x=listeMax,y=listeIDs,marker=dict(color="yellowgreen", size=8),mode="markers",name="Maximum"))
     figCount.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Indicateurs sur le nombre de messages envoyés",xaxis_title="Messages",yaxis_title="Membres")
-    figCount.update_yaxes(automargin=True)
+    figCount.update_yaxes(automargin=True,ticktext=listeNoms,tickvals=listeIDs)
+    figCount.update_xaxes(showgrid=False, zeroline=False)
 
-    figRank.add_trace(go.Scatter(x=listeRankMed,y=listeNoms,marker=dict(color="gold", size=8),mode="markers",name="Médiane"))
-    figRank.add_trace(go.Scatter(x=listeRankMoy,y=listeNoms,marker=dict(color="turquoise", size=8),mode="markers",name="Moyenne"))
-    figRank.add_trace(go.Scatter(x=listeRankMax,y=listeNoms,marker=dict(color="yellowgreen", size=8),mode="markers",name="Minimum"))
+    figRank.add_trace(go.Scatter(x=listeRankMed,y=listeIDs,marker=dict(color="gold", size=8),mode="markers",name="Médiane"))
+    figRank.add_trace(go.Scatter(x=listeRankMoy,y=listeIDs,marker=dict(color="turquoise", size=8),mode="markers",name="Moyenne"))
+    figRank.add_trace(go.Scatter(x=listeRankMax,y=listeIDs,marker=dict(color="yellowgreen", size=8),mode="markers",name="Minimum"))
     figRank.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Indicateurs sur les rangs",xaxis_title="Rang",yaxis_title="Membres")
-    figRank.update_yaxes(automargin=True)
+    figRank.update_yaxes(automargin=True,ticktext=listeNoms,tickvals=listeIDs)
+    figRank.update_xaxes(showgrid=False, zeroline=False,autorange="reversed")
 
     return plot(figCount,output_type='div'), plot(figRank,output_type='div')

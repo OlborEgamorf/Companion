@@ -159,7 +159,7 @@
         {% for i in rankMois %}
             <tr>
                 <td>{{ i.Count|tempsvoice:option }}</td>
-                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ user1Color }} ; margin-top:10px"></div></td>
+                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ user1Color }} ; margin-top:15px"></div></td>
 
                 {% if i.Rank < i.Rank2 %}
                     <td style="text-align: center;font-style: italic;font-weight: bolder; ">{{ i.Rank }}</td>
@@ -187,7 +187,7 @@
         {% for i in rankAnnee %}
             <tr>
                 <td>{{ i.Count|tempsvoice:option }}</td>
-                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ user1Color }}; margin-top:10px"></div></td>
+                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ user1Color }}; margin-top:15px"></div></td>
 
                 {% if i.Rank < i.Rank2 %}
                     <td style="text-align: center;font-style: italic;font-weight: bolder; ">{{ i.Rank }}</td>
