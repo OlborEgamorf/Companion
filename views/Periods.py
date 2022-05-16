@@ -65,6 +65,8 @@ def viewPeriods(request,guild,option):
             listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
         elif option=="freq":
             listeObj=list(map(lambda x:getFreq(x),listeObj))
+        elif option=="divers":
+            listeObj=list(map(lambda x:getDivers(x),listeObj))
 
         if obj==None:
             obj=listeObj[0]["ID"]
@@ -128,5 +130,5 @@ def iFramePeriods(request,guild,option):
         maxi=max(maxi,i["Count"])
     
     connexion.close()
-    ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"option":option}
+    ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"option":option,"obj":obj}
     return render(request, "companion/Ranks/iFrameRanks_ranks.html", ctx)

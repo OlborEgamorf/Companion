@@ -65,7 +65,7 @@ def viewEvol(request,guild,option):
         if option in ("emotes","reactions"):
             listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
         elif option in ("salons","voicechan"):
-            listeObj=list(map(lambda x:getChannels(x),listeObj))
+            listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
         elif option=="freq":
             listeObj=list(map(lambda x:getFreq(x),listeObj))
 

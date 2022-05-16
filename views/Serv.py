@@ -26,7 +26,7 @@ def viewServ(request,guild,option):
     "lisPlus":getPlus("periods",option),"dictPlus":dictRefPlus,"plus":"serv",
     "selector":True,"travel":False}
 
-    if option in ("emotes","salons","voicechan","reactions","freq"):
+    if option in ("emotes","salons","voicechan","reactions","freq","divers"):
         connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
         
         listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
@@ -36,6 +36,8 @@ def viewServ(request,guild,option):
             listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
         elif option=="freq":
             listeObj=list(map(lambda x:getFreq(x),listeObj))
+        elif option=="divers":
+            listeObj=list(map(lambda x:getDivers(x),listeObj))
 
         if obj==None:
             obj=listeObj[0]["ID"]
@@ -70,11 +72,19 @@ def iFrameServ(request,guild,option):
         annee="20"+annee
     mois,annee,moisDB,anneeDB=getMoisAnnee(tableauMois[mois],annee)
     user=request.user
-    
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
 
-    if option!="freq":
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        categ="Jeux"
+        connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
+    elif option!="freq":
+        categ="Stats"
         connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    else:
+        categ="Stats"
+    
+    connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
+
+    
 
     rank=curseur.execute("SELECT Rank FROM {0}{1} WHERE ID={2}".format(moisDB.lower(),anneeDB,obj)).fetchone()["Rank"]
 
@@ -95,7 +105,11 @@ def iFrameServ(request,guild,option):
             stats.append(getChannels(i,curseurGet))
         elif option=="freq":
             stats.append(getFreq(i))
-
+        elif option in ("messages","voice","mots"):
+            stats.append(getUserTable(i,curseurGet,guild))
+        elif categ=="Jeux":
+            stats.append(getUserJeux(i,curseurGet,option))
+            
         maxi=max(maxi,i["Count"])
     
     connexion.close()

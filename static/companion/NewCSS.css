@@ -93,9 +93,9 @@ h1 {
 }
 
 .img-guild {
-    width: 100px;
-    height: 100px;
-    padding: 10px;
+    width: 80px;
+    height: 80px;
+    padding: 20px;
     border-radius: 100%;
     transition: all 0.5s;
 }
@@ -113,19 +113,17 @@ h1 {
 }
 
 .card-guild:hover {
-    width: 140px;
-    height: 220px;
-    margin: 30px 25px;
+    height: 240px;
     transition: all 0.5s;
 }
 
 .card-guild:hover .icon-guild img {
-    padding: 20px;
+    padding: 45px 20px;
     transition: all 0.5s;
+    border-radius: 35%;
 }
 
 .card-guild:hover .guild-name {
-    padding: 0 20px;
     transition: all 0.5s;
 }
 

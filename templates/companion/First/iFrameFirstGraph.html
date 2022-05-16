@@ -17,11 +17,8 @@
     <table class="table-iframe">
         <tr><th colspan="5">Classement {{ role }} {{ jour }} {{ mois }} {{ annee }}</th></tr>
             <tr>
-                <th>Rang</th>
+                <th>Date</th>
                 <th colspan="2">Membre</th>
-                {% if plus != "graph" %}
-                    <th id="leg-barre">Barre</th>
-                {% endif %}
                 <th>Messages</th>
             </tr>
             {% for i in rank %}
@@ -30,27 +27,9 @@
                 {% else %}
                     <tr>
                 {% endif %}
-                    <td>{{ i.Rank }}</td>
+                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
                     
-                    {% if option == "messages" or option == "mots" or option == "voice" or obj != None %}
-                        <td>
-                            {% if i.Avatar %}
-                                <a href="/companion/profil/{{ i.ID }}">
-                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
-                            {% else %}
-                                <a href="/companion/profil/{{ i.ID }}">
-                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
-                            {% endif %}
-                        </td>
-                    {% elif option == "emotes" or option == "reactions" %}
-                        {% if i.Nom == "twemoji" %}
-                        <td onclick="getTwemoji('{{ i.ID }}',this)">
-                        {% else %}
-                        <td>
-                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}?size=128" style="border-radius: 0%;">
-                        {% endif %}
-                        </td>
-                    {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                    {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
                         <td>
                             {% if i.Emote != None %}
                                 <a href="/companion/profil/{{ i.ID }}">
@@ -60,12 +39,17 @@
                                 <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
                             {% endif %}
                         </td>
+                    {% else %}
+                    <td>
+                        {% if i.Avatar %}
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                        {% endif %}
+                    </td>
                     {% endif %}
     
                     <td style="text-align: start;">{{ i.Nom }}</td>
-                    {% if plus != "graph" %}
-                        <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
-                    {% endif %}
                     <td>{{ i.Count|tempsvoice:option }}</td>
                 </tr>
             {% endfor %}

@@ -2,18 +2,25 @@ import plotly.graph_objects as go
 from companion.outils import getTablePerso
 from plotly.offline import plot
 
-def graphLinePeriods(guild,option,user,color,perso,period):
+def graphLinePeriods(guild,option,user,obj,color,perso,period):
     if perso:
-        table=getTablePerso(guild,option,user.id,False,period,"periodAsc")
+        if obj!=None:
+            table=getTablePerso(guild,option,user,obj,period,"periodAsc")
+        else:
+            table=getTablePerso(guild,option,user,False,period,"periodAsc")
         listeRanks=list(map(lambda x:x["Rank"], table))
     else:
-        table=getTablePerso(guild,option,guild,False,period,"periodAsc")
+        if obj!=None:
+            table=getTablePerso(guild,option,obj,False,period,"periodAsc")
+            listeRanks=list(map(lambda x:x["Rank"], table))
+        else:
+            table=getTablePerso(guild,option,guild,False,period,"periodAsc")
 
     listeLabels=list(map(lambda x:"20{1}-{0}".format(x["Mois"],x["Annee"]),table))
     listeCount=list(map(lambda x:x["Count"], table))
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=listeLabels, y=listeCount, text=listeCount, mode='lines+markers+text', marker=dict(color=color, size=12), line=dict(color=color), textposition="top center"))
+    fig.add_trace(go.Scatter(x=listeLabels, y=listeCount, text=listeCount, mode='lines+markers+text', marker=dict(color=color, size=12), line=dict(color=color), textposition="top center",hovertemplate = "%{y}"))
 
     fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Périodes - Messages",xaxis_title="Dates",yaxis_title="Messages",hovermode="x")
     fig.update_yaxes(automargin=True)
@@ -49,7 +56,7 @@ def graphLinePeriods(guild,option,user,color,perso,period):
     mois=[]
     for i in range(len(listeCount)):
         if act!=table[i]["Annee"]:
-            figAn.add_trace(go.Scatter(x=mois, y=listeCount[save:i], text=listeCount[save:i], mode='lines+markers+text', marker=dict(color=colors[nb], size=10), line=dict(color=colors[nb]), textposition="top center",name="20{0}".format(act)))
+            figAn.add_trace(go.Scatter(x=mois, y=listeCount[save:i], text=listeCount[save:i], mode='lines+markers+text', marker=dict(color=colors[nb], size=10), line=dict(color=colors[nb]), textposition="top center",name="20{0}".format(act),hovertemplate = "%{y}"))
             save=i
             liste=[table[i]["Count"]]
             act=table[i]["Annee"]
@@ -59,7 +66,8 @@ def graphLinePeriods(guild,option,user,color,perso,period):
             liste.append(table[i]["Count"])
             mois.append(int(table[i]["Mois"]))
 
-    figAn.add_trace(go.Scatter(x=mois, y=listeCount[save:i], text=listeCount[save:i], mode='lines+markers+text', marker=dict(color=colors[nb], size=10), line=dict(color=colors[nb]), textposition="top center",name="20{0}".format(act)))
+    if save!=i:
+        figAn.add_trace(go.Scatter(x=mois, y=listeCount[save:], text=listeCount[save:], mode='lines+markers+text', marker=dict(color=colors[nb], size=10), line=dict(color=colors[nb]), textposition="top center",name="20{0}".format(act),hovertemplate = "%{y}"))
     figAn.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Périodes - Comparaison de chaque année",xaxis_title="Dates",yaxis_title="Messages",hovermode="x")
     figAn.update_yaxes(automargin=True)
     figAn.update_xaxes(showgrid=False, zeroline=False,categoryorder='category ascending',ticktext=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Décembre"],tickvals=[1,2,3,4,5,6,7,8,9,10,11,12])
@@ -89,9 +97,9 @@ def graphLinePeriods(guild,option,user,color,perso,period):
     figBox.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=500,title="Périodes - Boxplot",xaxis_title="Messages",)
     figBox.update_xaxes(automargin=True)
 
-    if perso:
+    if perso or obj!=None:
         figRanks = go.Figure()
-        figRanks.add_trace(go.Scatter(x=listeLabels, y=listeRanks, text=listeRanks, mode='lines+markers+text', marker=dict(color=color, size=12), line=dict(color=color), textposition="top center"))
+        figRanks.add_trace(go.Scatter(x=listeLabels, y=listeRanks, text=listeRanks, mode='lines+markers+text', marker=dict(color=color, size=12), line=dict(color=color), textposition="top center",hovertemplate = "%{y}"))
 
         figRanks.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Périodes - Rangs",xaxis_title="Dates",yaxis_title="Rangs",hovermode="x")
         figRanks.update_yaxes(automargin=True,autorange="reversed")

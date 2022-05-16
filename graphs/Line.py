@@ -1,6 +1,6 @@
 from math import inf
 import plotly.graph_objects as go
-from companion.Getteurs import getUserInfo
+from companion.Getteurs import getNom, getUserInfo
 from companion.outils import connectSQL, dictOptions, tableauMois
 from companion.templatetags.TagsCustom import formatCount
 from plotly.offline import plot
@@ -19,7 +19,7 @@ def graphLine(guild,option,user,curseur,curseurGet,mois,annee,moisDB,anneeDB):
 
     stop=3 if len(table)>3 else len(table)
     ids=list(map(lambda x:x["ID"],table))[:stop]
-    if user.id not in ids:
+    if user.id not in ids and option in ("messages","voice","mots"):
         ids.append(user.id)
         stop+=1
     ids.reverse()
@@ -44,20 +44,26 @@ def graphLine(guild,option,user,curseur,curseurGet,mois,annee,moisDB,anneeDB):
     colors=[]
 
     for i in range(stop):
-        infos=getUserInfo(ids[i],curseurGet,guild)
-        hexa=hex(infos["Color"])[2:]
-        if len(hexa)==6:
-            hexa="#"+hexa
+        if option in ("messages","voice","mots"):
+            infos=getUserInfo(ids[i],curseurGet,guild)
+            hexa=hex(infos["Color"])[2:]
+            if len(hexa)==6:
+                color="#"+hexa
+            else:
+                color="#"+"0"*(6-len(hexa))+hexa
+            nom=infos["Nom"]
         else:
-            hexa="#0"+hexa
-        colors.append(infos["Color"])
-        count=colors.count(infos["Color"])
+            nom=getNom(ids[i],option,curseurGet,False)
+            color=None
+        
+        colors.append(color)
+        count=colors.count(color)
         if count==1:
-            fig.add_trace(go.Scatter(x=listeX[i], y=listeY[i],mode='lines+markers+text',name=infos["Nom"],marker=dict(color=hexa, size=12),line=dict(color=hexa),text=listeR[i],textposition="top center"))
+            fig.add_trace(go.Scatter(x=listeX[i], y=listeY[i],mode='lines+markers+text',name=nom,marker=dict(color=color, size=12),line=dict(color=color),text=listeR[i],textposition="top center"))
         else:
-            fig.add_trace(go.Scatter(x=listeX[i], y=listeY[i],mode='lines+markers+text',name=infos["Nom"],marker=dict(color=hexa, size=12),line=dict(color=hexa,dash=dictLine[count]),text=listeR[i],textposition="top center"))
+            fig.add_trace(go.Scatter(x=listeX[i], y=listeY[i],mode='lines+markers+text',name=nom,marker=dict(color=color, size=12),line=dict(color=color,dash=dictLine[count]),text=listeR[i],textposition="top center"))
 
-    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Evolution des trois premiers sur les 10 derniers mois",xaxis_title="Dates",yaxis_title="Messages")
+    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Evolution des trois premiers sur les 10 derniers mois",xaxis_title="Dates",yaxis_title="Messages",hovermode="x unified",legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
     fig.update_yaxes(automargin=True)
     fig.update_xaxes(showgrid=False, zeroline=False)
     return plot(fig,output_type='div')

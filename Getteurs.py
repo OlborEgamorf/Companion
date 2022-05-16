@@ -1,4 +1,5 @@
-from companion.outils import connectSQL,dictOptions
+from companion.outils import connectSQL,dictOptions,dictDivers
+from companion.templatetags.TagsCustom import tempsVoice
 
 
 def getUserTable(i,curseurGet,guild):
@@ -31,6 +32,11 @@ def getChannels(i,curseurGet):
 def getFreq(i):
     return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"{0}h-{1}h".format(i["ID"],i["ID"]+1),"ID":i["ID"]}
 
+def getDivers(i):
+    if i["ID"]==11:
+        return {"Count":tempsVoice(i["Count"]),"Rank":i["Rank"],"Nom":dictDivers[i["ID"]],"ID":i["ID"]}
+    return {"Count":i["Count"],"Rank":i["Rank"],"Nom":dictDivers[i["ID"]],"ID":i["ID"]}
+
 
 def getColor(id,guild,curseurGet):
     infos=curseurGet.execute("SELECT * FROM users_{0} WHERE ID={1}".format(guild,id)).fetchone()
@@ -59,7 +65,10 @@ def getNom(id,option,curseurGet,obj):
     elif option=="freq":
         infos={"Nom":"{0}h-{1}h".format(id,id+1)}
     if infos!=None:
-        return infos["Nom"]
+        if len(infos["Nom"])>15:
+            return infos["Nom"][:15]+"..."
+        else:
+            return infos["Nom"]
     return "Inconnu"
 
 def getUserJeux(i,curseurGet,jeu):

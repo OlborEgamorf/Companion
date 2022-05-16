@@ -1,6 +1,6 @@
 import time
 import plotly.graph_objects as go
-from companion.Getteurs import (getChannels, getEmoteTable, getFreq, getUserInfo,
+from companion.Getteurs import (getChannels, getEmoteTable, getFreq, getNom, getUserInfo,
                                 getUserTable)
 from plotly.offline import plot
 
@@ -8,7 +8,6 @@ from companion.outils import connectSQL, dictOptions, tableauMois
 
 
 def graphRank(guild,option,user,curseur,curseurGet,moisDB,anneeDB,circular):
-    old=1
     colors=[]
     counts=[]
     names=[]
@@ -36,8 +35,7 @@ def graphRank(guild,option,user,curseur,curseurGet,moisDB,anneeDB,circular):
             ligne=getFreq(i)
 
         if ligne["Nom"]=="Ancien membre" or option not in ("messages","voice","mots"):
-            old+=1
-            colors.append("rgb(110,200,250)")
+            pass
         else:
             if len(ligne["Color"])<=6:
                 colors.append("#"+"0"*(7-len(ligne["Color"]))+ligne["Color"][1:])
@@ -80,7 +78,8 @@ def graphRank(guild,option,user,curseur,curseurGet,moisDB,anneeDB,circular):
             colors.append("rgb(110,200,250)")
         
         figCirc=go.Figure(data=go.Pie(labels=names,values=counts,ids=ids))
-        figCirc.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",font_size=14,height=750,title="Proportions")
+        figCirc.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",font_size=14,height=750,title="Proportions",
+        legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
         figCirc.update_traces(marker_colors=colors,textposition='inside')
         figCirc.update_yaxes(automargin=True)
 
@@ -94,19 +93,23 @@ def graphRank(guild,option,user,curseur,curseurGet,moisDB,anneeDB,circular):
 def graphAnim(guild,option,curseur,curseurGet,moisDB,anneeDB):
     temps=time.time()
     ids=[]
-    table=curseur.execute("SELECT * FROM {0}{1} ORDER BY Rank ASC".format(moisDB,anneeDB)).fetchall()
+    table=curseur.execute("SELECT * FROM {0}{1} WHERE Rank<150 ORDER BY Rank ASC".format(moisDB,anneeDB)).fetchall()
     for i in table:
         if curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Rank<30".format(moisDB,anneeDB,i["ID"])).fetchone()!=None:
             ids.append(i["ID"])
 
     dictInfos={}
     for i in ids:
-        infos=getUserInfo(i,curseurGet,guild)
-        hexa=hex(infos["Color"])[2:]
-        if len(hexa)==6:
-            infos["Color"]="#"+hexa
+        if option in ("messages","voice","mots"):
+            infos=getUserInfo(i,curseurGet,guild)
+            hexa=hex(infos["Color"])[2:]
+            if len(hexa)==6:
+                infos["Color"]="#"+hexa
+            else:
+                infos["Color"]="#"+"0"*(6-len(hexa))+hexa
         else:
-            infos["Color"]="#"+"0"*(6-len(hexa))+hexa
+            nom=getNom(i,option,curseurGet,False)
+            infos={"ID":i,"Nom":nom,"Color":None}
         dictInfos[i]=infos
     connexionRap,curseurRap=connectSQL(guild,"Rapports","Stats","GL","")
     dates=curseurRap.execute("SELECT DISTINCT Jour FROM ranks WHERE Mois='{0}' AND Annee='{1}' AND Type='{2}' ORDER BY Jour ASC".format(tableauMois[moisDB],anneeDB,dictOptions[option])).fetchall()

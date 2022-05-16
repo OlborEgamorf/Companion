@@ -1,18 +1,22 @@
 from django.urls import path
 
-from .compare.ServCompare import viewServCompare
+from companion.views.Pantheon import viewPantheon
 
 from .compare.EvolCompare import viewEvolCompare
 from .compare.FirstCompare import viewFirstCompare
 from .compare.PeriodsCompare import viewPeriodsCompare
 from .compare.PersoCompare import viewPersoCompare
 from .compare.RanksCompare import viewRankCompare
+from .compare.ServCompare import viewServCompare
 from .views.Blank import iFrameBlank, iFrameBlankCompare
 from .views.emotesmondial import emotesMondial, iframeEmotes
 from .views.EmotesWW import emotesMondialGuild
 from .views.Evol import evolJeux, iFrameEvol, viewEvol
 from .views.First import firstJeux, iFrameFirst, iFrameFirstJeux, viewFirst
-from .views.graphiques import graphEvol, graphPeriods, graphRanks, iFrameGraphEvol, iFrameGraphPeriods, iFrameGraphRanks
+from .views.graphiques import (graphEvol, graphFirst, graphJours, graphPeriods,
+                               graphRanks, iFrameGraphEvol, iFrameGraphFirst,
+                               iFrameGraphJours, iFrameGraphPeriods,
+                               iFrameGraphRanks)
 from .views.GuildHome import viewGuildHome
 from .views.HallOfBadges import viewBadges
 from .views.home import home
@@ -21,7 +25,8 @@ from .views.Periods import (iFramePeriods, iFramePeriodsJeux, periodsJeux,
                             viewPeriods)
 from .views.Perso import iFramePerso, viewPerso
 from .views.Profil import viewProfilHome, viewProfilPerso, viewProfilTitres
-from .views.Rank import iFrameRank, iFrameRankJeux, rankJeux, viewRank, viewRankObj
+from .views.Rank import (iFrameRank, iFrameRankJeux, rankJeux, viewRank,
+                         viewRankObj)
 from .views.Rapports import viewRapports
 from .views.Roles import iFrameRoles, viewRoles
 from .views.Serv import iFrameServ, viewServ
@@ -63,9 +68,13 @@ urlpatterns = [
     path("<int:guild>/<str:option>/ranks/graphs",graphRanks,name="graphs-ranks"),
     path("<int:guild>/<str:option>/periods/graphs",graphPeriods,name="graphs-periods"),
     path("<int:guild>/<str:option>/evol/graphs",graphEvol,name="graphs-periods"),
+    path("<int:guild>/<str:option>/first/graphs",graphFirst,name="graphs-periods"),
+    path("<int:guild>/<str:option>/jours/graphs",graphJours,name="graphs-periods"),
     path("<int:guild>/<str:option>/iframeranks/graphs",iFrameGraphRanks,name="iframe-graphs-ranks"),
     path("<int:guild>/<str:option>/iframeperiods/graphs",iFrameGraphPeriods,name="iframe-graphs-ranks"),
     path("<int:guild>/<str:option>/iframeevol/graphs",iFrameGraphEvol,name="iframe-graphs-ranks"),
+    path("<int:guild>/<str:option>/iframefirst/graphs",iFrameGraphFirst,name="iframe-graphs-ranks"),
+    path("<int:guild>/<str:option>/iframejours/graphs",iFrameGraphJours,name="iframe-graphs-ranks"),
 
     path("<int:guild>/<str:option>/ranks/compare",viewRankCompare,name="compare-ranks"),
     path("<int:guild>/<str:option>/ranks/compareperso",viewPersoCompare,name="compare-perso"),
@@ -74,6 +83,8 @@ urlpatterns = [
     path("<int:guild>/<str:option>/evol/compare",viewEvolCompare,name="compare-evol"),
     
     path("<int:guild>/<str:option>/first/compare",viewFirstCompare,name="compare-first"),
+
+    path("<int:guild>/<str:option>/ranks/pantheon",viewPantheon,name="stats-ranks"),
 
     path("profil/<int:user>",viewProfilHome,name="user-profil"),
     path("profil/<int:user>/titres",viewProfilTitres,name="user-titres"),

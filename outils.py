@@ -7,17 +7,19 @@ listeSections=["Accueil","Messages","Salons","Emotes","Vocal","Réactions","Mots
 
 tableauMois={"01":"Janvier","02":"Février","03":"Mars","04":"Avril","05":"Mai","06":"Juin","07":"Juillet","08":"Aout","09":"Septembre","10":"Octobre","11":"Novembre","12":"Décembre","TO":"TO","janvier":"01","février":"02","mars":"03","avril":"04","mai":"05","juin":"06","juillet":"07","aout":"08","septembre":"09","octobre":"10","novembre":"11","décembre":"12","glob":"GL","to":"TO","Total":"TO","total":"to"}
 
-dictOptions={"messages":"Messages","voice":"Voice","salons":"Salons","voicechan":"Voicechan","emotes":"Emotes","reactions":"Reactions","mots":"Mots","freq":"Freq","p4":"P4","tortues":"Tortues","tortuesduo":"TortuesDuo","trivialversus":"TrivialVersus","trivialbr":"TrivialBR","trivialparty":"TrivialParty","morpion":"Morpion","matrice":"Matrice"}
+dictOptions={"messages":"Messages","voice":"Voice","salons":"Salons","voicechan":"Voicechan","emotes":"Emotes","reactions":"Reactions","mots":"Mots","freq":"Freq","p4":"P4","tortues":"Tortues","tortuesduo":"TortuesDuo","trivialversus":"TrivialVersus","trivialbr":"TrivialBR","trivialparty":"TrivialParty","morpion":"Morpion","matrice":"Matrice","divers":"Divers"}
 
-listeCommands=["ranks","periods","evol","first","roles","jours","rapport"]
-listeOptions=["home","messages","voice","emotes","freq","salons","voicechan","reactions","mots"]
+listeCommands=["ranks","periods","evol","first","jours","rapport"]
+listeOptions=["home","messages","voice","emotes","freq","salons","voicechan","reactions","divers"]
 listePlus=["","graphs","compare"]
 dictRefCommands={"ranks":"Classements","periods":"Périodes","serv":"Serveur","perso":"Perso","evol":"Évolutions","first":"Premiers","roles":"Rôles","jours":"Jours","moy":"Moyennes","rapport":"Rapports","mondial":"Mondial","badges":"Badges"}
-dictRefOptions={"home":"Accueil","messages":"Messages","voice":"Vocal","salons":"Salons","voicechan":"Salons vocaux","emotes":"Emotes","reactions":"Réactions","mots":"Mots","freq":"Fréquences"}
-dictRefPlus={"":"Tableaux","graphs":"Graphiques","compare":"Comparateur","perso":"Pour vous","serv":"Pour le serveur","compareperso":"Comparateur personnel","obj":"Pour un objet"}
+dictRefOptions={"home":"Accueil","messages":"Messages","voice":"Vocal","salons":"Salons","voicechan":"Salons vocaux","emotes":"Emotes","reactions":"Réactions","mots":"Mots","freq":"Fréquences","divers":"Divers"}
+dictRefPlus={"":"Tableaux","graphs":"Graphiques","compare":"Comparateur","perso":"Pour vous","serv":"Pour le serveur","compareperso":"Comparateur personnel","obj":"Pour un objet","pantheon":"Panthéon"}
 
 listeOptionsJeux=["home","p4","tortues","tortuesduo","trivialversus","trivialbr","trivialparty","morpion","matrice",]
 dictRefOptionsJeux={"home":"Accueil","p4":"P4","tortues":"Tortues","tortuesduo":"TortuesDuo","trivialversus":"Trivial VS","trivialbr":"Trivial BR","trivialparty":"Trivial Party","morpion":"Morpion","matrice":"Matrice"}
+
+dictDivers={3:"Images",2:"GIFs",1:"Fichiers",4:"Liens",5:"Réponse",6:"Réactions",7:"Edits",8:"Emotes",9:"Messages",10:"Mots",11:"Vocal","images":3,"gifs":2,"fichiers":1,"liens":4,"réponse":5,"réactions":6,"edits":7,"emotes":8,"messages":9,"mots":10,"vocal":11}
 
 def getCommands(option):
     liste=listeCommands.copy()
@@ -27,11 +29,17 @@ def getCommands(option):
         liste.append("mondial")
     if option=="home":
         liste=[]
+    if option=="divers":
+        liste=["ranks","periods"]
     return liste
 
 def getPlus(command,option):
     if command=="jours":
         liste=["","graphs"]
+    elif command=="ranks" and option=="divers":
+        liste=["serv","perso","obj"]
+    elif command=="periods" and option=="divers":
+        liste=["serv","perso"]
     elif command in ("rapport","roles"):
         liste=[""]
     elif command=="periods" and option in ("emotes","salons","voicechan","reactions","freq"):
@@ -39,7 +47,9 @@ def getPlus(command,option):
     elif command=="periods" and option not in ("emotes","salons","voicechan","reactions","freq"):
         liste=["serv","perso","graphs","compareperso"]
     elif command=="ranks" and option in ("emotes","salons","voicechan","reactions","freq"):
-        liste=["serv","perso","obj","graphs","compare","compareperso"]
+        liste=["serv","perso","obj","pantheon","graphs","compare","compareperso"]
+    elif command=="ranks" and option not in ("emotes","salons","voicechan","reactions","freq"):
+        liste=["","pantheon","graphs","compare"]
     else:
         liste=listePlus.copy()
     return liste

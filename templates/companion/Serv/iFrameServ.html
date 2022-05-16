@@ -27,21 +27,32 @@
 
 <body class="bodyiframe">
     <table class="table-iframe">
-        {% if option == "emotes" or option == "reactions" %}
-            <tr><th colspan="5">Classement {{ role }} {{ jour }} {{ mois }} {{ annee }}</th></tr>
+        {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" or obj != None %}
+            <tr><th colspan="5">Classement {{ mois }} {{ annee }}</th></tr>
             <tr>
                 <th>Rang</th>
                 <th colspan="2">Membre</th>
                 <th id="leg-barre">Barre</th>
                 <th>Messages</th>
             </tr>
-        {% else %} 
-            <tr><th colspan="4">Classement {{ role }} {{ jour }} {{ mois }} {{ annee }}</th></tr>
+        {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+            <tr><th colspan="6">Classement {{ mois }} {{ annee }}</th></tr>
             <tr>
                 <th>Rang</th>
-                <th>Membre</th>
+                <th colspan="2">Joueur</th>
                 <th id="leg-barre">Barre</th>
-                <th>Messages</th>
+                <th>Points</th>
+                <th>W/L</th>
+                <th>Badge</th>
+            </tr>
+        {% else %}
+            <tr><th colspan="4">Classement {{ mois }} {{ annee }}</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>Emote</th>
+                <th id="leg-barre">Barre</th>
+                <th>Utilisations</th>
+            </tr>
         {% endif %}
 
         {% for i in rank %}
@@ -51,15 +62,35 @@
                 <tr id="{{ i.ID }}" onmouseover="hoverID('{{ i.ID }}')" onmouseleave="leaveHover('{{ i.ID }}')">
             {% endif %}
                 <td>{{ i.Rank }}</td>
-                {% if option == "emotes" or option == "reactions" %}
-                    <td>
-                        {% if i.Animated %}
-                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                    {% if option == "messages" or option == "mots" or option == "voice" or obj != None %}
+                        <td>
+                            {% if i.Avatar %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                            {% else %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            {% endif %}
+                        </td>
+                    {% elif option == "emotes" or option == "reactions" %}
+                        {% if i.Nom == "twemoji" %}
+                        <td onclick="getTwemoji('{{ i.ID }}',this)">
                         {% else %}
-                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                        <td>
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}?size=128" style="border-radius: 0%;">
                         {% endif %}
-                    </td>
-                {% endif %}
+                        </td>
+                    {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                        <td>
+                            {% if i.Emote != None %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}"></a>
+                            {% else %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            {% endif %}
+                        </td>
+                    {% endif %}
                 <td style="text-align: start;">{{ i.Nom }}</td>
                 <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
                 <td>{{ i.Count|tempsvoice:option }}</td>

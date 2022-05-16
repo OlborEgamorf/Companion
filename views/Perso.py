@@ -49,16 +49,23 @@ def viewPerso(request,guild,option):
 
         elif option=="freq":
             ligne=getFreq(i)
+        
+        elif option=="divers":
+            ligne=getDivers(i)
 
-        more=curseur.execute("SELECT * FROM {0}{1} WHERE ID={2}".format(moisDBGen,anneeDBGen,i["ID"])).fetchone()
-        if more!=None:
-            ligne["CountGen"]=more["Count"]
-            ligne["RankGen"]=more["Rank"]
+        if option!="divers":
+            more=curseur.execute("SELECT * FROM {0}{1} WHERE ID={2}".format(moisDBGen,anneeDBGen,i["ID"])).fetchone()
+            if more!=None:
+                ligne["CountGen"]=more["Count"]
+                ligne["RankGen"]=more["Rank"]
         stats.append(ligne)
         maxi=max(maxi,i["Count"])
 
     ctx["max"]=maxi
-    return render(request, "companion/Perso/perso.html", ctx)
+    if option=="divers":
+        return render(request, "companion/Ranks/ranksDivers.html", ctx)
+    else:
+        return render(request, "companion/Perso/perso.html", ctx)
 
 
 @login_required(login_url="/login")

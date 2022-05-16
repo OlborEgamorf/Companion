@@ -58,13 +58,23 @@
             {% endautoescape %}
         </div>
         {% endif %}
+
+        {% if fig8 != None %}
+        <div class="graphs">
+            {% autoescape off %}
+            {{ fig8 }}
+            {% endautoescape %}
+        </div>
+        {% endif %}
     </div>
     {% if command == "ranks" %}
         <iframe src="/companion/{{ guildid }}/{{ option }}/iframeranks/graphs?data={{ mois }}?{{ annee }}?{{ obj }}" scrolling="no" onload="resizeIframe(this)"></iframe>
     {% elif command == "evol" %}
         <iframe src="/companion/{{ guildid }}/{{ option }}/iframeevol/graphs?data={{ mois }}?{{ annee }}?{{ obj }}" scrolling="no" onload="resizeIframe(this)"></iframe>
-    {% elif command == "periods" %}
-        <iframe src="/companion/{{ guildid }}/{{ option }}/iframeperiods/graphs" scrolling="no" onload="resizeIframe(this)"></iframe>
+    {% elif command == "first" %}
+        <iframe src="/companion/{{ guildid }}/{{ option }}/iframefirst/graphs" scrolling="no" onload="resizeIframe(this)"></iframe>
+    {% elif command == "jours" %}
+        <iframe src="/companion/{{ guildid }}/{{ option }}/iframejours/graphs" scrolling="no" onload="resizeIframe(this)"></iframe>
     {% endif %}
 </div>
 {% endblock stats %}

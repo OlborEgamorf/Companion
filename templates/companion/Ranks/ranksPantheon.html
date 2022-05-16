@@ -2,8 +2,8 @@
 {% block script %}
 <script type="text/javascript">
     
-    function newSite(id,obj) {
-        var site = "/companion/{{ guildid }}/{{ option }}/iframeranks?data={{ mois }}?{{ annee }}?"+id
+    function newSite(id,mois,annee,obj) {
+        var site = "/companion/{{ guildid }}/{{ option }}/iframeserv?data="+mois+"?"+annee+"?"+id
         document.getElementById('iframeevol').src = site;
         try {document.getElementById("elselect").id = NaN}
         catch {}
@@ -20,26 +20,28 @@
 
 <div class="searchTable">
     {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
-        <input type="text" id="searchTable" onkeyup="searchName(2)" placeholder="Recherchez une emote">
+        <input type="text" id="searchTable" onkeyup="searchName(3)" placeholder="Recherchez une emote">
     {% else %}
-        <input type="text" id="searchTable" onkeyup="searchName(1)" placeholder="Recherchez une emote">
+        <input type="text" id="searchTable" onkeyup="searchName(2)" placeholder="Recherchez une emote">
     {% endif %}
 </div>
 
 <div class="stats">
     <table id="tableot">
         {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" or obj != None %}
-            <tr><th colspan="5">Classement {{ mois }} {{ annee }}</th></tr>
+            <tr><th colspan="6">Panthéon - Le classement des classements</th></tr>
             <tr>
-                <th>Rang</th>
+                <th>Rang (base)</th>
+                <th>Date</th>
                 <th colspan="2">Membre</th>
                 <th id="leg-barre">Barre</th>
                 <th>Messages</th>
             </tr>
         {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
-            <tr><th colspan="6">Classement {{ mois }} {{ annee }}</th></tr>
+            <tr><th colspan="7">Panthéon - Le classement des classements</th></tr>
             <tr>
-                <th>Rang</th>
+                <th>Rang (base)</th>
+                <th>Date</th>
                 <th colspan="2">Joueur</th>
                 <th id="leg-barre">Barre</th>
                 <th>Points</th>
@@ -47,9 +49,10 @@
                 <th>Badge</th>
             </tr>
         {% else %}
-            <tr><th colspan="4">Classement {{ mois }} {{ annee }}</th></tr>
+            <tr><th colspan="5">Panthéon - Le classement des classements</th></tr>
             <tr>
-                <th>Rang</th>
+                <th>Rang (base)</th>
+                <th>Date</th>
                 <th>Emote</th>
                 <th id="leg-barre">Barre</th>
                 <th>Utilisations</th>
@@ -58,11 +61,12 @@
 
         {% for i in rank %}
             {% if i.ID == id %}
-                <tr class="user" onClick="newSite('{{ i.ID }}',this)">
+                <tr class="user" onClick="newSite('{{ i.ID }}','{{ i.Mois }}','{{ i.Annee }}',this)">
             {% else %}
-                <tr onClick="newSite('{{ i.ID }}',this)">
+                <tr onClick="newSite('{{ i.ID }}','{{ i.Mois }}','{{ i.Annee }}',this)">
             {% endif %}
-                    <td>{{ i.Rank }}</td>
+                    <td>{{ i.Rank }} ({{ i.RankOri }})</td>
+                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
                     {% if option == "messages" or option == "mots" or option == "voice" or obj != None %}
                         <td>
                             {% if i.Avatar %}

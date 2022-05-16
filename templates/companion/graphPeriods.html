@@ -66,7 +66,7 @@
     {% if command == "ranks" %}
         <iframe src="/companion/{{ guildid }}/{{ option }}/iframeranks/graphs?data={{ mois }}?{{ annee }}?{{ obj }}" scrolling="no" onload="resizeIframe(this)"></iframe>
     {% elif command == "periods" %}
-        <iframe src="/companion/{{ guildid }}/{{ option }}/iframeperiods/graphs" scrolling="no" onload="resizeIframe(this)"></iframe>
+        <iframe src="/companion/{{ guildid }}/{{ option }}/iframeperiods/graphs?data={{ obj }}" scrolling="no" onload="resizeIframe(this)"></iframe>
     {% endif %}
 </div>
 {% endblock stats %}

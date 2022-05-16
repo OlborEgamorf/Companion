@@ -50,6 +50,9 @@ def viewRank(request,guild,option):
 
         elif option=="freq":
             stats.append(getFreq(i))
+
+        elif option=="divers":
+            stats.append(getDivers(i))
         
         elif categ=="Jeux":
             stats.append(getUserJeux(i,curseurGet,option))
@@ -86,7 +89,10 @@ def viewRank(request,guild,option):
         "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"" if option in ("messages","voice","mots") else "serv",
         "travel":True,"selector":True,"obj":None}
 
-        return render(request, "companion/Ranks/ranks.html", ctx)
+        if option=="divers":
+            return render(request, "companion/Ranks/ranksDivers.html", ctx)
+        else:
+            return render(request, "companion/Ranks/ranks.html", ctx)
 
 @login_required(login_url="/login")
 def viewRankObj(request,guild,option):
@@ -110,9 +116,11 @@ def viewRankObj(request,guild,option):
         listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
     elif option=="freq":
         listeObj=list(map(lambda x:getFreq(x),listeObj))
-
+    elif option=="divers":
+        listeObj=list(map(lambda x:getDivers(x),listeObj))
+        
     if obj==None:
-        obj=listeObj[0]["ID"]
+        obj=str(listeObj[0]["ID"])
 
     if len(listeObj)>150:
         listeObj=listeObj[:150]
@@ -121,7 +129,11 @@ def viewRankObj(request,guild,option):
 
     for i in curseur.execute("SELECT * FROM {0}{1}{2} ORDER BY Rank ASC LIMIT 150".format(moisDB,anneeDB,obj)).fetchall():
 
-        stats.append(getUserTable(i,curseurGet,guild))
+        ligne=getUserTable(i,curseurGet,guild)
+        if option=="divers" and obj=="11":
+            ligne["Count"]=tempsVoice(i["Count"])
+
+        stats.append(ligne)
         maxi=max(maxi,i["Count"])
 
     connexion.close()
