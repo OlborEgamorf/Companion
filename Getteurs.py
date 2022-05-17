@@ -50,7 +50,7 @@ def getGuildInfo(id,curseurGet):
 def getUserInfo(id,curseurGet,guild):
     infos=curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,id)).fetchone()
     if infos==None:
-        return {"ID":id,"Nom":"Ancien membre","Color":239100}
+        return {"ID":id,"Nom":"Ancien membre","Color":239100,"Avatar":None}
     if len(infos["Nom"])>15:
         infos["Nom"]=infos["Nom"][:15]+"..."
     return infos
@@ -119,3 +119,30 @@ def getAllInfos(curseur,curseurUser,connexionUser,user):
         test=True
 
     return {"Coins":coins,"Titre":titre,"Custom":custom,"Full":full,"Emote":emote,"Couleur":couleur,"VIP":vip,"Testeur":test}
+
+def formatColor(color):
+    hexa=hex(color)[2:]
+    if len(hexa)==6:
+        color="#"+hexa
+    else:
+        color="#"+"0"*(6-len(hexa))+hexa
+    return color
+
+def addInfos(table,dictInfos,option,guild,curseurGet):
+    for i in table:
+        if i["ID"] in dictInfos:
+            if option in ("messages","voice","mots"):
+                i["Nom"]=dictInfos[i["ID"]]["Nom"]
+                i["Avatar"]=dictInfos[i["ID"]]["Avatar"]
+                i["Color"]=formatColor(dictInfos[i["ID"]]["Color"])
+            else:
+                i["Nom"]=dictInfos[i["ID"]]
+        else:
+            if option in ("messages","voice","mots"):
+                infos=getUserInfo(i["ID"],curseurGet,guild)
+                i["Nom"]=infos["Nom"]
+                i["Avatar"]=infos["Avatar"]
+                i["Color"]=formatColor(infos["Color"])
+            else:
+                infos=getNom(i["ID"],option,curseurGet,False)
+                i["Nom"]=infos

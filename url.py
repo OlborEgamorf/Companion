@@ -1,36 +1,40 @@
 from django.urls import path
 
-from companion.views.Pantheon import viewPantheon
-
-from .compare.EvolCompare import viewEvolCompare
-from .compare.FirstCompare import viewFirstCompare
-from .compare.PeriodsCompare import viewPeriodsCompare
-from .compare.PersoCompare import viewPersoCompare
-from .compare.RanksCompare import viewRankCompare
-from .compare.ServCompare import viewServCompare
-from .views.Blank import iFrameBlank, iFrameBlankCompare
-from .views.emotesmondial import emotesMondial, iframeEmotes
-from .views.EmotesWW import emotesMondialGuild
-from .views.Evol import evolJeux, iFrameEvol, viewEvol
-from .views.First import firstJeux, iFrameFirst, iFrameFirstJeux, viewFirst
-from .views.graphiques import (graphEvol, graphFirst, graphJours, graphPeriods,
-                               graphRanks, iFrameGraphEvol, iFrameGraphFirst,
-                               iFrameGraphJours, iFrameGraphPeriods,
-                               iFrameGraphRanks)
-from .views.GuildHome import viewGuildHome
-from .views.HallOfBadges import viewBadges
-from .views.home import home
-from .views.Jours import iFrameJour, viewJours
-from .views.Periods import (iFramePeriods, iFramePeriodsJeux, periodsJeux,
-                            viewPeriods)
-from .views.Perso import iFramePerso, viewPerso
-from .views.Profil import viewProfilHome, viewProfilPerso, viewProfilTitres
-from .views.Rank import (iFrameRank, iFrameRankJeux, rankJeux, viewRank,
-                         viewRankObj)
-from .views.Rapports import viewRapports
-from .views.Roles import iFrameRoles, viewRoles
-from .views.Serv import iFrameServ, viewServ
-from .views.StatsHome import statsHomeJeux, viewStatsHome
+from companion.views.Autre.Blank import iFrameBlank, iFrameBlankCompare
+from companion.views.Autre.GuildHome import viewGuildHome
+from companion.views.Autre.HallOfBadges import viewBadges
+from companion.views.Autre.home import home
+from companion.views.Autre.StatsHome import statsHomeJeux, viewStatsHome
+from companion.views.Evol.Evol import evolJeux, iFrameEvol, viewEvol
+from companion.views.Evol.EvolCompare import viewEvolCompare
+from companion.views.Evol.EvolGraph import graphEvol, iFrameGraphEvol
+from companion.views.First.First import (firstJeux, iFrameFirst,
+                                         iFrameFirstJeux, viewFirst)
+from companion.views.First.FirstCompare import viewFirstCompare
+from companion.views.First.FirstGraph import graphFirst, iFrameGraphFirst
+from companion.views.Jours.Jours import iFrameJour, viewJours
+from companion.views.Jours.JoursGraph import graphJours, iFrameGraphJours
+from companion.views.Mondial.emotesmondial import emotesMondial, iframeEmotes
+from companion.views.Mondial.EmotesWW import emotesMondialGuild
+from companion.views.Periods.Periods import (iFramePeriods, iFramePeriodsJeux,
+                                             periodsJeux, viewPeriods)
+from companion.views.Periods.PeriodsCompare import viewPeriodsCompare
+from companion.views.Periods.PeriodsGraph import (graphPeriods,
+                                                  iFrameGraphPeriods)
+from companion.views.Periods.Serv import iFrameServ, viewServ
+from companion.views.Periods.ServCompare import viewServCompare
+from companion.views.Profil.ProfilCustom import viewProfilPerso
+from companion.views.Profil.ProfilHome import viewProfilHome
+from companion.views.Profil.ProfilTitres import viewProfilTitres
+from companion.views.Ranks.Pantheon import viewPantheon
+from companion.views.Ranks.Perso import iFramePerso, viewPerso
+from companion.views.Ranks.PersoCompare import viewPersoCompare
+from companion.views.Ranks.Rank import (iFrameRank, iFrameRankJeux, rankJeux,
+                                        viewRank, viewRankObj)
+from companion.views.Ranks.RanksCompare import viewRankCompare
+from companion.views.Ranks.RanksGraph import graphRanks, iFrameGraphRanks
+from companion.views.Rapports.NewRapports import viewRapports
+from companion.views.Roles.Roles import iFrameRoles
 
 urlpatterns = [
     path('', home, name="companion-home"),
@@ -41,7 +45,7 @@ urlpatterns = [
     path("<int:guild>/<str:option>/periods",viewServ,name="stats-periods"),
     path("<int:guild>/<str:option>/evol",viewEvol,name="stats-evol"),
     path("<int:guild>/<str:option>/jours",viewJours,name="stats-jours"),
-    path("<int:guild>/<str:option>/roles",viewRoles,name="stats-roles"),
+    #path("<int:guild>/<str:option>/roles",viewRoles,name="stats-roles"),
     path("<int:guild>/<str:option>/first",viewFirst,name="stats-first"),
     path("<int:guild>/<str:option>/rapport",viewRapports,name="stats-rapport"),
     path("<int:guild>/emotes/mondial",emotesMondialGuild,name="guild-emotes-mondial"),

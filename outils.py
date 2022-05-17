@@ -329,3 +329,17 @@ def rankingClassic(table:list):
             countTemp=table[i]["Count"]
             rankTemp=i+1
             table[i]["Rank"]=rankTemp
+
+
+def getCommon(me,user,curseurGet):
+    listeCom=[]
+    connexionAll,curseurAll=connectSQL("OT","Users","Guild",None,None)
+    myguilds=curseurAll.execute("SELECT * FROM user{0}".format(me)).fetchall()
+    myguilds=list(map(lambda x:x["Guild"], myguilds))
+    for i in curseurAll.execute("SELECT * FROM user{0}".format(user)).fetchall():
+        if i["Guild"] in myguilds:
+            guild=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(i["Guild"])).fetchone()
+            if guild!=None:
+                listeCom.append({"ID":i["Guild"],"Icon":guild["Icon"],"Nom":guild["Nom"]})
+    connexionAll.close()
+    return listeCom

@@ -7,6 +7,11 @@ def useDict(value,liste):
 
 def tempsVoice(nb:int) -> str:
     """Permet de formater un nombre en unité de temps, pour les statistiques vocales."""
+    if int(nb)<0:
+        nb=abs(int(nb))
+        neg="- "
+    else:
+        neg=""
     if int(nb)<60:
         count=str(nb)+"s"
     elif int(nb)<3600:
@@ -15,13 +20,18 @@ def tempsVoice(nb:int) -> str:
         count=str(int(nb)//3600)+"h "+str(int(nb)%3600//60)+"m "+str(int(nb)%3600%60)+"s"
     else:
         count=str(int(nb)//86400)+"j "+str(int(nb)%86400//3600)+"h "+str(int(nb)%86400%3600//60)+"m "+str(int(nb)%86400%3600%60)+"s"
-    return count
+    return neg+count
 
 def formatCount(count,option) -> str:
     """Permet de décider en fonction de l'option donnée de s'il faut formater en unité de temps ou non."""
+    if count=="":
+        return ""
     if option in ("voice","voicechan"):
         return tempsVoice(count)
     return count
+
+def soustraction(op1,op2):
+    return op1-op2
 
 def getLen(liste):
     return len(liste)
@@ -63,3 +73,4 @@ register.filter("getperso",getRankPerso)
 register.filter("getbest",getRankBest)
 
 register.filter("getbadges",getListBadges)
+register.filter("soustraction",soustraction)
