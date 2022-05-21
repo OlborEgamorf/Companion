@@ -2,8 +2,9 @@ from math import inf
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from companion.Decorator import CompanionStats
 
-from companion.Getteurs import getUserTable
+from companion.Getteurs import getPin, getUserTable
 from companion.outils import (connectSQL, dictOptions, dictRefCommands,
                       dictRefOptions, getCommands,
                       getMoisAnnee, getPlus, getTableDay, getTimes,
@@ -11,6 +12,7 @@ from companion.outils import (connectSQL, dictOptions, dictRefCommands,
 
 
 @login_required(login_url="/login")
+@CompanionStats
 def viewJours(request,guild,option):
     mois,annee = request.GET.get("mois"),request.GET.get("annee")
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
@@ -31,7 +33,8 @@ def viewJours(request,guild,option):
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"jours",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("jours",option),"dictPlus":dictRefPlus,"plus":"",
-    "travel":True,"selector":True}
+    "travel":True,"selector":True,
+    "pin":getPin(user,curseurGet,guild,option,"jours","")}
     
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL",None)
 

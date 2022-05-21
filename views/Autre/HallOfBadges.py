@@ -15,6 +15,7 @@ def viewBadges(request,option):
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     user_avatar=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()["Avatar"]
     user_name=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()["Nom"]
+    pin=getPin(user,curseurGet,"jeux",option,"badges","")
 
     connexion,curseur=connectSQL("OT","Titres","Titres",None,None)
     connexionRank,curseurRank=connectSQL("OT",dictOptions[option],"Jeux","GL","")

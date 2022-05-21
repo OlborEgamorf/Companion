@@ -50,7 +50,8 @@ def viewPeriods(request,guild,option):
         "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"periods",
         "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
         "lisPlus":getPlus("periods",option),"dictPlus":dictRefPlus,"plus":"perso",
-        "travel":False,"selector":True}
+        "travel":False,"selector":True,
+        "pin":getPin(user,curseurGet,guild,option,"periods","perso")}
     
 
     if option in ("messages","voice","mots") or categ=="Jeux":

@@ -1,7 +1,7 @@
 from math import inf
 
 import plotly.graph_objects as go
-from companion.Getteurs import getChannels, getEmoteTable, getFreq, getUserInfo
+from companion.Getteurs import getChannels, getEmoteTable, getFreq, getPin, getUserInfo
 from companion.outils import getTablePerso
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -9,7 +9,7 @@ from plotly.offline import plot
 
 from companion.outils import (connectSQL, dictOptions, dictRefCommands, dictRefOptions,
                       dictRefPlus, getCommands, getPlus, getTablePerso,
-                      listeOptions)
+                      listeOptions,tableauMois)
 
 
 @login_required(login_url="/login")
@@ -54,7 +54,8 @@ def graphPeriods(request,guild,option):
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"periods",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("periods",option),"dictPlus":dictRefPlus,"plus":"graphs",
-    "travel":False,"selector":True,"obj":obj,"listeObjs":listeObj}
+    "travel":False,"selector":True,"obj":obj,"listeObjs":listeObj,
+    "pin":getPin(user,curseurGet,guild,option,"periods","graphs")}
     return render(request, "companion/graphPeriods.html", ctx)
 
 
@@ -64,11 +65,11 @@ def iFrameGraphPeriods(request,guild,option):
     user=request.user
 
     if option in ("messages","voice","mots"):
-        tableUser=getTablePerso(guild,option,user.id,False,"M","periodAsc")
-        tableServ=getTablePerso(guild,option,guild,False,"M","periodAsc")
+        tableUser=getTablePerso(guild,dictOptions[option],user.id,False,"M","periodAsc")
+        tableServ=getTablePerso(guild,dictOptions[option],guild,False,"M","periodAsc")
     else:
-        tableUser=getTablePerso(guild,option,user.id,obj,"M","periodAsc")
-        tableServ=getTablePerso(guild,option,obj,False,"M","periodAsc")
+        tableUser=getTablePerso(guild,dictOptions[option],user.id,obj,"M","periodAsc")
+        tableServ=getTablePerso(guild,dictOptions[option],obj,False,"M","periodAsc")
     maxiUser=max(tableUser,key=lambda x:x["Count"])
     maxiServ=max(tableServ,key=lambda x:x["Count"])
 
@@ -79,16 +80,16 @@ def iFrameGraphPeriods(request,guild,option):
 def linePlot(guild,option,user,obj,color,perso,period):
     if perso:
         if obj!=False:
-            table=getTablePerso(guild,option,user,obj,period,"periodAsc")
+            table=getTablePerso(guild,dictOptions[option],user,obj,period,"periodAsc")
         else:
-            table=getTablePerso(guild,option,user,False,period,"periodAsc")
+            table=getTablePerso(guild,dictOptions[option],user,False,period,"periodAsc")
         listeRanks=list(map(lambda x:x["Rank"], table))
     else:
         if obj!=False:
-            table=getTablePerso(guild,option,obj,False,period,"periodAsc")
+            table=getTablePerso(guild,dictOptions[option],obj,False,period,"periodAsc")
             listeRanks=list(map(lambda x:x["Rank"], table))
         else:
-            table=getTablePerso(guild,option,guild,False,period,"periodAsc")
+            table=getTablePerso(guild,dictOptions[option],guild,False,period,"periodAsc")
 
     listeLabels=list(map(lambda x:"20{1}-{0}".format(x["Mois"],x["Annee"]),table))
     listeCount=list(map(lambda x:x["Count"], table))

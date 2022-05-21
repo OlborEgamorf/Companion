@@ -127,6 +127,21 @@ h1 {
     transition: all 0.5s;
 }
 
+.card-mix:hover {
+    height: 240px;
+    transition: all 0.5s;
+}
+
+.card-mix:hover .icon-guild img {
+    padding: 45px 20px;
+    transition: all 0.5s;
+    border-radius: 35%;
+}
+
+.card-mix:hover .guild-name {
+    transition: all 0.5s;
+}
+
 .card-mix {
     background: #111;
     margin: 20px 15px;
@@ -134,6 +149,30 @@ h1 {
     height: 200px;
     float: left;
     border-radius: 10px;
+    transition: all 0.5s;
+}
+
+.card-pin {
+    background: #111;
+    margin: 20px 15px;
+    width: 120px;
+    height: 300px;
+    float: left;
+    border-radius: 10px;
+    transition: all 0.5s;
+}
+.card-pin:hover {
+    height: 340px;
+    transition: all 0.5s;
+}
+
+.card-pin:hover .icon-guild img {
+    padding: 45px 20px;
+    transition: all 0.5s;
+    border-radius: 35%;
+}
+
+.card-pin:hover .guild-name {
     transition: all 0.5s;
 }
 

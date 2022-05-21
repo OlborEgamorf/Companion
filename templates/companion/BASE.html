@@ -19,7 +19,7 @@
     
 
     function resizeIframe(obj) {
-        if (obj.src != "http://localhost:8000/companion/iframeblank") {
+        if (obj.src != "https://olbortrack.com/companion/iframeblank") {
             obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
         }
     }
@@ -97,6 +97,49 @@
             sleep(200).then(() => {reduce.style.opacity=100})
         })
     }
+
+    function AJAX(pin) {
+        var pin = document.getElementById("pin")
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                pin.innerHTML = httpRequest.responseText
+            }
+        }
+        console.log(pin.innerHTML)
+        if (pin.innerHTML == "Épingler à l'accès rapide") {
+            httpRequest.open("GET","/companion/pin/add?guild={{ guildid }}&command={{ command }}&option={{ option }}&plus={{ plus }}",true)
+        } else {
+            httpRequest.open("GET","/companion/pin/del?guild={{ guildid }}&command={{ command }}&option={{ option }}&plus={{ plus }}",true)
+        }
+        
+        httpRequest.send()
+    }
+
+    function devBarMobile() {
+        sidebar = document.getElementById("side")
+        sidebar.style.left=0
+        childs=sidebar.children
+        for (i = 0; i < childs.length;i++) {
+            childs[i].style.width="400px"
+            childs[i].style.borderRadius=0
+            childs[i].children[1].style.opacity = 100
+            childs[i].children[1].style.fontSize = "20px"
+        }
+    }
+
+    function undevBarMobile() {
+        sidebar = document.getElementById("side")
+        sidebar.style.left=""
+        childs=sidebar.children
+        for (i = 0; i < childs.length;i++) {
+            childs[i].style.width=""
+            childs[i].style.borderRadius=""
+            childs[i].children[1].style.opacity = 0
+            childs[i].children[1].style.fontSize = 0
+        }
+    }
+
 </script>
 
 {% block script %} {% endblock %}
@@ -105,7 +148,19 @@
 
 
 <body>
+    <div class="buttonnav">
+        <a onclick="devBarMobile()">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></span>
+            <span id="suus" class="text-bar">Olbor Track - Accueil</span>
+        </a>
+    </div>
+    
     <div class="sidenav" id="side">
+        <a id="back" class="back" onclick="undevBarMobile()">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/977285454648979476/Moins.png"></span>
+            <span id="suus" class="text-bar"></span>
+        </a>
+
         <a href="/companion/" class="ot-logo" onmouseenter="showBar('OT')" onmouseleave="hideBar('OT')" onclick="clickServ(this)">
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
             <span id="OT" class="text-bar">Olbor Track - Accueil</span>
@@ -119,50 +174,68 @@
                 <span class="little-icon-guild" ><img style="border-radius: 0;" src="https://cdn.discordapp.com/attachments/752150155276451993/971138748349812816/Alldf.png"></span>
                 <span id="0" class="text-bar">Classements jeux</span>
             </a>
-        {% else %}
+        {% elif not mix %}
             <a href="/companion/{{ guildid }}" onmouseenter="showBar('Guild')" onmouseleave="hideBar('Guild')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}"></span>
                 <span id="Guild" class="text-bar">{{ guildname }}</span>
             </a>
         {% endif %}
-        {% if guildid != 'jeux' %}
-            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Stats')" style="background-color: #696969;" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
+        {% if mix %}
+            {% for i in listeMix %}
+                <a href="/companion/{{ i.ID }}" onmouseenter="showBar('{{ i.ID }}')" onmouseleave="hideBar('{{ i.ID }}')" onclick="clickServ(this)">
+                    <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}"></span>
+                    <span id="{{ i.ID }}" class="text-bar">{{ i.Nom }}</span>
+                </a>
+            {% endfor %}
+            <a href="/companion/{{ guildid }}/del" onmouseenter="showBar('Del')" onmouseleave="hideBar('Del')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/977152614275887124/Trash.png"></span>
+                <span id="Del" class="text-bar">Supprimer le mix</span>
+            </a>
+        {% elif guildid != 'jeux' %}
+            <a href="/companion/{{ guildid }}/home" onmouseenter="showBar('Stats')" style="background-color: #696969;" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png"></span>
                 <span id="Stats" class="text-bar">Statistiques</span>
             </a>
-            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Sondages')" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
+            <a href="/companion/{{ guildid }}/polls" onmouseenter="showBar('Sondages')" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604052315136050/poll.png"></span>
                 <span id="Sondages" class="text-bar">Sondages</span>
             </a>
-            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" onclick="clickServ(this)">
+            <a href="/companion/{{ guildid }}/sv" onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604056203231252/sv.png"></span>
                 <span id="SV" class="text-bar">Savez-Vous ?</span>
             </a>
-            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" onclick="clickServ(this)">
+            <a href="/companion/{{ guildid }}/anniv" onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888141462066303056/anniv.png"></span>
                 <span id="Anniv" class="text-bar">Anniversaires</span>
             </a>
-            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" onclick="clickServ(this)">
+            <a href="/companion/{{ guildid }}/outils" onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604051069407272/outils.png"></span>
                 <span id="Outils" class="text-bar">Outils</span>
             </a>
-            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" onclick="clickServ(this)">
+            <a href="/companion/{{ guildid }}/admin" onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604058883420170/admin.png"></span>
                 <span id="Admin" class="text-bar">Administration</span>
             </a>
         {% endif %}
-        
-
-        <a href="/companion/" id="nones">
-            <span class="little-icon-guild"></span>
-            <span id="0" class="text-bar"></span>
+        <a onclick="AJAX()" onmouseenter="showBar('pin')" onmouseleave="hideBar('pin')">
+            <span class="little-icon-guild"><img src="https://cdn.discordapp.com/attachments/726034739550486618/976423325205155910/PIN.png"></span>
+            {% if pin %}
+            <span id="pin" class="text-bar">Retirer de l'accès rapide</span>
+            {% else %} 
+            <span id="pin" class="text-bar">Épingler à l'accès rapide</span>
+            {% endif %}
         </a>
+
     </div>
 
     <div class="profil-infos">
         <div>
             {% if guildid == 'jeux' %}
                 <img class="profil-avatar" src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png">
+            {% elif mix %}
+                {% for i in listeMix %}
+                    <img class="profil-avatar" src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}">
+                {% endfor %}
             {% else %}
                 <img class="profil-avatar" src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}">
             {% endif %}
@@ -265,7 +338,7 @@
                     {% endfor %}
                 </select>
             {% endif %}
-                <input type="submit" value="Parcourir" onclick="clickServ(this)">
+                <input type="submit" value="Charger" onclick="clickServ(this)">
             </div>
         </form>
     {% endif %}

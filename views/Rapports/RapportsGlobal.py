@@ -1,9 +1,11 @@
 import plotly.graph_objects as go
-from companion.Getteurs import addInfos, formatColor, getNom, getUserInfo
+from companion.Getteurs import (addInfos, formatColor, getNom, getPin,
+                                getUserInfo)
 from companion.outils import (connectSQL, dictOptions, dictRefCommands,
-                              dictRefOptions, dictRefPlus, getCommands, getTablePerso, getTimes,
-                              listeOptions, tableauMois)
+                              dictRefOptions, dictRefPlus, getCommands,
+                              getTimes, listeOptions, tableauMois)
 from plotly.offline import plot
+
 
 def rapportGlobal(guild,option,request,user,moisDB,anneeDB,mois,annee):
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
@@ -198,7 +200,8 @@ def rapportGlobal(guild,option,request,user,moisDB,anneeDB,mois,annee):
         "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"rapport",
         "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
         "lisPlus":[],"dictPlus":dictRefPlus,"plus":"",
-        "travel":True,"selector":True,"obj":None}
+        "travel":True,"selector":True,"obj":None,
+        "pin":getPin(user,curseurGet,guild,option,"rapport","")}
 
     return ctx
 

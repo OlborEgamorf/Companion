@@ -127,15 +127,53 @@
                 <span class="guild-name">Stats mondiales</span>
             </div>
         </a>
+        <a href="https://discord.gg/kMQz7nF">
+            <div class="card-guild">
+                <span class="icon-guild">
+                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/976176189532176414/servtest.png">
+                </span>
+                <span class="guild-name">Serveur de tests</span>
+            </div>
+        </a>
         <a href="https://discord.com/oauth2/authorize?client_id=699728606493933650&permissions=120259472576&scope=bot">
             <div class="card-guild">
                 <span class="icon-guild">
-                    <img class="img-guild" src="https://media.discordapp.net/attachments/661948174339932203/929011609555329024/772766034163400715.png">
+                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png">
                 </span>
                 <span class="guild-name">Ajoutez un serveur</span>
             </div>
         </a>
     </div>
+
+    {% if userpin %}
+        <div class="guild-stats">Accès rapide</div>
+        <div class="all-guilds">
+            {% for i in userpin %} 
+            {% if i.Option == "home" %} 
+                <a href="/companion/{{ i.Guild }}/home">
+            {% else %}
+                <a href="/companion/{{ i.Guild }}/{{ i.Option }}/{{ i.Command }}/{{ i.Plus }}">
+            {% endif %}
+                <div class="card-pin">
+                    <span class="icon-guild">
+                        {% if i.Guild == "jeux" %}
+                            <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png">
+                        {% elif i.Mix %}
+                            <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
+                        {% else %}
+                            <img class="img-guild" src="https://cdn.discordapp.com/icons/{{ i.Guild }}/{{ i.Icon }}?size=128">
+                        {% endif %}
+                    </span>
+                    {% if i.Guild == "jeux" %}
+                        <span class="guild-name">{{ i.Nom }}<br><br>{{ i.Option|usedict:dictOptionsJeux }}<br>{{ i.Command|usedict:dictCommands }}<br>{{ i.Plus|usedict:dictPlus }}</span>
+                    {% else %}
+                        <span class="guild-name">{{ i.Nom }}<br><br>{{ i.Option|usedict:dictOptions }}<br>{{ i.Command|usedict:dictCommands }}<br>{{ i.Plus|usedict:dictPlus }}</span>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <div class="guild-stats">Vos Mix</div>
     {% if mixalert == True %}
@@ -162,7 +200,7 @@
         <a onclick="checkBoxes()">
             <div class="card-guild">
                 <span class="icon-guild">
-                    <img class="img-guild" src="https://media.discordapp.net/attachments/661948174339932203/929011609555329024/772766034163400715.png">
+                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png">
                 </span>
                 <span id="create-mix" class="guild-name">Créez un mix</span>
             </div>

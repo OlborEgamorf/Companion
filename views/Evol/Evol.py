@@ -2,6 +2,7 @@ from math import inf
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from companion.Decorator import CompanionStats
 
 from companion.Getteurs import *
 from companion.outils import (collapseEvol, connectSQL, dictOptions, dictRefCommands,
@@ -14,6 +15,7 @@ def evolJeux(request,option):
     return viewEvol(request,"OT",option)
 
 @login_required(login_url="/login")
+@CompanionStats
 def viewEvol(request,guild,option):
     mois,annee,obj = request.GET.get("mois"),request.GET.get("annee"),request.GET.get("obj")
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
@@ -23,6 +25,7 @@ def viewEvol(request,guild,option):
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
 
     if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        pin=getPin(user,curseurGet,"jeux",option,"evol","")
         categ="Jeux"
         listeMois,listeAnnee=getTimes(guild,option,"Jeux")
         connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
@@ -34,8 +37,10 @@ def viewEvol(request,guild,option):
         "commands":["ranks","periods","evol","first","badges"],"dictCommands":dictRefCommands,"command":"evol",
         "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":option,
         "lisPlus":getPlus("evol",option),"dictPlus":dictRefPlus,"plus":"",
-        "travel":True,"selector":True}
+        "travel":True,"selector":True,
+        "pin":pin}
     else:
+        pin=getPin(user,curseurGet,guild,option,"evol","")
         categ="Stats"
         listeMois,listeAnnee=getTimes(guild,option,"Stats")
         guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
@@ -47,7 +52,8 @@ def viewEvol(request,guild,option):
         "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"evol",
         "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
         "lisPlus":getPlus("evol",option),"dictPlus":dictRefPlus,"plus":"",
-        "travel":True,"selector":True}
+        "travel":True,"selector":True,
+        "pin":pin}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
     if option in ("messages","voice","mots"):

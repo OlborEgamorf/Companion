@@ -55,6 +55,16 @@ def getUserInfo(id,curseurGet,guild):
         infos["Nom"]=infos["Nom"][:15]+"..."
     return infos
 
+def getUserInfoMix(id,guilds,curseurGet):
+    infos=None
+    for guild in guilds:
+        infoGuild=getUserInfo(id,curseurGet,guild)
+        if infoGuild["Nom"]!="Ancien membre":
+            infos=infoGuild
+    if infos==None:
+        return {"ID":id,"Nom":"Ancien membre","Color":239100,"Avatar":None}
+    return infos
+
 def getNom(id,option,curseurGet,obj):
     if option in ("messages","voice","mots") or obj:
         infos=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(id)).fetchone()
@@ -63,7 +73,7 @@ def getNom(id,option,curseurGet,obj):
     elif option in ("salons","voicechan"):
         infos=curseurGet.execute("SELECT * FROM salons WHERE ID={0}".format(id)).fetchone()
     elif option=="freq":
-        infos={"Nom":"{0}h-{1}h".format(id,id+1)}
+        infos={"Nom":"{0}h-{1}h".format(id,int(id)+1)}
     if infos!=None:
         if len(infos["Nom"])>15:
             return infos["Nom"][:15]+"..."
@@ -146,3 +156,26 @@ def addInfos(table,dictInfos,option,guild,curseurGet):
             else:
                 infos=getNom(i["ID"],option,curseurGet,False)
                 i["Nom"]=infos
+
+def getInfoMix(user,mix,curseurGet):
+    connexionMix,curseurMix=connectSQL("OT","Mixes","Guild",None,None)
+    infosMix=curseurMix.execute("SELECT * FROM mixes_{0} WHERE Nombre={1}".format(user.id,mix)).fetchone()
+    assert infosMix!=None
+    listeMixs=[]
+    mix_ids=[]
+    for j in range(1,6):
+        if infosMix["Serveur{0}".format(j)]!=0:
+            mix_ids.append(infosMix["Serveur{0}".format(j)])
+            infosGuild=getGuildInfo(infosMix["Serveur{0}".format(j)],curseurGet)
+            listeMixs.append({"ID":infosMix["Serveur{0}".format(j)],"Icon":infosGuild["Icon"],"Nom":infosGuild["Nom"]})
+    return mix_ids,infosMix,listeMixs
+
+def getPin(user,curseurGet,guild,option,command,plus):
+    try:
+        pin=curseurGet.execute("SELECT * FROM pin_{0} WHERE Guild='{1}' AND Option='{2}' AND Command='{3}' AND Plus='{4}'".format(user.id,guild,option,command,plus)).fetchone()
+        if pin!=None:
+            return True
+        else:
+            return False
+    except:
+        return False

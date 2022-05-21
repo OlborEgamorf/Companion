@@ -1,3 +1,4 @@
+from companion.Decorator import CompanionStats
 from companion.outils import getMoisAnnee
 from companion.views.Rapports.RapportAnnee import rapportAnnee
 from companion.views.Rapports.RapportsGlobal import rapportGlobal
@@ -7,6 +8,7 @@ from django.shortcuts import render
 
 
 @login_required(login_url="/login")
+@CompanionStats
 def viewRapports(request,guild,option):
     user=request.user
     mois,annee = request.GET.get("mois"),request.GET.get("annee")

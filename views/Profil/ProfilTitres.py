@@ -23,7 +23,6 @@ def viewProfilTitres(request,user):
         connexionUserCo,curseurUserCo=connectSQL("OT",request.user.id,"Titres",None,None)
         coins=curseurUserCo.execute("SELECT * FROM coins").fetchone()["Coins"]
         options=["home","titres"]
-        listeCom=getCommon(request.user.id,user,curseurGet)
     else:
         user_avatar=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Avatar"]
         user_name=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Nom"]
@@ -31,7 +30,6 @@ def viewProfilTitres(request,user):
         user_name_profil=user_name
         coins=infos["Coins"]
         options=["home","titres","custom","stats"]
-        listeCom=[]
 
     mess,colorMess=None,None
     if request.method=="POST":
@@ -122,7 +120,7 @@ def viewProfilTitres(request,user):
         else:
             i["Own"]=False
 
-    ctx={"avatarprofil":user_avatar_profil,"idprofil":user,"nomprofil":user_name_profil,"guildscom":listeCom,
+    ctx={"avatarprofil":user_avatar_profil,"idprofil":user,"nomprofil":user_name_profil,
         "avatar":user_avatar,"id":request.user.id,"nom":user_name,
         "titre":infos["Full"],"color":infos["Couleur"],"emote":infos["Emote"],"custom":infos["Custom"],"coins":coins,"equip":infos["Titre"],
         "vip":infos["VIP"],"testeur":infos["Testeur"],

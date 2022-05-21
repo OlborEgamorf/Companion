@@ -2,6 +2,7 @@ from math import inf
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from companion.Decorator import CompanionStats
 
 from companion.Getteurs import *
 from companion.outils import (collapseEvol, connectSQL, dictOptions, dictRefCommands,
@@ -10,6 +11,7 @@ from companion.outils import (collapseEvol, connectSQL, dictOptions, dictRefComm
 
 
 @login_required(login_url="/login")
+@CompanionStats
 def viewEvolCompare(request,guild,option):
     user=request.user
     mois,annee = request.GET.get("mois"),request.GET.get("annee")
@@ -77,7 +79,8 @@ def viewEvolCompare(request,guild,option):
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("evol",option),"dictPlus":dictRefPlus,"plus":"compare",
     "travel":True,"selector":True,"listeObjs":listeObj,"obj":int(obj2),
-    "user1ID":int(obj1),"user2ID":int(obj2)}
+    "user1ID":int(obj1),"user2ID":int(obj2),
+    "pin":getPin(user,curseurGet,guild,option,"evol","compare")}
 
     if option in ("messages","voice","mots"):
         infos1=getUserInfo(obj1,curseurGet,guild)

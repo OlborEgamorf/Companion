@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
-from companion.Getteurs import (getChannels, getEmoteTable, getFreq, getNom,
+from companion.Decorator import CompanionStats
+from companion.Getteurs import (getChannels, getEmoteTable, getFreq, getNom, getPin,
                                 getUserInfo)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -11,6 +12,7 @@ from companion.outils import (collapseEvol, connectSQL, dictOptions, dictRefComm
 
 
 @login_required(login_url="/login")
+@CompanionStats
 def graphEvol(request,guild,option):
     mois,annee,obj = request.GET.get("mois"),request.GET.get("annee"),request.GET.get("obj")
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
@@ -53,7 +55,8 @@ def graphEvol(request,guild,option):
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"evol",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("evol",option),"dictPlus":dictRefPlus,"plus":"graphs",
-    "travel":True,"selector":True,"obj":obj,"listeObjs":listeObj}
+    "travel":True,"selector":True,"obj":obj,"listeObjs":listeObj,
+    "pin":getPin(user,curseurGet,guild,option,"evol","graphs")}
     return render(request, "companion/Old/graph.html", ctx)
 
 

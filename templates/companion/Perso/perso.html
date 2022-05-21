@@ -2,8 +2,13 @@
 {% block script %}
 <script type="text/javascript">
     
-    function newSite(id,obj) {
-        var site = "/companion/{{ guildid }}/{{ option }}/iframeperso?data="+id
+    function newSite(id,obj,mix) {
+        if (mix == "True") {
+            var site = "/companion/{{ guildid }}/{{ option }}/iframeperso?data="+id+"?{{ mois }}?{{ annee }}"
+        } else {
+            var site = "/companion/{{ guildid }}/{{ option }}/iframeperso?data="+id
+        }
+        
         document.getElementById('iframeevol').src = site;
         try {document.getElementById("elselect").id = NaN}
         catch {}
@@ -29,7 +34,9 @@
                 <th colspan="2">Emote</th>
                 <th id="leg-barre">Barre</th>
                 <th>Utilisations</th>
-                <th>Général :<br>Rang<br>Compteur</th>
+                {% if not mix %}
+                    <th>Général :<br>Rang<br>Compteur</th>
+                {% endif %}
             </tr>
         {% else %}
             <tr><th colspan="5">Classement {{ mois }} {{ annee }}</th></tr>
@@ -38,12 +45,14 @@
                 <th>Emote</th>
                 <th id="leg-barre">Barre</th>
                 <th>Utilisations</th>
-                <th>Général :<br>Rang<br>Compteur</th>
+                {% if not mix %}
+                    <th>Général :<br>Rang<br>Compteur</th>
+                {% endif %}
             </tr>   
         {% endif %}
         
         {% for i in rank %}
-        <tr onClick="newSite('{{ i.ID }}',this)">
+        <tr onClick="newSite('{{ i.ID }}',this,'{{ mix }}')">
             <td>{{ i.Rank }}</td>
             {% if option == "emotes" or option == "reactions" %}
                 <td>
@@ -57,10 +66,12 @@
             <td style="text-align: start;">{{ i.Nom }}</td>
             <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ color }}"></div></td>
             <td>{{ i.Count }}</td>
-            <td>{{ i.RankGen }}e<br>{{ i.CountGen }}</td>
+            {% if not mix %}
+                <td>{{ i.RankGen }}e<br>{{ i.CountGen }}</td>
+            {% endif %}
         </tr>
         {% endfor %}
     </table>
-    <iframe id="iframeevol" src="/companion/iframeblank" scrolling="no" onload="resizeIframe(this)"></iframe>
+    <iframe id="iframeevol" src="/companion/iframeblank?option={{ option }}&command={{ command }}&plus={{ plus }}" scrolling="no" onload="resizeIframe(this)"></iframe>
 </div>
 {% endblock stats %}

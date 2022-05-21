@@ -1,6 +1,6 @@
 from random import shuffle
 import plotly.graph_objects as go
-from companion.Getteurs import addInfos, formatColor, getEmoteTable, getNom, getUserInfo
+from companion.Getteurs import addInfos, formatColor, getEmoteTable, getNom, getPin, getUserInfo
 from companion.outils import (connectSQL, dictOptions, dictRefCommands,
                               dictRefOptions, dictRefPlus, getCommands,
                               getTablePerso, getTimes, listeOptions,
@@ -324,7 +324,8 @@ def rapportMois(guild,option,request,user,moisDB,anneeDB,mois,annee):
         "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"rapport",
         "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
         "lisPlus":[],"dictPlus":dictRefPlus,"plus":"",
-        "travel":True,"selector":True,"obj":None}
+        "travel":True,"selector":True,"obj":None,
+        "pin":getPin(user,curseurGet,guild,option,"rapport","")}
 
     return ctx
 

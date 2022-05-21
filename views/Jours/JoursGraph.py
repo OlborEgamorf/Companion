@@ -1,4 +1,6 @@
 import plotly.graph_objects as go
+from companion.Decorator import CompanionStats
+from companion.Getteurs import getPin
 from companion.views.Evol.EvolGraph import xaxeEvol
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -10,6 +12,7 @@ from companion.outils import (connectSQL, dictOptions, dictRefCommands, dictRefO
 
 
 @login_required(login_url="/login")
+@CompanionStats
 def graphJours(request,guild,option):
     mois,annee = request.GET.get("mois"),request.GET.get("annee")
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
@@ -32,7 +35,8 @@ def graphJours(request,guild,option):
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"jours",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("jours",option),"dictPlus":dictRefPlus,"plus":"graphs",
-    "travel":True,"selector":True,"obj":None}
+    "travel":True,"selector":True,"obj":None,
+    "pin":getPin(user,curseurGet,guild,option,"jours","graphs")}
     return render(request, "companion/Old/graph.html", ctx)
 
 

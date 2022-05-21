@@ -10,8 +10,12 @@
     
     <title>Olbor Track Companion</title>
 </head>
-
+{% load TagsCustom %}
 <body class="bodyiframe">
+    <div style="text-align: justify;padding: 15px; "class="guild-stats">
+        <h2><img style="width: 40px;height: 40px;"src="https://cdn.discordapp.com/attachments/726034739550486618/870604056203231252/sv.png">Lexique</h2>
+        {{ option|lexiqueOption }}<br><br>{{ command|lexiqueCommande }}<br><br>{{ plus|lexiquePlus }}<br>
+    </div>
     <h1>Cliquez sur n'importe quel élément pour afficher un tableau complémentaire</h1>
 </body>
 

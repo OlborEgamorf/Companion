@@ -1,7 +1,8 @@
 from math import inf
 
 import plotly.graph_objects as go
-from companion.Getteurs import (getChannels, getEmoteTable, getFreq, getNom,
+from companion.Decorator import CompanionStats
+from companion.Getteurs import (getChannels, getEmoteTable, getFreq, getNom, getPin,
                                 getUserInfo, getUserTable)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -13,6 +14,7 @@ from companion.outils import (connectSQL, dictOptions, dictRefCommands, dictRefO
 
 
 @login_required(login_url="/login")
+@CompanionStats
 def graphFirst(request,guild,option):
     user=request.user
 
@@ -35,7 +37,8 @@ def graphFirst(request,guild,option):
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"first",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("first",option),"dictPlus":dictRefPlus,"plus":"graphs",
-    "travel":False,"selector":True,"obj":None}
+    "travel":False,"selector":True,"obj":None,
+    "pin":getPin(user,curseurGet,guild,option,"evol","graphs")}
     return render(request, "companion/Old/graph.html", ctx)
 
 

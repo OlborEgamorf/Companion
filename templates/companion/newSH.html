@@ -44,7 +44,11 @@
                     {% if opt == "messages" or opt == "mots" or opt == "voice" %}
                         <td>
                             {% if i.Avatar %}
-                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                            {% else %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
                             {% endif %}
                         </td>
                     {% elif opt == "emotes" or opt == "reactions" %}
@@ -115,7 +119,11 @@
                     {% if opt == "messages" or opt == "mots" or opt == "voice" %}
                         <td>
                             {% if i.Avatar %}
-                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                            {% else %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
                             {% endif %}
                         </td>
                     {% elif opt == "emotes" or opt == "reactions" %}

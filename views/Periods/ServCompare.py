@@ -64,7 +64,8 @@ def viewServCompare(request,guild,option):
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("periods",option),"dictPlus":dictRefPlus,"plus":"compare",
     "travel":False,"selector":True,"listeObjs":listeObj,"obj":int(obj2),
-    "user1ID":int(obj1),"user2ID":int(obj2)}
+    "user1ID":int(obj1),"user2ID":int(obj2),
+    "pin":getPin(user,curseurGet,guild,option,"periods","compare")}
 
     ctx["user1Nom"]=getNom(obj1,option,curseurGet,False)
     ctx["user2Nom"]=getNom(obj2,option,curseurGet,False)

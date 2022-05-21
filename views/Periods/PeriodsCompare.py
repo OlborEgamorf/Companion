@@ -76,7 +76,8 @@ def viewPeriodsCompare(request,guild,option):
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("periods",option),"dictPlus":dictRefPlus,"plus":"compareperso",
     "travel":False,"selector":True,"listeObjs":listeObj,"obj":int(obj2),
-    "user1ID":int(obj1),"user2ID":int(obj2)}
+    "user1ID":int(obj1),"user2ID":int(obj2),
+    "pin":getPin(user,curseurGet,guild,option,"periods","compareperso")}
 
     if option in ("messages","voice","mots"):
         infos1=getUserInfo(obj1,curseurGet,guild)

@@ -71,7 +71,7 @@
     {% if guildid == "jeux" %}
         <iframe id="iframeevol" src="/companion/jeux/{{ option }}/iframeperiods?data={{ mois }}?{{ annee }}?None" scrolling="no" onload="resizeIframe(this)"></iframe>
     {% else %}
-        <iframe id="iframeevol" src="/companion/iframeblank" scrolling="no" onload="resizeIframe(this)"></iframe>
+        <iframe id="iframeevol" src="/companion/iframeblank?option={{ option }}&command={{ command }}&plus={{ plus }}" scrolling="no" onload="resizeIframe(this)"></iframe>
     {% endif %}
 </div>
 {% endblock stats %}

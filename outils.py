@@ -2,6 +2,7 @@ import os
 import sqlite3
 
 import requests
+from os.path import exists
 
 listeSections=["Accueil","Messages","Salons","Emotes","Vocal","Réactions","Mots","Fréquences"]
 
@@ -12,7 +13,7 @@ dictOptions={"messages":"Messages","voice":"Voice","salons":"Salons","voicechan"
 listeCommands=["ranks","periods","evol","first","jours","rapport"]
 listeOptions=["home","messages","voice","emotes","freq","salons","voicechan","reactions","divers"]
 listePlus=["","graphs","compare"]
-dictRefCommands={"ranks":"Classements","periods":"Périodes","serv":"Serveur","perso":"Perso","evol":"Évolutions","first":"Premiers","roles":"Rôles","jours":"Jours","moy":"Moyennes","rapport":"Rapports","mondial":"Mondial","badges":"Badges"}
+dictRefCommands={"ranks":"Classements","periods":"Périodes","serv":"Serveur","perso":"Perso","evol":"Évolutions","first":"Premiers","roles":"Rôles","jours":"Jours","moy":"Moyennes","rapport":"Rapports","mondial":"Mondial","badges":"Badges","":""}
 dictRefOptions={"home":"Accueil","messages":"Messages","voice":"Vocal","salons":"Salons","voicechan":"Salons vocaux","emotes":"Emotes","reactions":"Réactions","mots":"Mots","freq":"Fréquences","divers":"Divers"}
 dictRefPlus={"":"Tableaux","graphs":"Graphiques","compare":"Comparateur","perso":"Pour vous","serv":"Pour le serveur","compareperso":"Comparateur personnel","obj":"Pour un objet","pantheon":"Panthéon"}
 
@@ -21,12 +22,15 @@ dictRefOptionsJeux={"home":"Accueil","p4":"P4","tortues":"Tortues","tortuesduo":
 
 dictDivers={3:"Images",2:"GIFs",1:"Fichiers",4:"Liens",5:"Réponse",6:"Réactions",7:"Edits",8:"Emotes",9:"Messages",10:"Mots",11:"Vocal","images":3,"gifs":2,"fichiers":1,"liens":4,"réponse":5,"réactions":6,"edits":7,"emotes":8,"messages":9,"mots":10,"vocal":11}
 
+with open('os/SQL.txt') as f:
+    root = f.read().strip()
+
 def getCommands(option):
     liste=listeCommands.copy()
     if option not in ("messages","voice"):
         liste.remove("jours")
-    if option=="emotes":
-        liste.append("mondial")
+    """if option=="emotes":
+        liste.append("mondial")"""
     if option=="home":
         liste=[]
     if option=="divers":
@@ -40,8 +44,6 @@ def getPlus(command,option):
         liste=["serv","perso","obj"]
     elif command=="periods" and option=="divers":
         liste=["serv","perso"]
-    elif command in ("rapport","roles"):
-        liste=[""]
     elif command=="periods" and option in ("emotes","salons","voicechan","reactions","freq"):
         liste=["serv","perso","graphs","compare","compareperso"]
     elif command=="periods" and option not in ("emotes","salons","voicechan","reactions","freq"):
@@ -63,6 +65,27 @@ def getTimes(guild,option,categ):
     annee=list(map(lambda x:"20{0}".format(x["Annee"]),annee))+["Global"]
     return mois,annee
 
+def getTimesMix(guilds,option):
+    allMois,allAnnee=[],[]
+    for guild in guilds:
+        connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
+        mois=curseur.execute("SELECT DISTINCT Mois FROM firstM ORDER BY Mois ASC").fetchall()
+        annee=curseur.execute("SELECT DISTINCT Annee FROM firstM ORDER BY Annee ASC").fetchall()
+        allMois+=mois
+        allAnnee+=annee
+    distMois,distAnnee=[],[]
+    for i in allMois:
+        if i not in distMois:
+            distMois.append(i)
+    for i in allAnnee:
+        if i not in distAnnee:
+            distAnnee.append(i)
+    distMois.sort(key=lambda x:x["Mois"])
+    distAnnee.sort(key=lambda x:x["Annee"])
+    mois=list(map(lambda x:tableauMois[x["Mois"]],distMois))+["Total"]
+    annee=list(map(lambda x:"20{0}".format(x["Annee"]),distAnnee))+["Global"]
+    return mois,annee
+
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
@@ -71,32 +94,33 @@ def dict_factory(cursor, row):
 
 def connectSQL(guild,db,option,mois,annee):
     if option=="Guild":
-        pathDir="F:/IFNO/OlborTrack/SQL/{0}/Guild".format(guild)
-        path="F:/IFNO/OlborTrack/SQL/{0}/Guild/{1}.db".format(guild,db)
+        pathDir=root+"/SQL/{0}/Guild".format(guild)
+        path=root+"/SQL/{0}/Guild/{1}.db".format(guild,db)
     elif db in ("Voice","Voicechan"):
         if mois in ("GL","glob") or annee in ("GL","glob"):
-            pathDir="F:/IFNO/OlborTrack/SQL/{0}/Voice/GL".format(guild)
-            path="F:/IFNO/OlborTrack/SQL/{0}/Voice/GL/{1}.db".format(guild,db)
+            pathDir=root+"/SQL/{0}/Voice/GL".format(guild)
+            path=root+"/SQL/{0}/Voice/GL/{1}.db".format(guild,db)
         else:
-            pathDir="F:/IFNO/OlborTrack/SQL/{0}/Voice/{1}/{2}".format(guild,annee,mois.upper())
-            path="F:/IFNO/OlborTrack/SQL/{0}/Voice/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
+            pathDir=root+"/SQL/{0}/Voice/{1}/{2}".format(guild,annee,mois.upper())
+            path=root+"/SQL/{0}/Voice/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
     elif option=="Jeux":
         if mois in ("GL","glob") or annee in ("GL","glob"):
-            pathDir="F:/IFNO/OlborTrack/SQL/{0}/Jeux/GL".format(guild)
-            path="F:/IFNO/OlborTrack/SQL/{0}/Jeux/GL/{1}.db".format(guild,db)
+            pathDir=root+"/SQL/{0}/Jeux/GL".format(guild)
+            path=root+"/SQL/{0}/Jeux/GL/{1}.db".format(guild,db)
         else:
-            pathDir="F:/IFNO/OlborTrack/SQL/{0}/Jeux/{1}/{2}".format(guild,annee,mois.upper())
-            path="F:/IFNO/OlborTrack/SQL/{0}/Jeux/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
+            pathDir=root+"/SQL/{0}/Jeux/{1}/{2}".format(guild,annee,mois.upper())
+            path=root+"/SQL/{0}/Jeux/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
     elif option in ("Trivial","Titres"):
-        pathDir="F:/IFNO/OlborTrack/SQL/OT/{0}".format(option)
-        path="F:/IFNO/OlborTrack/SQL/OT/{0}/{1}.db".format(option,db)
+        pathDir=root+"/SQL/OT/{0}".format(option)
+        path=root+"/SQL/OT/{0}/{1}.db".format(option,db)
     elif mois in ("GL","glob") or annee in ("GL","glob"):
-        pathDir="F:/IFNO/OlborTrack/SQL/{0}/GL".format(guild)
-        path="F:/IFNO/OlborTrack/SQL/{0}/GL/{1}.db".format(guild,db)
+        pathDir=root+"/SQL/{0}/GL".format(guild)
+        path=root+"/SQL/{0}/GL/{1}.db".format(guild,db)
     else:
-        pathDir="F:/IFNO/OlborTrack/SQL/{0}/{1}/{2}".format(guild,annee,mois.upper())
-        path="F:/IFNO/OlborTrack/SQL/{0}/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
+        pathDir=root+"/SQL/{0}/{1}/{2}".format(guild,annee,mois.upper())
+        path=root+"/SQL/{0}/{1}/{2}/{3}.db".format(guild,annee,mois.upper(),db)
 
+    assert exists(path)
     if not os.path.exists(pathDir):
         os.makedirs(pathDir)
     connexion = sqlite3.connect(path)
@@ -281,14 +305,13 @@ def getTablePerso(guild,option,id,idobj,period,tri):
     return liste
 
 
-def getGuilds(user):
-    bot_guilds=requests.get("https://discord.com/api/v9/users/@me/guilds",headers={"Authorization":"Bot Njk5NzI4NjA2NDkzOTMzNjUw.XpYnDA.ScdeM2sFekTRHY5hubkwg0HWDPU"})
-    bguild_json=bot_guilds.json()
-    bot_ids=list(map(lambda x:x["id"], bguild_json))
+def getGuilds(user,curseurGet):
+    bot_guilds=curseurGet.execute("SELECT ID FROM guilds").fetchall()
+    bot_ids=list(map(lambda x:x["ID"], bot_guilds))
     user_guild=requests.get("https://discord.com/api/v9/users/@me/guilds",headers={"Authorization":"Bearer {0}".format(user.token)})
     uguild_json=user_guild.json()
 
-    common=list(filter(lambda x: x["id"] in bot_ids, uguild_json))
+    common=list(filter(lambda x: int(x["id"]) in bot_ids, uguild_json))
     final_guilds=[]
 
     for guild in common:
@@ -331,15 +354,10 @@ def rankingClassic(table:list):
             table[i]["Rank"]=rankTemp
 
 
-def getCommon(me,user,curseurGet):
+def getCommon(guilds_me,user,curseurGet):
     listeCom=[]
-    connexionAll,curseurAll=connectSQL("OT","Users","Guild",None,None)
-    myguilds=curseurAll.execute("SELECT * FROM user{0}".format(me)).fetchall()
-    myguilds=list(map(lambda x:x["Guild"], myguilds))
-    for i in curseurAll.execute("SELECT * FROM user{0}".format(user)).fetchall():
-        if i["Guild"] in myguilds:
-            guild=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(i["Guild"])).fetchone()
-            if guild!=None:
-                listeCom.append({"ID":i["Guild"],"Icon":guild["Icon"],"Nom":guild["Nom"]})
-    connexionAll.close()
+    for i in guilds_me:
+        if curseurGet.execute("SELECT * FROM users_{0} WHERE ID={1}".format(i["ID"],user)).fetchone()!=None:
+            guild=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(i["ID"])).fetchone()
+            listeCom.append({"ID":i["ID"],"Icon":guild["Icon"],"Nom":guild["Nom"]})
     return listeCom

@@ -10,10 +10,10 @@
     
     <title>Olbor Track Companion</title>
 </head>
-
+{% load TagsCustom %}
 <body class="bodyiframe">
     <table class="table-iframe">
-        <tr><th colspan="5">Classement {{ role }} {{ jour }} {{ mois }} {{ annee }}</th></tr>
+        <tr><th colspan="5">Classement {{ mois }} {{ annee }} {{ nom }}</th></tr>
             <tr>
                 <th>Rang</th>
                 <th colspan="2">Membre</th>
@@ -30,7 +30,7 @@
                     </td>
                     <td style="text-align: start;">{{ i.Nom }}</td>
                     <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
-                    <td>{{ i.Count }}</td>
+                    <td>{{ i.Count|tempsvoice:option }}</td>
                 </tr>
             {% endfor %}
     </table>

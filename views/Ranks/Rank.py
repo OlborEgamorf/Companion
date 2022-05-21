@@ -2,6 +2,7 @@ from math import inf
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from companion.Decorator import CompanionStats
 
 from companion.Getteurs import *
 from companion.outils import (collapseEvol, connectSQL, dictOptions, dictRefCommands,
@@ -18,6 +19,7 @@ def iFrameRankJeux(request,option):
     return iFrameRank(request,"OT",option)
 
 @login_required(login_url="/login")
+@CompanionStats
 def viewRank(request,guild,option):
     mois,annee = request.GET.get("mois"),request.GET.get("annee")
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
@@ -30,9 +32,11 @@ def viewRank(request,guild,option):
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
 
     if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        pin=getPin(user,curseurGet,"jeux",option,"ranks","")
         categ="Jeux"
         connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
     else:
+        pin=getPin(user,curseurGet,guild,option,"ranks","")
         categ="Stats"
         guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
@@ -64,9 +68,7 @@ def viewRank(request,guild,option):
     if maxi<=0:
         maxi=1
 
-    if "/mix/" in request.path:
-        return {"rank":stats,"guildicon":guild_full["icon"],"guildname":guild_full["name"],"guildid":guild}
-    elif categ=="Jeux":
+    if categ=="Jeux":
         listeMois,listeAnnee=getTimes(guild,option,"Jeux")
         ctx={"rank":stats,"max":maxi,
         "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
@@ -75,7 +77,8 @@ def viewRank(request,guild,option):
         "commands":["ranks","periods","evol","first","badges"],"dictCommands":dictRefCommands,"command":"ranks",
         "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":option,
         "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"",
-        "travel":True,"selector":True,"obj":None}
+        "travel":True,"selector":True,"obj":None,
+        "pin":pin}
         return render(request, "companion/Ranks/ranks.html", ctx)
     else:
         listeMois,listeAnnee=getTimes(guild,option,"Stats")
@@ -87,7 +90,8 @@ def viewRank(request,guild,option):
         "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
         "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
         "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"" if option in ("messages","voice","mots") else "serv",
-        "travel":True,"selector":True,"obj":None}
+        "travel":True,"selector":True,"obj":None,
+        "pin":pin}
 
         if option=="divers":
             return render(request, "companion/Ranks/ranksDivers.html", ctx)
@@ -95,6 +99,7 @@ def viewRank(request,guild,option):
             return render(request, "companion/Ranks/ranks.html", ctx)
 
 @login_required(login_url="/login")
+@CompanionStats
 def viewRankObj(request,guild,option):
     mois,annee,obj = request.GET.get("mois"),request.GET.get("annee"),request.GET.get("obj")
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
@@ -150,7 +155,8 @@ def viewRankObj(request,guild,option):
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"obj",
-    "travel":True,"selector":True,"obj":int(obj),"listeObjs":listeObj}
+    "travel":True,"selector":True,"obj":int(obj),"listeObjs":listeObj,
+    "pin":getPin(user,curseurGet,guild,option,"ranks","obj")}
 
     return render(request, "companion/Ranks/ranks.html", ctx)
 
@@ -196,12 +202,15 @@ def iFrameRank(request,guild,option):
         return render(request,"companion/Ranks/iFrameRanks_evol.html",ctx)
 
     else:
+        nom=getNom(obj,option,curseurGet,False)
+        try:
+            maxi=-inf
+            stats=[]
+            for i in curseur.execute("SELECT * FROM {0}{1}{2} ORDER BY Rank ASC LIMIT 150".format(moisDB,anneeDB,obj)).fetchall():
+                stats.append(getUserTable(i,curseurGet,guild))
+                maxi=max(maxi,i["Count"])
+        except:
+            pass
 
-        maxi=-inf
-        stats=[]
-        for i in curseur.execute("SELECT * FROM {0}{1}{2} ORDER BY Rank ASC LIMIT 150".format(moisDB,anneeDB,obj)).fetchall():
-            stats.append(getUserTable(i,curseurGet,guild))
-            maxi=max(maxi,i["Count"])
-
-        ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"option":option}
+        ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"option":option,"obj":obj,"nom":nom}
         return render(request, "companion/Ranks/iFrameRanks_ranks.html", ctx)

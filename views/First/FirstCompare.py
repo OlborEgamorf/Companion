@@ -3,6 +3,7 @@ from random import choice
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from companion.Decorator import CompanionStats
 
 from companion.Getteurs import *
 from companion.outils import (connectSQL, dictOptions, dictRefCommands, dictRefOptions,
@@ -11,6 +12,7 @@ from companion.outils import (connectSQL, dictOptions, dictRefCommands, dictRefO
 
 
 @login_required(login_url="/login")
+@CompanionStats
 def viewFirstCompare(request,guild,option):
     annee1 = request.GET.get("annee1")
     annee2 = request.GET.get("annee2")
@@ -106,6 +108,7 @@ def viewFirstCompare(request,guild,option):
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"first",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("first",option),"dictPlus":dictRefPlus,"plus":"compare",
-    "travel":False,"selector":True,"obj":None}
+    "travel":False,"selector":True,"obj":None,
+    "pin":getPin(user,curseurGet,guild,option,"evol","compare")}
 
     return render(request, "companion/Compare/firstCompare.html", ctx)

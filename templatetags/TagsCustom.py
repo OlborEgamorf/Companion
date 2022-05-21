@@ -59,6 +59,47 @@ def getNomBadge(badge):
     dictNom={1:"3eme sur un mois",2:"2eme sur un mois",3:"1er sur un mois",11:"3eme sur une année",12:"2eme sur une année",13:"1er sur une année",101:"3eme du classement général",102:"2e du classement général",103:"Premier du classement général"}
     return dictNom[badge]
 
+def lexiqueOption(option):
+    if option=="messages":
+        return "Messages : correspond aux statistiques de messages envoyés sur votre serveur, par chaque membre, et sur différentes périodes."
+    if option=="voice":
+        return "Vocal : correspond aux statistiques du temps passé dans n'importe quel salon vocal, par chaque membre, et sur différentes périodes."
+    if option=="emotes":
+        return "Emotes : correspond aux statistiques des emotes et emojis envoyés dans les messages sur le serveur."
+    if option=="freq":
+        return "Fréquences : correspond aux heures où les messages ont été envoyés sur le serveur."
+    if option=="salons":
+        return "Salons : correspond aux statistiques de messages envoyés par les membres dans chaque salon textuel."
+    if option=="voicechan":
+        return "Salons vocaux : correspond aux statistiques du temps passé en vocal par les membres dans chaque salon vocal."
+    if option=="reactions":
+        return "Réactions : correspond aux statistiques des réactions laissées sur les messages par les membres du serveur."
+
+def lexiqueCommande(command):
+    if command=="ranks":
+        return "Classements : Affiche les statistiques sous forme de classements. Les classements sont disponibles sur plusieurs types de périodes : mois, année ou global." 
+    if command=="periods":
+        return "Périodes : Affiche les statistiques sous forme d'un résumé période par période." 
+    if command=="evol":
+        return "Évolution : Affiche votre évolution ou celle d'un objet (salon, emote, ...) pour le classement d'une période donnée." 
+    if command=="first":
+        return "Premiers : Affiche le premier du classement de chaque période." 
+    if command=="jours":
+        return "Premiers : Affiche les messages envoyés ou le temps passé en vocal pour chaque jour où il y a eu de l'activité sur le serveur." 
+
+def lexiquePlus(plus):
+    if plus=="":
+        return "Tableaux : Affiche les statistiques dans un tableau simple. Vous pouvez trier le tableau en cliquant sur les en-têtes de colonnes, et chercher des éléments à l'intérieur. Cliquer sur une ligne affiche un tableau complémentaire sous ce lexique." 
+    if plus=="serv":
+        return "Tableaux pour le serveur : Affiche les statistiques dans un tableau simple. Ce tableau correspond aux statistiques du serveur dans son ensemble. Vous pouvez trier le tableau en cliquant sur les en-têtes de colonnes, et chercher des éléments à l'intérieur. Cliquer sur une ligne affiche un tableau complémentaire sous ce lexique." 
+    if plus=="perso":
+        return "Tableaux pour vous : Affiche les statistiques dans un tableau simple. Ce tableau correspond aux statistiques de vous seulement. Vous pouvez trier le tableau en cliquant sur les en-têtes de colonnes, et chercher des éléments à l'intérieur. Cliquer sur une ligne affiche un tableau complémentaire sous ce lexique."
+    if plus=="obj":
+        return "Tableaux pour un objet : Affiche les statistiques dans un tableau simple. Ce tableau correspond aux statistiques d'un objet : salon, emote, ou autre que vous choisissez. Vous pouvez trier le tableau en cliquant sur les en-têtes de colonnes, et chercher des éléments à l'intérieur. Cliquer sur une ligne affiche un tableau complémentaire sous ce lexique."  
+    if plus=="pantheon":
+        return "Pantheon : Affiche le classement des classements : tous les classements de toutes les périodes fusionnés, pour donner un super classement." 
+    if plus=="graph":
+        return "Graphiques : Affiche les statistiques dans différents graphiques, pour mieux visualiser."   
 
 
 register.filter("usedict", useDict)
@@ -74,3 +115,7 @@ register.filter("getbest",getRankBest)
 
 register.filter("getbadges",getListBadges)
 register.filter("soustraction",soustraction)
+
+register.filter("lexiqueOption",lexiqueOption)
+register.filter("lexiqueCommande",lexiqueCommande)
+register.filter("lexiquePlus",lexiquePlus)

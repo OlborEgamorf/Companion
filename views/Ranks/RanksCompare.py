@@ -2,6 +2,7 @@ from math import inf
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from companion.Decorator import CompanionStats
 
 from companion.Getteurs import *
 from companion.outils import (connectSQL, dictOptions, dictRefCommands, dictRefOptions,
@@ -10,6 +11,7 @@ from companion.outils import (connectSQL, dictOptions, dictRefCommands, dictRefO
 
 
 @login_required(login_url="/login")
+@CompanionStats
 def viewRankCompare(request,guild,option):
     mois1,annee1 = request.GET.get("mois1"),request.GET.get("annee1")
     mois2,annee2 = request.GET.get("mois2"),request.GET.get("annee2")
@@ -95,6 +97,7 @@ def viewRankCompare(request,guild,option):
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
     "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"compare",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "travel":False,"selector":True,"obj":None}
+    "travel":False,"selector":True,"obj":None,
+    "pin":getPin(user,curseurGet,guild,option,"ranks","compare")}
 
     return render(request, "companion/Compare/ranksCompare.html", ctx)

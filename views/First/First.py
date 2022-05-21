@@ -2,6 +2,7 @@ from math import inf
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from companion.Decorator import CompanionStats
 
 from companion.Getteurs import *
 from companion.outils import (collapseEvol, connectSQL, dictOptions, dictRefCommands,
@@ -17,6 +18,7 @@ def iFrameFirstJeux(request,option):
     return iFrameFirst(request,"OT",option)
 
 @login_required(login_url="/login")
+@CompanionStats
 def viewFirst(request,guild,option):
     user=request.user
 
@@ -24,8 +26,10 @@ def viewFirst(request,guild,option):
     statsM,statsA=[],[]
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
+    pin=getPin(user,curseurGet,guild,option,"first","")
 
     if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        pin=getPin(user,curseurGet,"jeux",option,"first","")
         categ="Jeux"
         connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
 
@@ -35,8 +39,10 @@ def viewFirst(request,guild,option):
         "commands":["ranks","periods","evol","first","badges"],"dictCommands":dictRefCommands,"command":"first",
         "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":option,
         "lisPlus":getPlus("first",option),"dictPlus":dictRefPlus,"plus":"",
-        "travel":False,"selector":True}
+        "travel":False,"selector":True,
+        "pin":pin}
     else:
+        pin=getPin(user,curseurGet,guild,option,"first","")
         categ="Stats"
         guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
@@ -46,7 +52,8 @@ def viewFirst(request,guild,option):
         "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"first",
         "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
         "lisPlus":getPlus("first",option),"dictPlus":dictRefPlus,"plus":"",
-        "travel":False,"selector":True}
+        "travel":False,"selector":True,
+        "pin":pin}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
 

@@ -3,7 +3,7 @@
 <script type="text/javascript">
     
     function newSite(id,obj) {
-        var site = "/companion/{{ guildid }}/{{ option }}/iframeranks?data={{ mois }}?{{ annee }}?"+id
+        var site = "/companion/{{ guildid }}/{{ option }}/iframeranks?data={{ mois }}?{{ annee }}?"+id        
         document.getElementById('iframeevol').src = site;
         try {document.getElementById("elselect").id = NaN}
         catch {}
@@ -19,7 +19,7 @@
 {% load TagsCustom %}
 
 <div class="searchTable">
-    {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
+    {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" or option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
         <input type="text" id="searchTable" onkeyup="searchName(2)" placeholder="Recherchez une emote">
     {% else %}
         <input type="text" id="searchTable" onkeyup="searchName(1)" placeholder="Recherchez une emote">
@@ -37,7 +37,7 @@
                 <th>Messages</th>
             </tr>
         {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
-            <tr><th colspan="6">Classement {{ mois }} {{ annee }}</th></tr>
+            <tr><th colspan="7">Classement {{ mois }} {{ annee }}</th></tr>
             <tr>
                 <th>Rang</th>
                 <th colspan="2">Joueur</th>
@@ -58,9 +58,9 @@
 
         {% for i in rank %}
             {% if i.ID == id %}
-                <tr class="user" onClick="newSite('{{ i.ID }}',this)">
+                <tr class="user" onClick="newSite('{{ i.ID }}',this,'{{ mix }}')">
             {% else %}
-                <tr onClick="newSite('{{ i.ID }}',this)">
+                <tr onClick="newSite('{{ i.ID }}',this,'{{ mix }}')">
             {% endif %}
                     <td>{{ i.Rank }}</td>
                     {% if option == "messages" or option == "mots" or option == "voice" or obj != None %}
@@ -107,6 +107,6 @@
                 </tr>
         {% endfor %}
     </table>
-    <iframe id="iframeevol" src="/companion/iframeblank" scrolling="no" onload="resizeIframe(this)"></iframe>
+    <iframe id="iframeevol" src="/companion/iframeblank?option={{ option }}&command={{ command }}&plus={{ plus }}" scrolling="no" onload="resizeIframe(this)"></iframe>
 </div>
 {% endblock stats %}

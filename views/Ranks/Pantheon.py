@@ -77,7 +77,8 @@ def viewPantheon(request,guild,option):
         "commands":["ranks","periods","evol","first","badges"],"dictCommands":dictRefCommands,"command":"ranks",
         "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":option,
         "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"pantheon",
-        "travel":False,"selector":True,"obj":None}
+        "travel":False,"selector":True,"obj":None,
+        "pin":getPin(user,curseurGet,guild,option,"ranks","pantheon")}
         return render(request, "companion/Ranks/ranks.html", ctx)
     else:
         ctx={"rank":stats,"max":maxi,

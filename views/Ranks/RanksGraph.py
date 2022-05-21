@@ -2,7 +2,8 @@ import calendar
 from math import inf
 
 import plotly.graph_objects as go
-from companion.Getteurs import (getChannels, getEmoteTable, getFreq, getNom,
+from companion.Decorator import CompanionStats
+from companion.Getteurs import (getChannels, getEmoteTable, getFreq, getNom, getPin,
                                 getUserInfo, getUserJeux, getUserTable)
 from companion.outils import connectSQL, dictOptions, tableauMois
 from companion.templatetags.TagsCustom import formatCount
@@ -16,6 +17,7 @@ from companion.outils import (connectSQL, dictOptions, dictRefCommands, dictRefO
 
 
 @login_required(login_url="/login")
+@CompanionStats
 def graphRanks(request,guild,option):
     mois,annee = request.GET.get("mois"),request.GET.get("annee")
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
@@ -55,7 +57,8 @@ def graphRanks(request,guild,option):
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"graphs",
-    "travel":True,"selector":True,"obj":None}
+    "travel":True,"selector":True,"obj":None,
+    "pin":getPin(user,curseurGet,guild,option,"ranks","graphs")}
     return render(request, "companion/Old/graph.html", ctx)
 
 @login_required(login_url="/login")

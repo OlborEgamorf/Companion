@@ -234,6 +234,6 @@
             </tr>
         {% endfor %}
     </table>
-    <iframe id="iframeevol" src="/companion/iframeblank" scrolling="no" onload="resizeIframe(this)"></iframe>
+    <iframe id="iframeevol" src="/companion/iframeblank?option={{ option }}&command={{ command }}&plus={{ plus }}" scrolling="no" onload="resizeIframe(this)"></iframe>
 </div>
 {% endblock stats %}

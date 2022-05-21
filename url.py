@@ -1,6 +1,7 @@
 from django.urls import path
+from companion.Pin import ajoutPin, delPin
 
-from companion.views.Autre.Blank import iFrameBlank, iFrameBlankCompare
+from companion.views.Autre.Blank import iFrameBlank
 from companion.views.Autre.GuildHome import viewGuildHome
 from companion.views.Autre.HallOfBadges import viewBadges
 from companion.views.Autre.home import home
@@ -14,6 +15,9 @@ from companion.views.First.FirstCompare import viewFirstCompare
 from companion.views.First.FirstGraph import graphFirst, iFrameGraphFirst
 from companion.views.Jours.Jours import iFrameJour, viewJours
 from companion.views.Jours.JoursGraph import graphJours, iFrameGraphJours
+from companion.views.Mixes.DelMix import delMix
+from companion.views.Mixes.MixPerso import iFrameMixPerso, mixPerso
+from companion.views.Mixes.MixRanks import iFrameMixRank, mixRank
 from companion.views.Mondial.emotesmondial import emotesMondial, iframeEmotes
 from companion.views.Mondial.EmotesWW import emotesMondialGuild
 from companion.views.Periods.Periods import (iFramePeriods, iFramePeriodsJeux,
@@ -41,14 +45,14 @@ urlpatterns = [
     path("<int:guild>",viewGuildHome,name="guild-home"),
 
     path("<int:guild>/home",viewStatsHome,name="stats-home"),
-    path("<int:guild>/<str:option>/ranks",viewRank,name="stats-ranks"),
-    path("<int:guild>/<str:option>/periods",viewServ,name="stats-periods"),
-    path("<int:guild>/<str:option>/evol",viewEvol,name="stats-evol"),
-    path("<int:guild>/<str:option>/jours",viewJours,name="stats-jours"),
+    path("<int:guild>/<str:option>/ranks/",viewRank,name="stats-ranks"),
+    path("<int:guild>/<str:option>/periods/",viewServ,name="stats-periods"),
+    path("<int:guild>/<str:option>/evol/",viewEvol,name="stats-evol"),
+    path("<int:guild>/<str:option>/jours/",viewJours,name="stats-jours"),
+    path("<int:guild>/<str:option>/first/",viewFirst,name="stats-first"),
+    path("<int:guild>/<str:option>/rapport/",viewRapports,name="stats-rapport"),
     #path("<int:guild>/<str:option>/roles",viewRoles,name="stats-roles"),
-    path("<int:guild>/<str:option>/first",viewFirst,name="stats-first"),
-    path("<int:guild>/<str:option>/rapport",viewRapports,name="stats-rapport"),
-    path("<int:guild>/emotes/mondial",emotesMondialGuild,name="guild-emotes-mondial"),
+    path("<int:guild>/emotes/mondial/",emotesMondialGuild,name="guild-emotes-mondial"),
 
     path("<int:guild>/<str:option>/periods/perso",viewPeriods,name="stats-serv"),
     path("<int:guild>/<str:option>/ranks/perso",viewPerso,name="stats-perso"),
@@ -64,7 +68,6 @@ urlpatterns = [
     path("<int:guild>/<str:option>/iframefirst",iFrameFirst,name="iframe-first"),
 
     path("iframeblank",iFrameBlank,name="iframe-blank"),
-    path("iframeblankcompare",iFrameBlankCompare,name="iframe-blank-compare"),
 
     path("mondial/emotes",emotesMondial,name="emotes-mondial"),
     path("<int:emote>/iframeemotesww",iframeEmotes,name="iframe-emotesww"),
@@ -94,14 +97,32 @@ urlpatterns = [
     path("profil/<int:user>/titres",viewProfilTitres,name="user-titres"),
     path("profil/<int:user>/custom",viewProfilPerso,name="user-custom"),
 
-    path("jeux/home",statsHomeJeux,name="jeux-ranks"),
-    path("jeux/<str:option>/ranks",rankJeux,name="jeux-ranks"),
-    path("jeux/<str:option>/periods",periodsJeux,name="jeux-periods"),
-    path("jeux/<str:option>/evol",evolJeux,name="jeux-evol"),
-    path("jeux/<str:option>/first",firstJeux,name="jeux-first"),
-    path("jeux/<str:option>/badges",viewBadges,name="jeux-first"),
+    path("jeux/home/",statsHomeJeux,name="jeux-ranks"),
+    path("jeux/<str:option>/ranks/",rankJeux,name="jeux-ranks"),
+    path("jeux/<str:option>/periods/",periodsJeux,name="jeux-periods"),
+    path("jeux/<str:option>/evol/",evolJeux,name="jeux-evol"),
+    path("jeux/<str:option>/first/",firstJeux,name="jeux-first"),
+    path("jeux/<str:option>/badges/",viewBadges,name="jeux-first"),
 
     path("jeux/<str:option>/iframeranks",iFrameRankJeux,name="jeux-iframe-ranks"),
     path("jeux/<str:option>/iframeperiods",iFramePeriodsJeux,name="jeux-iframe-periods"),
     path("jeux/<str:option>/iframefirst",iFrameFirstJeux,name="jeux-iframe-first"),
+
+    path("mixes/<int:mix>/<str:option>/ranks/",mixRank,name="stats-ranks"),
+    path("mixes/<int:mix>/<str:option>/periods/",viewServ,name="stats-periods"),
+
+    path("mixes/<int:mix>/<str:option>/periods/perso",mixPerso,name="stats-serv"),
+    path("mixes/<int:mix>/<str:option>/ranks/perso",mixPerso,name="stats-perso"),
+
+    path("mixes/<int:mix>/<str:option>/iframeranks",iFrameMixRank,name="iframe-ranks"),
+    path("mixes/<int:mix>/<str:option>/iframeperiods",iFramePeriods,name="iframe-periods"),
+    path("mixes/<int:mix>/<str:option>/iframeserv",iFrameServ,name="iframe-serv"),
+    path("mixes/<int:mix>/<str:option>/iframeperso",iFrameMixPerso,name="iframe-perso"),
+
+    path("mixes/<int:mix>/del",delMix,name="del-mix"),
+
+    path("pin",ajoutPin),
+    path("pin/add",ajoutPin),
+    path("pin/del",delPin),
+    
 ]

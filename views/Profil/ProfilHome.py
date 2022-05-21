@@ -13,12 +13,13 @@ def viewProfilHome(request,user):
     connexionUser,curseurUser=connectSQL("OT",user,"Titres",None,None)
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     infos=getAllInfos(curseur,curseurUser,connexionUser,user)
+    full_guilds=getGuilds(request.user,curseurGet)
 
     if user!=request.user.id:
         user_avatar=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Avatar"]
         user_name=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Nom"]
         options=["home","titres"]
-        listeCom=getCommon(request.user.id,user,curseurGet)
+        listeCom=getCommon(full_guilds,user,curseurGet)
         if len(listeCom)==0:
             user_avatar_profil=None
             user_name_profil=infos["Full"]
@@ -71,7 +72,6 @@ def viewProfilHome(request,user):
     liste=list(filter(lambda x:x in dictJeux, liste))
     dictMessages,dictSalons,dictEmotes,dictVoc,dictFreq=[],[],{},[],{}
     if user==request.user.id:
-        full_guilds=getGuilds(request.user)
         for i in full_guilds:
             guild=getGuildInfo(i["ID"],curseurGet)
             try:

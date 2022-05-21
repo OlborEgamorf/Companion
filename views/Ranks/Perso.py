@@ -2,6 +2,7 @@ from math import inf
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from companion.Decorator import CompanionStats
 
 from companion.Getteurs import *
 from companion.outils import (connectSQL, dictOptions, dictRefCommands, dictRefOptions,
@@ -11,6 +12,7 @@ from companion.outils import (connectSQL, dictOptions, dictRefCommands, dictRefO
 
 
 @login_required(login_url="/login")
+@CompanionStats
 def viewPerso(request,guild,option):
     mois,annee = request.GET.get("mois"),request.GET.get("annee")
     mois,annee,moisDB,anneeDB=getMoisAnneePerso(mois,annee)
@@ -35,7 +37,8 @@ def viewPerso(request,guild,option):
     "commands":getCommands(option),"dictCommands":dictRefCommands,"command":"ranks",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
     "lisPlus":getPlus("ranks",option),"dictPlus":dictRefPlus,"plus":"perso",
-    "travel":True,"selector":True}
+    "travel":True,"selector":True,
+    "pin":getPin(user,curseurGet,guild,option,"ranks","perso")}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",moisDB,anneeDB)
 

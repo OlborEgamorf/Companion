@@ -23,6 +23,7 @@ def viewStatsHome(request,guild):
     user_name=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Nom"]
 
     if guild=="OT":
+        pin=getPin(user,curseurGet,"jeux","home","","")
         liste=listeOptionsJeux[1:]
         categ="Jeux"
         connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
@@ -34,8 +35,9 @@ def viewStatsHome(request,guild):
         "guildname":"Olbor Track - Mondial","guildid":"jeux",
         "commands":[],"dictCommands":dictRefCommands,
         "options":listeOptionsJeux,"dictOptions":dictRefOptionsJeux,"option":"home","optNotHome":listeOptionsJeux[1:],
-        "travel":False,"selector":False,"obj":None}
+        "travel":False,"selector":False,"obj":None,"pin":pin}
     else:
+        pin=getPin(user,curseurGet,guild,"home","","")
         liste=listeOptions[1:]
         liste.remove("divers")
         categ="Stats"
@@ -45,7 +47,7 @@ def viewStatsHome(request,guild):
         "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
         "commands":getCommands("home"),"dictCommands":dictRefCommands,
         "options":listeOptions,"dictOptions":dictRefOptions,"option":"home","optNotHome":liste,
-        "travel":False,"selector":False,"obj":None}
+        "travel":False,"selector":False,"obj":None,"pin":pin}
 
 
     for option in liste:
@@ -86,66 +88,71 @@ def viewStatsHome(request,guild):
 
         first=[]
         maxi=-inf
-        for i in curseur.execute("SELECT * FROM firstM ORDER BY DateID DESC LIMIT 5").fetchall():
-            i["Rank"]=0
+        try:
+            for i in curseur.execute("SELECT * FROM firstM ORDER BY DateID DESC LIMIT 5").fetchall():
+                i["Rank"]=0
 
-            if option in ("messages","voice","mots"):
-                ligne=getUserTable(i,curseurGet,guild)
+                if option in ("messages","voice","mots"):
+                    ligne=getUserTable(i,curseurGet,guild)
 
-            elif option in ("emotes","reactions"):
-                ligne=getEmoteTable(i,curseurGet)
+                elif option in ("emotes","reactions"):
+                    ligne=getEmoteTable(i,curseurGet)
 
-            elif option in ("salons","voicechan"):
-                ligne=getChannels(i,curseurGet)
+                elif option in ("salons","voicechan"):
+                    ligne=getChannels(i,curseurGet)
 
-            elif option=="freq":
-                ligne=getFreq(i)
-            
-            elif categ=="Jeux":
-                i["W"]=0
-                i["L"]=0
-                ligne=getUserJeux(i,curseurGet,option)
+                elif option=="freq":
+                    ligne=getFreq(i)
+                
+                elif categ=="Jeux":
+                    i["W"]=0
+                    i["L"]=0
+                    ligne=getUserJeux(i,curseurGet,option)
 
-            ligne["Mois"]=i["Mois"]
-            ligne["Annee"]=i["Annee"]
-            first.append(ligne)
+                ligne["Mois"]=i["Mois"]
+                ligne["Annee"]=i["Annee"]
+                first.append(ligne)
 
-            maxi=max(maxi,i["Count"])
-        
+                maxi=max(maxi,i["Count"])
+        except:
+            pass
         maxis["first"]=maxi
         
         maxi=-inf
-        if option in ("messages","voice","mots") or categ=="Jeux":
-            perso=getTablePerso(guild,dictOptions[option],user.id,False,"M","periodDesc")
-            perso=perso[:5] if len(perso)>5 else perso
-            if perso!=[]:
-                maxi=max(list(map(lambda x:x["Count"],perso)))
-            else:
-                maxi=0
-        else:
+        try:
             perso=[]
-            for i in curseur.execute("SELECT * FROM firstM ORDER BY DateID DESC LIMIT 5").fetchall():
-                connexionMois,curseurMois=connectSQL(guild,dictOptions[option],"Stats",i["Mois"],i["Annee"])
-                try:
-                    obj=curseurMois.execute("SELECT * FROM perso{0}{1}{2} ORDER BY Count DESC LIMIT 1".format(i["Mois"],i["Annee"],user.id)).fetchone()
-                    if obj!=None:
-                        if option in ("emotes","reactions"):
-                            ligne=getEmoteTable(obj,curseurGet)
+            if option in ("messages","voice","mots") or categ=="Jeux":
+                perso=getTablePerso(guild,dictOptions[option],user.id,False,"M","periodDesc")
+                perso=perso[:5] if len(perso)>5 else perso
+                if perso!=[]:
+                    maxi=max(list(map(lambda x:x["Count"],perso)))
+                else:
+                    maxi=0
+            else:
+                for i in curseur.execute("SELECT * FROM firstM ORDER BY DateID DESC LIMIT 5").fetchall():
+                    connexionMois,curseurMois=connectSQL(guild,dictOptions[option],"Stats",i["Mois"],i["Annee"])
+                    try:
+                        obj=curseurMois.execute("SELECT * FROM perso{0}{1}{2} ORDER BY Count DESC LIMIT 1".format(i["Mois"],i["Annee"],user.id)).fetchone()
+                        if obj!=None:
+                            if option in ("emotes","reactions"):
+                                ligne=getEmoteTable(obj,curseurGet)
 
-                        elif option in ("salons","voicechan"):
-                            ligne=getChannels(obj,curseurGet)
+                            elif option in ("salons","voicechan"):
+                                ligne=getChannels(obj,curseurGet)
 
-                        elif option=="freq":
-                            ligne=getFreq(obj)
+                            elif option=="freq":
+                                ligne=getFreq(obj)
 
-                        ligne["Mois"]=i["Mois"]
-                        ligne["Annee"]=i["Annee"]
-                        perso.append(ligne)
+                            ligne["Mois"]=i["Mois"]
+                            ligne["Annee"]=i["Annee"]
+                            perso.append(ligne)
 
-                        maxi=max(maxi,obj["Count"])
-                except:
-                    pass
-
+                            maxi=max(maxi,obj["Count"])
+                    except:
+                        pass
+        except:
+            pass
+            
         maxis["perso"]=maxi
         stats_final[option]={"rank":stats.copy(),"first":first.copy(),"perso":perso.copy()}
         maxis_final[option]=maxis
