@@ -59,7 +59,7 @@ def viewPeriods(request,guild,option):
         ctx["rankAnnee"]=getTablePerso(guild,dictOptions[option],user.id,False,"A","countDesc")
     else:
         connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
-        listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
+        listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC LIMIT 150").fetchall()
         if option in ("emotes","reactions"):
             listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
         elif option in ("salons","voicechan"):
@@ -71,9 +71,6 @@ def viewPeriods(request,guild,option):
 
         if obj==None:
             obj=listeObj[0]["ID"]
-
-        if len(listeObj)>150:
-            listeObj=listeObj[:150]
     
         ctx["obj"]=int(obj)
         ctx["listeObjs"]=listeObj

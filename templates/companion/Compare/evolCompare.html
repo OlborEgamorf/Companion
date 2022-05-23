@@ -115,13 +115,13 @@
                 {{ user2Nom }}</th>
             </tr>
             <tr>
-                <th style="width:10%">Messages</th>
+                <th style="width:10%">{{ option|headcount }}</th>
                 <th style="width:31%" id="leg-barre">Barre</th>
                 <th style="width:5%" colspan="2">Rang</th>
                 <th style="width:8%">Date</th>
                 <th style="width:5%" colspan="2">Rang</th>
                 <th style="width:31%" id="leg-barre">Barre</th>
-                <th style="width:10%">Messages</th>
+                <th style="width:10%">{{ option|headcount }}</th>
             </tr>
         {% else %}
             <tr><th colspan="4">Classement {{ mois }} {{ annee }}</th></tr>

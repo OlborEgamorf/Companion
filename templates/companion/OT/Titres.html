@@ -1,0 +1,77 @@
+{% extends "companion/OT/BaseOT.html" %}
+{% block script %}
+<script type="text/javascript">
+
+    function confirm(button) {
+        val=button.value
+        button.value="Confirmer"
+        sleep(100).then(() => {button.type="submit"})
+        sleep(10000).then(() => {
+            button.type="button"
+            button.value=val})
+    }
+</script>
+{% endblock script %}
+
+{% block page %}
+{% load TagsCustom %}
+
+<div class="guild-stats">Boutique du jour - vous pouvez acheter des titres depuis votre profil</div>
+
+<form action="" method="post"> {% csrf_token %}
+<div class="div-titres">
+    
+    <table>
+        <tr><th colspan="5">Titres en boutique</th></tr>
+        <tr>
+            <th>ID</th>
+            <th>Titre</th>
+            <th class="text-small">Rareté</th>
+            <th class="text-small">Collection</th>
+            <th>Prix <img class="otcoin" src="https://cdn.discordapp.com/attachments/726034739550486618/959864834147622942/873226814527520809.webp"></th>
+        </tr>
+
+        {% for i in boutique %}
+            <tr>
+                <td>{{ i.ID }}</td>
+                <td>{{ i.Nom }}</td>
+                <td class="text-small">{{ i.Rareté|usedict:dictRarete }}</td>
+                <td class="text-small">{{ i.Collection }}</td>
+                {% if i.Own == True %}
+                    <td>Déjà possédé !</td>
+                {% elif i.Stock == 0 %}
+                    <td>En rupture de stock !</td>
+                {% else %}
+                    <td>{{ i.Rareté|usedict:dictAchat }}</td>
+                {% endif %}
+                
+            </tr>
+        {% endfor %}
+
+    </table>
+</div>
+
+<div class="guild-stats">Tous les titres</div>
+
+<div class="div-profil">
+    {% for i in titresInfos %}
+        <table class="table-jeux">
+            <tr><th colspan="3">{{ i.Nom }}</th></tr>
+            <tr>
+                <th>ID</th>
+                <th>Rareté</th>
+                <th>Collection</th>
+            </tr>
+            <tr>
+                <td>{{ i.ID }}</td>
+                <td>{{ i.Rareté|usedict:dictRarete }}</td>
+                <td>{{ i.Collection }}</td>
+            </tr>
+            <tr><td colspan="3">{{ i.Description }}</td></tr>
+        </table>
+    {% endfor %}
+</div>
+
+
+</form>
+{% endblock page %}

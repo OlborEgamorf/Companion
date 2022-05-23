@@ -15,9 +15,19 @@ def viewGuildHome(request,guild):
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
     guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
+    try:
+        hideblind=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
+        assert not hideblind["Blind"]
+        assert not hideblind["Leave"]
+        assert curseurGuild.execute("SELECT * FROM stats").fetchone()["Active"]
+        stats=True
+    except:
+        stats=False
+
     ctx={"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
     "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
-    "stats":True,"outils":True,"sv":True,"polls":True,"admin":True,"anniv":True,
+    "stats":stats,"outils":True,"sv":True,"polls":True,"admin":True,"anniv":True,
     "travel":False,"selector":False}
     
     return render(request, "companion/GuildHome.html", ctx)

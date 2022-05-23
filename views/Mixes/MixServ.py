@@ -10,7 +10,7 @@ from django.shortcuts import render
 
 
 @login_required(login_url="/login")
-def mixPeriods(request,mix,option):
+def mixServ(request,mix,option):
     obj = request.GET.get("obj")
     user=request.user
 
@@ -57,12 +57,15 @@ def mixPeriods(request,mix,option):
             obj=listeObj[0]["ID"]
 
         obj=int(obj)
+        idperso=obj
     else:
         obj,listeObj=None,None
 
     for guild in mix_ids:
+        if option in ("messages","voice","mots"):
+            idperso=guild
         try:
-            for i in getTablePerso(guild,dictOptions[option],user.id,obj,"M","countDesc"):
+            for i in getTablePerso(guild,dictOptions[option],idperso,False,"M","countDesc"):
                 it=0
                 while it<len(statsMois) and it!=-1:
                     if statsMois[it]["Mois"]==i["Mois"] and statsMois[it]["Annee"]==i["Annee"]:
@@ -72,7 +75,7 @@ def mixPeriods(request,mix,option):
                         it+=1
                 if it!=-1:
                     statsMois.append(i)
-            for i in getTablePerso(guild,dictOptions[option],user.id,obj,"A","countDesc"):
+            for i in getTablePerso(guild,dictOptions[option],idperso,False,"A","countDesc"):
                 it=0
                 while it<len(statsAnnee) and it!=-1:
                     if statsAnnee[it]["Annee"]==i["Annee"]:
@@ -105,14 +108,14 @@ def mixPeriods(request,mix,option):
     "guildname":infosMix["Nom"],"guildid":"mixes/{0}".format(infosMix["Nombre"]),
     "commands":["ranks","periods"],"dictCommands":dictRefCommands,"command":"periods",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":["serv","perso"],"dictPlus":dictRefPlus,"plus":"perso",
+    "lisPlus":["serv","perso"],"dictPlus":dictRefPlus,"plus":"serv",
     "travel":False,"selector":True,"obj":obj,"listeObjs":listeObj,"mix":True,"listeMix":listeMixs,"nbmix":infosMix["Nombre"],
     "pin":getPin(user,curseurGet,"mixes/{0}".format(infosMix["Nombre"]),option,"ranks","")}
 
     return render(request, "companion/periods.html", ctx)
 
 @login_required(login_url="/login")
-def iFrameMixPeriods(request,mix,option):
+def iFrameMixServ(request,mix,option):
     all=request.GET.get("data")
     mois,annee,obj=all.split("?")
     if len(annee)==4:
@@ -150,7 +153,10 @@ def iFrameMixPeriods(request,mix,option):
         for guild in listeMixs:
             try:
                 connexion,curseur=connectSQL(guild["ID"],dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
-                ligne=curseur.execute("SELECT * FROM {0}{1}{2} WHERE ID={3}".format(moisDB,anneeDB,obj,user.id)).fetchone()
+                if option in ("messages","voice","mots"):
+                    ligne=curseur.execute("SELECT SUM(Count) AS Count FROM {0}{1}".format(moisDB,anneeDB)).fetchone()
+                else:
+                    ligne=curseur.execute("SELECT * FROM {0}{1} WHERE ID={2}".format(moisDB,anneeDB,obj)).fetchone()
                 ligne["Nom"]=guild["Nom"]
                 ligne["ID"]=guild["ID"]
                 ligne["Icon"]=guild["Icon"]
@@ -159,6 +165,8 @@ def iFrameMixPeriods(request,mix,option):
             except:
                 pass
         stats.sort(key=lambda x:x["Count"],reverse=True)
+        if option in ("messages","voice","mots"):
+            rankingClassic(stats)
         if maxi<0:
             maxi=1
         ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"nom":nom,"option":option}

@@ -20,7 +20,7 @@ dictRefPlus={"":"Tableaux","graphs":"Graphiques","compare":"Comparateur","perso"
 listeOptionsJeux=["home","p4","tortues","tortuesduo","trivialversus","trivialbr","trivialparty","morpion","matrice",]
 dictRefOptionsJeux={"home":"Accueil","p4":"P4","tortues":"Tortues","tortuesduo":"TortuesDuo","trivialversus":"Trivial VS","trivialbr":"Trivial BR","trivialparty":"Trivial Party","morpion":"Morpion","matrice":"Matrice"}
 
-dictDivers={3:"Images",2:"GIFs",1:"Fichiers",4:"Liens",5:"Réponse",6:"Réactions",7:"Edits",8:"Emotes",9:"Messages",10:"Mots",11:"Vocal","images":3,"gifs":2,"fichiers":1,"liens":4,"réponse":5,"réactions":6,"edits":7,"emotes":8,"messages":9,"mots":10,"vocal":11}
+dictDivers={3:"Images envoyées",2:"GIFs envoyés",1:"Fichiers envoyés",4:"Liens envoyés",5:"Réponses envoyés",6:"Réactions effectuées",7:"Messages édités",8:"Emotes envoyées",9:"Messages envoyés",10:"Mots écrits",11:"Temps passé en vocal","images":3,"gifs":2,"fichiers":1,"liens":4,"réponse":5,"réactions":6,"edits":7,"emotes":8,"messages":9,"mots":10,"vocal":11}
 
 with open('os/SQL.txt') as f:
     root = f.read().strip()
@@ -159,13 +159,6 @@ def getGuild(guild):
     assert guild_full.status_code==200
     guild_full=guild_full.json()
     return guild_full
-
-
-def getUser(guild,id):
-    user_full=requests.get("https://discord.com/api/v9/guilds/{0}/members/{1}".format(guild,id),headers={"Authorization":"Bot Njk5NzI4NjA2NDkzOTMzNjUw.XpYnDA.ScdeM2sFekTRHY5hubkwg0HWDPU"})
-    assert user_full.status_code==200
-    user_full=user_full.json()
-    return user_full
 
 
 def colorRoles(guild_full):

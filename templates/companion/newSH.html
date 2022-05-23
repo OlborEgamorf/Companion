@@ -4,16 +4,16 @@
 {% block stats %}
 {% load TagsCustom %}
 {% for opt in optNotHome %}
-    <div class="guild-stats">{{ opt|usedict:dictOptions }}</div>
+    <div class="guild-stats">{{ opt|statshome }}</div>
     <div class="div-profil">
         <table class="table-recap">
             {% if opt == "messages" or opt == "mots" or opt == "voice" or opt == "emotes" or opt == "reactions" %}
                 <tr><th colspan="5">Classement global</th></tr>
                 <tr>
                     <th>Rang</th>
-                    <th colspan="2">Membre</th>
+                    <th colspan="2">{{ opt|headnom }}</th>
                     <th id="leg-barre">Barre</th>
-                    <th>Messages</th>
+                    <th>{{ opt|headcount }}</th>
                 </tr>
             {% elif opt == "tortues" or opt == "tortuesduo" or opt == "p4" or opt == "matrice" or opt == "morpion" or opt == "trivialversus" or opt == "trivialbr" or opt == "trivialparty" %}
                 <tr><th colspan="6">Classement global</th></tr>
@@ -28,9 +28,9 @@
                 <tr><th colspan="4">Classement global</th></tr>
                 <tr>
                     <th>Rang</th>
-                    <th>Emote</th>
+                    <th>{{ opt|headnom }}</th>
                     <th id="leg-barre">Barre</th>
-                    <th>Utilisations</th>
+                    <th>{{ opt|headcount }}</th>
                 </tr>
             {% endif %}
 
@@ -88,9 +88,9 @@
                 <tr><th colspan="5">Premiers sur les 5 derniers mois</th></tr>
                 <tr>
                     <th>Période</th>
-                    <th colspan="2">Membre</th>
+                    <th colspan="2">{{ opt|headnom }}</th>
                     <th id="leg-barre">Barre</th>
-                    <th>Messages</th>
+                    <th>{{ opt|headcount }}</th>
                 </tr>
             {% elif opt == "tortues" or opt == "tortuesduo" or opt == "p4" or opt == "matrice" or opt == "morpion" or opt == "trivialversus" or opt == "trivialbr" or opt == "trivialparty" %}
                 <tr><th colspan="5">Premier sur les 5 derniers mois</th></tr>
@@ -104,9 +104,9 @@
                 <tr><th colspan="4">Premiers sur les 5 derniers moiss</th></tr>
                 <tr>
                     <th>Période</th>
-                    <th>Membre</th>
+                    <th>{{ opt|headnom }}</th>
                     <th id="leg-barre">Barre</th>
-                    <th>Messages</th>
+                    <th>{{ opt|headcount }}</th>
                 </tr>
             {% endif %}
             {% for i in stats|getfirst:opt %}
@@ -159,7 +159,7 @@
                     <th>Rang</th>
                     <th>Date</th>
                     <th>Barre</th>
-                    <th>Messages</th>
+                    <th>{{ opt|headcount }}</th>
                 </tr>
                 {% for i in stats|getperso:opt %}
                     <tr>
@@ -194,17 +194,17 @@
                     <tr><th colspan="5">Vos meilleures emotes sur les 5 derniers mois</th></tr>
                     <tr>
                         <th>Rang</th>
-                        <th colspan="2">Emote</th>
+                        <th colspan="2">{{ opt|headnom }}</th>
                         <th id="leg-barre">Barre</th>
-                        <th>Utilisations</th>
+                        <th>{{ opt|headcount }}</th>
                     </tr>
                 {% else %}
                     <tr><th colspan="4">Vos meilleures emotes sur les 5 derniers mois</th></tr>
                     <tr>
                         <th>Rang</th>
-                        <th>Emote</th>
+                        <th>{{ opt|headnom }}</th>
                         <th id="leg-barre">Barre</th>
-                        <th>Utilisations</th>
+                        <th>{{ opt|headcount }}</th>
                     </tr>   
                 {% endif %}
                 

@@ -101,6 +101,51 @@ def lexiquePlus(plus):
     if plus=="graph":
         return "Graphiques : Affiche les statistiques dans différents graphiques, pour mieux visualiser."   
 
+def statshome(option):
+    if option=="messages":
+        return "Résumé messages envoyés"
+    if option=="voice":
+        return "Résumé temps passé en vocal"
+    if option=="emotes":
+        return "Résumé emotes envoyées"
+    if option=="freq":
+        return "Résumé heures d'activité"
+    if option=="salons":
+        return "Résumé salons textuels les plus actifs"
+    if option=="voicechan":
+        return "Résumé salons vocaux les plus actifs"
+    if option=="reactions":
+        return "Résumé réactions envoyées"
+
+def enteteNom(option):
+    if option in ("messages","voice"):
+        return "Membre"
+    if option in ("emotes","reactions"):
+        return "Emote"
+    if option=="freq":
+        return "Heure"
+    if option in ("salons","voicechan"):
+        return "Salon"
+
+def enteteCount(option):
+    if option in ("messages","salons","freq"):
+        return "Messages envoyés"
+    if option in ("voice","voicechan"):
+        return "Temps en vocal"
+    if option in ("emotes","reactions"):
+        return "Utilisations"
+
+def nomsearch(option):
+    if option in ("messages","voice"):
+        return "un membre"
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        return "un joueur"
+    if option in ("emotes","reactions"):
+        return "une emote"
+    if option=="freq":
+        return "une heure"
+    if option in ("salons","voicechan"):
+        return "un salon"
 
 register.filter("usedict", useDict)
 register.filter("tempsvoice",formatCount)
@@ -119,3 +164,8 @@ register.filter("soustraction",soustraction)
 register.filter("lexiqueOption",lexiqueOption)
 register.filter("lexiqueCommande",lexiqueCommande)
 register.filter("lexiquePlus",lexiquePlus)
+register.filter("statshome",statshome)
+
+register.filter("headnom",enteteNom)
+register.filter("headcount",enteteCount)
+register.filter("nomsearch",nomsearch)

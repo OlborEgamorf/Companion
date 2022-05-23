@@ -98,11 +98,7 @@ def createAccount(connexion,curseur):
     connexion.commit()
 def getAllInfos(curseur,curseurUser,connexionUser,user):
     createAccount(connexionUser,curseurUser)
-    try:
-        coins=curseurUser.execute("SELECT * FROM coins").fetchone()["Coins"]
-    except:
-        createAccount(connexionUser,curseurUser)
-        coins=0
+    coins=curseurUser.execute("SELECT * FROM coins").fetchone()["Coins"]
     titre=curseur.execute("SELECT titres.Nom FROM active JOIN titres ON active.TitreID=titres.ID WHERE MembreID={0}".format(user)).fetchone()
     custom=curseur.execute("SELECT Custom FROM custom WHERE ID={0}".format(user)).fetchone()
     emote=curseur.execute("SELECT * FROM emotes WHERE ID={0}".format(user)).fetchone()

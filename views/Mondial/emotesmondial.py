@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from companion.Getteurs import getGuildInfo
-from companion.outils import (connectSQL, getGuilds, getMoisAnnee, getUser,
+from companion.outils import (connectSQL, getGuilds, getMoisAnnee,
                       tableauMois)
 
 

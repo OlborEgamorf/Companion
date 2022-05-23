@@ -19,6 +19,6 @@ def CompanionStats(func):
         try:
             return func(*args,**kwargs)
         except AssertionError:
-            return render(request,"companion/DateError.html")
+            return render(request,"companion/Erreurs/DateError.html")
         
     return wrapper

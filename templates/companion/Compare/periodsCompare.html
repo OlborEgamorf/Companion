@@ -147,13 +147,13 @@
         {% endif %}
 
         <tr>
-            <th style="width:10%" onclick="sortTable(0)">Messages</th>
+            <th style="width:10%" onclick="sortTable(0)">{{ option|headcount }}</th>
             <th style="width:31%" id="leg-barre" onclick="sortTable(0)">Barre</th>
             <th style="width:5%" onclick="sortTable(2)">Rang</th>
             <th style="width:8%" onclick="sortTable(3)">Date</th>
             <th style="width:5%" onclick="sortTable(4)">Rang</th>
             <th style="width:31%" id="leg-barre" onclick="sortTable(6)">Barre</th>
-            <th style="width:10%" onclick="sortTable(6)">Messages</th>
+            <th style="width:10%" onclick="sortTable(6)">{{ option|headcount }}</th>
         </tr>
 
         {% for i in rankMois %}

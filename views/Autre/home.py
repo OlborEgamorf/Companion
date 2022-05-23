@@ -63,7 +63,8 @@ def home(request):
         pass
 
     try:
-        pins=curseurGet.execute("SELECT * FROM pin_{0}".format(user.id)).fetchall()
+        connexionPin,curseurPin=connectSQL("OT","Pin","Guild",None,None)
+        pins=curseurPin.execute("SELECT * FROM pin_{0}".format(user.id)).fetchall()
         for i in pins:
             if i["Guild"][:5]=="mixes":
                 mix=curseurMix.execute("SELECT * FROM mixes_{0} WHERE Nombre={1}".format(user.id,i["Guild"][6:])).fetchone()
@@ -81,5 +82,3 @@ def home(request):
     ctx={"guilds":common,"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"mixalert":mixalert,"mixes":mixes_final,
     "userpin":pins,"dictCommands":dictRefCommands,"dictOptions":dictRefOptions,"dictPlus":dictRefPlus,"dictOptionsJeux":dictRefOptionsJeux}
     return render(request, "companion/home.html", ctx)
-
-#print(request.POST.get(str(guild["id"])))

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://media.discordapp.net/attachments/726034739550486618/908452059496448000/capucheB.png">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
+    <title>Stats mondiales - OT Companion</title>
+    <script src="{% static 'companion/Scripts.js' %}" crossorigin="anonymous"></script>
+</head>
+
+{% block script %} {% endblock %}
+
+
+{% load TagsCustom %}
+
+<body>
+    <div class="sidenav" id="side">
+        <a href="/companion/" class="ot-logo" onmouseenter="showBar('OT')" onmouseleave="hideBar('OT')" onclick="clickServ(this)">
+            <span class="little-icon-guild"><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
+            <span id="OT" class="text-bar">Olbor Track - Accueil</span>
+        </a>
+        <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}?size=128"></span>
+            <span id="Focus" class="text-bar">{{ nom }}</span>
+        </a>
+        <a href="/companion/ot" style="background-color: #696969;" onmouseenter="showBar('user')" onmouseleave="hideBar('user')" onclick="clickServ(this)">
+            <span class="little-icon-guild"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977557244969353216/FULL.png"></span>
+            <span id="user" class="text-bar">Stats mondiales</span>
+        </a>
+        
+    </div>
+
+    <div class="profil-infos">
+        <div>
+            <img class="profil-avatar" src="https://cdn.discordapp.com/attachments/726034739550486618/977557244969353216/FULL.png">
+            <div class="profil-texte">
+                <div class="texte-gros">
+                    Olbor Track
+                </div>
+                <div class="texte-titre">
+                    Stats mondiales
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navbar">
+        {% for o in options %}
+            {% if option == o %}
+                <a class="select">{{ o|usedict:dictOptions }}</a>
+            {% elif o == "home" %}
+                <a href="/companion/ot/" onclick="clickServ(this)">{{ o|usedict:dictOptions }}</a>
+            {% else %}
+                <a href="/companion/ot/{{ o }}" onclick="clickServ(this)">{{ o|usedict:dictOptions }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+{% block page %} {% endblock %}
+
+<div class="footer-ot" style="margin-bottom: 0;">
+    <span class="footer-links">
+        <a href="/companion"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png"></a>
+        <a href="https://twitter.com/OlborTrack"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575596027768943/580b57fcd9996e24bc43c53e.png"></a>
+        <a href="https://instagram.com/OlborTrack"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575617326424095/zerdsfsf.png"></a>
+        <a href="https://github.com/OlborEgamorf/OlborTrack-Bot"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575617653583922/25231.png"></a>
+    </span>
+</div>
+
+<div class="footer-ot" style="margin-top: 0;width: 250px;">
+    <span class="footer-credits">
+        Olbor Track Companion <br>Par OlborEgamorf
+    </span>
+</div>
+
+</body>
+</html>

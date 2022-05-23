@@ -30,7 +30,7 @@ def viewServ(request,guild,option):
     if option in ("emotes","salons","voicechan","reactions","freq","divers"):
         connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
         
-        listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
+        listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC LIMIT 150").fetchall()
         if option in ("emotes","reactions"):
             listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
         elif option in ("salons","voicechan"):

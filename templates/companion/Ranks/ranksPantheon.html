@@ -20,9 +20,9 @@
 
 <div class="searchTable">
     {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
-        <input type="text" id="searchTable" onkeyup="searchName(3)" placeholder="Recherchez une emote">
+        <input type="text" id="searchTable" onkeyup="searchName(3)" placeholder="Recherchez {{ option|nomsearch }}">
     {% else %}
-        <input type="text" id="searchTable" onkeyup="searchName(2)" placeholder="Recherchez une emote">
+        <input type="text" id="searchTable" onkeyup="searchName(2)" placeholder="Recherchez {{ option|nomsearch }}">
     {% endif %}
 </div>
 
@@ -33,9 +33,9 @@
             <tr>
                 <th>Rang (base)</th>
                 <th>Date</th>
-                <th colspan="2">Membre</th>
+                <th colspan="2">{{ option|headnom }}</th>
                 <th id="leg-barre">Barre</th>
-                <th>Messages</th>
+                <th>{{ option|headcount }}</th>
             </tr>
         {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
             <tr><th colspan="7">Panthéon - Le classement des classements</th></tr>
@@ -53,9 +53,9 @@
             <tr>
                 <th>Rang (base)</th>
                 <th>Date</th>
-                <th>Emote</th>
+                <th>{{ option|headnom }}</th>
                 <th id="leg-barre">Barre</th>
-                <th>Utilisations</th>
+                <th>{{ option|headcount }}</th>
             </tr>
         {% endif %}
 

@@ -1,0 +1,15 @@
+{% extends "companion/OT/BaseOT.html" %}
+{% block page %}
+{% load TagsCustom %}
+
+<div class="div-profil">
+    {% for i in rank %}
+        <table class="table-jeux">
+            <tr><th>{{ i.Nom }}</th></tr>
+            <tr><th>Compteur</th></tr>
+            <tr><td>{{ i.Count }}</td></tr>
+        </table>
+    {% endfor %}
+</div>
+
+{% endblock page %}

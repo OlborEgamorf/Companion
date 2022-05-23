@@ -16,10 +16,13 @@ from companion.views.First.FirstGraph import graphFirst, iFrameGraphFirst
 from companion.views.Jours.Jours import iFrameJour, viewJours
 from companion.views.Jours.JoursGraph import graphJours, iFrameGraphJours
 from companion.views.Mixes.DelMix import delMix
+from companion.views.Mixes.MixPeriods import iFrameMixPeriods, mixPeriods
 from companion.views.Mixes.MixPerso import iFrameMixPerso, mixPerso
 from companion.views.Mixes.MixRanks import iFrameMixRank, mixRank
+from companion.views.Mixes.MixServ import iFrameMixServ, mixServ
 from companion.views.Mondial.emotesmondial import emotesMondial, iframeEmotes
 from companion.views.Mondial.EmotesWW import emotesMondialGuild
+from companion.views.OT.OTTitres import viewOTStats, viewOTTitres
 from companion.views.Periods.Periods import (iFramePeriods, iFramePeriodsJeux,
                                              periodsJeux, viewPeriods)
 from companion.views.Periods.PeriodsCompare import viewPeriodsCompare
@@ -109,14 +112,14 @@ urlpatterns = [
     path("jeux/<str:option>/iframefirst",iFrameFirstJeux,name="jeux-iframe-first"),
 
     path("mixes/<int:mix>/<str:option>/ranks/",mixRank,name="stats-ranks"),
-    path("mixes/<int:mix>/<str:option>/periods/",viewServ,name="stats-periods"),
+    path("mixes/<int:mix>/<str:option>/periods/",mixServ,name="stats-periods"),
 
-    path("mixes/<int:mix>/<str:option>/periods/perso",mixPerso,name="stats-serv"),
+    path("mixes/<int:mix>/<str:option>/periods/perso",mixPeriods,name="stats-serv"),
     path("mixes/<int:mix>/<str:option>/ranks/perso",mixPerso,name="stats-perso"),
 
     path("mixes/<int:mix>/<str:option>/iframeranks",iFrameMixRank,name="iframe-ranks"),
-    path("mixes/<int:mix>/<str:option>/iframeperiods",iFramePeriods,name="iframe-periods"),
-    path("mixes/<int:mix>/<str:option>/iframeserv",iFrameServ,name="iframe-serv"),
+    path("mixes/<int:mix>/<str:option>/iframeperiods",iFrameMixPeriods,name="iframe-periods"),
+    path("mixes/<int:mix>/<str:option>/iframeserv",iFrameMixServ,name="iframe-serv"),
     path("mixes/<int:mix>/<str:option>/iframeperso",iFrameMixPerso,name="iframe-perso"),
 
     path("mixes/<int:mix>/del",delMix,name="del-mix"),
@@ -124,5 +127,8 @@ urlpatterns = [
     path("pin",ajoutPin),
     path("pin/add",ajoutPin),
     path("pin/del",delPin),
+
+    path("ot/titres",viewOTTitres,name="del-mix"),
+    path("ot/stats",viewOTStats,name="del-mix"),
     
 ]

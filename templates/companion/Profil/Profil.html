@@ -37,7 +37,7 @@
                 <th>Rang (interne)</th>
                 <th colspan="2">Serveur</th>
                 <th id="leg-barre">Barre</th>
-                <th>Messages</th>
+                <th>Messages envoyés</th>
             </tr>
     
             {% for i in messages %}
@@ -45,9 +45,9 @@
                     <td>{{ i.Rank }} ({{ i.RankIntern }})</td>
                     <td>
                         {% if i.Icon %}
-                            <img src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}.png?size=128">
+                            <a href="/companion/{{ i.ID }}"><img src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}.png?size=128"></a>
                         {% else %}
-                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                            <a href="/companion/{{ i.ID }}"><img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
                         {% endif %}
                     </td>
                     <td style="text-align: start;">{{ i.Nom }}</td>
@@ -67,7 +67,7 @@
                 <th>Rang (interne)</th>
                 <th colspan="2">Serveur</th>
                 <th id="leg-barre">Barre</th>
-                <th>Messages</th>
+                <th>Temps passé en vocal</th>
             </tr>
     
             {% for i in vocal %}
@@ -75,9 +75,9 @@
                     <td>{{ i.Rank }} ({{ i.RankIntern }})</td>
                     <td>
                         {% if i.Icon %}
-                            <img src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}.png?size=128">
+                            <a href="/companion/{{ i.ID }}"><img src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}.png?size=128"></a>
                         {% else %}
-                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                            <a href="/companion/{{ i.ID }}"><img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
                         {% endif %}
                     </td>
                     <td style="text-align: start;">{{ i.Nom }}</td>
@@ -97,7 +97,7 @@
                 <th>Rang</th>
                 <th>Emote</th>
                 <th id="leg-barre">Barre</th>
-                <th>Messages</th>
+                <th>Utilisations</th>
             </tr>
     
             {% for i in emotes %}
@@ -122,7 +122,7 @@
                 <th>Rang (interne)</th>
                 <th colspan="2">Salon</th>
                 <th id="leg-barre">Barre</th>
-                <th>Messages</th>
+                <th>Messages envoyés</th>
             </tr>
     
             {% for i in salons %}
@@ -130,9 +130,9 @@
                     <td>{{ i.Rank }} ({{ i.RankIntern }})</td>
                     <td>
                         {% if i.Icon %}
-                            <img src="https://cdn.discordapp.com/icons/{{ i.IDGuild }}/{{ i.Icon }}.png?size=128">
+                            <a href="/companion/{{ i.ID }}"><img src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}.png?size=128"></a>
                         {% else %}
-                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                            <a href="/companion/{{ i.ID }}"><img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
                         {% endif %}
                     </td>
                     <td style="text-align: start;">{{ i.Nom }}</td>
@@ -152,7 +152,7 @@
                 <th>Rang</th>
                 <th>Heure</th>
                 <th id="leg-barre">Barre</th>
-                <th>Messages</th>
+                <th>Messages envoyés</th>
             </tr>
     
             {% for i in freq %}

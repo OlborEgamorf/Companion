@@ -18,11 +18,11 @@
         <tr><th colspan="5">Classement {{ jour }} {{ mois }} {{ annee }} {{ nom }}</th></tr>
             <tr>
                 <th>Rang</th>
-                <th colspan="2">Membre</th>
+                <th colspan="2">{{ option|headnom }}</th>
                 {% if plus != "graph" %}
                     <th id="leg-barre">Barre</th>
                 {% endif %}
-                <th>Messages</th>
+                <th>{{ option|headcount }}</th>
             </tr>
             {% for i in rank %}
                 {% if i.ID == id %}

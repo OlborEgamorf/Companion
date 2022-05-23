@@ -4,7 +4,11 @@
 <script type="text/javascript">
     
     function newSite(mois,annee,obj) {
-        var site = "/companion/{{ guildid }}/{{ option }}/iframe{{ command }}?data="+mois+"?"+annee+"?{{ obj }}"
+        if ('{{ mix }}' == "True" && '{{ plus }}' == "serv") {
+          var site = "/companion/{{ guildid }}/{{ option }}/iframeserv?data="+mois+"?"+annee+"?{{ obj }}"
+        } else {
+          var site = "/companion/{{ guildid }}/{{ option }}/iframe{{ command }}?data="+mois+"?"+annee+"?{{ obj }}"
+        }
         document.getElementById('iframeevol').src = site;
         try {document.getElementById("elselect").id = NaN}
         catch {}
@@ -92,7 +96,7 @@
             <th onclick="sortTable(0)">Rang</th>
             <th onclick="sortTable(1)">Date</th>
             <th>Barre</th>
-            <th onclick="sortTable(3)">Messages</th>
+            <th onclick="sortTable(3)">{{ option|headcount }}</th>
         </tr>
         {% for i in rankMois %}
             <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">

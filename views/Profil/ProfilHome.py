@@ -31,7 +31,7 @@ def viewProfilHome(request,user):
         user_name=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Nom"]
         user_avatar_profil=user_avatar
         user_name_profil=user_name
-        options=["home","titres","custom","stats"]
+        options=["home","titres",]#"custom","stats"]
         listeCom=[]
 
     liste=["P4","Tortues","TortuesDuo","TrivialVersus","TrivialParty","TrivialBR","Matrice","Morpion"]

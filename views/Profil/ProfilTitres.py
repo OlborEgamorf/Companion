@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from companion.Getteurs import getAllInfos
-from companion.outils import connectSQL, getCommon
+from companion.outils import connectSQL, getCommon, getGuilds
 
 @login_required(login_url="/login")
 def viewProfilTitres(request,user):
@@ -16,10 +16,16 @@ def viewProfilTitres(request,user):
     infos=getAllInfos(curseur,curseurUser,connexionUser,user)
 
     if user!=request.user.id:
-        user_avatar_profil=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user)).fetchone()["Avatar"]
-        user_name_profil=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user)).fetchone()["Nom"]
         user_avatar=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Avatar"]
         user_name=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Nom"]
+        full_guilds=getGuilds(request.user,curseurGet)
+        listeCom=getCommon(full_guilds,user,curseurGet)
+        if len(listeCom)==0:
+            user_avatar_profil=None
+            user_name_profil=infos["Full"]
+        else:
+            user_avatar_profil=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user)).fetchone()["Avatar"]
+            user_name_profil=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user)).fetchone()["Nom"]
         connexionUserCo,curseurUserCo=connectSQL("OT",request.user.id,"Titres",None,None)
         coins=curseurUserCo.execute("SELECT * FROM coins").fetchone()["Coins"]
         options=["home","titres"]
@@ -29,7 +35,8 @@ def viewProfilTitres(request,user):
         user_avatar_profil=user_avatar
         user_name_profil=user_name
         coins=infos["Coins"]
-        options=["home","titres","custom","stats"]
+        options=["home","titres",]#"custom","stats"]
+        listeCom=[]
 
     mess,colorMess=None,None
     if request.method=="POST":
@@ -120,7 +127,7 @@ def viewProfilTitres(request,user):
         else:
             i["Own"]=False
 
-    ctx={"avatarprofil":user_avatar_profil,"idprofil":user,"nomprofil":user_name_profil,
+    ctx={"avatarprofil":user_avatar_profil,"idprofil":user,"nomprofil":user_name_profil,"guildscom":listeCom,
         "avatar":user_avatar,"id":request.user.id,"nom":user_name,
         "titre":infos["Full"],"color":infos["Couleur"],"emote":infos["Emote"],"custom":infos["Custom"],"coins":coins,"equip":infos["Titre"],
         "vip":infos["VIP"],"testeur":infos["Testeur"],

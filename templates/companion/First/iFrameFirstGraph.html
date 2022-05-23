@@ -15,12 +15,20 @@
 
 <body class="bodyiframe">
     <table class="table-iframe">
-        <tr><th colspan="5">Classement {{ role }} {{ jour }} {{ mois }} {{ annee }}</th></tr>
+        <tr><th colspan="5">Liste des premiers</th></tr>
+            {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions"%}
             <tr>
                 <th>Date</th>
-                <th colspan="2">Membre</th>
-                <th>Messages</th>
+                <th colspan="2">{{ option|headnom }}</th>
+                <th>{{ option|headcount }}</th>
             </tr>
+            {% else %}
+            <tr>
+                <th>Date</th>
+                <th>{{ option|headnom }}</th>
+                <th>{{ option|headcount }}</th>
+            </tr>
+            {% endif %}
             {% for i in rank %}
                 {% if i.ID == id %}
                     <tr class="user">
@@ -29,24 +37,24 @@
                 {% endif %}
                     <td>{{ i.Mois }}/{{ i.Annee }}</td>
                     
-                    {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                    {% if option == "messages" or option == "mots" or option == "voice" %}
                         <td>
-                            {% if i.Emote != None %}
+                            {% if i.Avatar %}
                                 <a href="/companion/profil/{{ i.ID }}">
-                                <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}"></a>
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
                             {% else %}
                                 <a href="/companion/profil/{{ i.ID }}">
                                 <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
                             {% endif %}
                         </td>
-                    {% else %}
-                    <td>
-                        {% if i.Avatar %}
-                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                    {% elif option == "emotes" or option == "reactions" %}
+                        {% if i.Nom == "twemoji" %}
+                        <td onclick="getTwemoji('{{ i.ID }}',this)">
                         {% else %}
-                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                        <td>
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}?size=128" style="border-radius: 0%;">
                         {% endif %}
-                    </td>
+                        </td>
                     {% endif %}
     
                     <td style="text-align: start;">{{ i.Nom }}</td>

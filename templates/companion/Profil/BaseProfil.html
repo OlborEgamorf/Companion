@@ -6,28 +6,9 @@
     <link rel="shortcut icon" href="https://media.discordapp.net/attachments/726034739550486618/908452059496448000/capucheB.png">
     {% load static %}
     <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
-    
     <title>{{ nomprofil }} - OT Companion</title>
+    <script src="{% static 'companion/Scripts.js' %}" crossorigin="anonymous"></script>
 </head>
-
-<script type="text/javascript">
-    
-    function sleep (time) {
-        return new Promise((resolve) => setTimeout(resolve, time));
-    }
-
-    function showBar(id) {
-        document.getElementById(id).style.opacity = 100;
-        sleep(500).then(() => {document.getElementById(id).style.fontSize = "20px"})
-    }    
-
-    function hideBar(id) {
-        document.getElementById(id).style.opacity = 0;
-        sleep(500).then(() => {document.getElementById(id).style.fontSize = "0"})
-    }  
-
-    
-</script>
 
 {% block script %} {% endblock %}
 
@@ -35,19 +16,31 @@
 {% load TagsCustom %}
 
 <body>
+    <div class="buttonnav">
+        <a onclick="devBarMobile()">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></span>
+            <span id="suus" class="text-bar">Olbor Track - Accueil</span>
+        </a>
+    </div>
+
     <div class="sidenav" id="side">
+        <a id="back" class="back" onclick="undevBarMobile()">
+            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/977285454648979476/Moins.png"></span>
+            <span id="suus" class="text-bar"></span>
+        </a>
+
         <a href="/companion/" class="ot-logo" onmouseenter="showBar('OT')" onmouseleave="hideBar('OT')" onclick="clickServ(this)">
             <span class="little-icon-guild"><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
             <span id="OT" class="text-bar">Olbor Track - Accueil</span>
         </a>
         {% if id == idprofil %}
-            <a href="/companion/profil/{{ id }}" style="background-color: {{ color }};" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
+            <a href="/companion/profil/{{ id }}" style="background-color: {{ color }};" onmouseenter="showBar('user')" onmouseleave="hideBar('user')" onclick="clickServ(this)">
             <span class="little-icon-guild"><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}"></span>
-            <span id="Focus" class="text-bar">{{ nom }}</span>
+            <span id="user" class="text-bar">{{ nom }}</span>
         {% else %}
-            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
+            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('user')" onmouseleave="hideBar('user')" onclick="clickServ(this)">
             <span class="little-icon-guild"><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}"></span>
-            <span id="Focus" class="text-bar">{{ nom }}</span>
+            <span id="user" class="text-bar">{{ nom }}</span>
         {% endif %}
         </a>
         

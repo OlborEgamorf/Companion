@@ -56,13 +56,13 @@
                 <th style="width:47.5%" colspan="5">Premiers {{ annee2 }}</th>
             </tr>
             <tr>
-                <th style="width:10%">Messages</th>
+                <th style="width:10%">{{ option|headcount }}</th>
                 <th style="width:22.5%" id="leg-barre">Barre</th>
-                <th style="width:15%" colspan="2">Membre</th>
+                <th style="width:15%" colspan="2">{{ option|headnom }}</th>
                 <th style="width:5%">Mois</th>
-                <th style="width:15%" colspan="2">Membre</th>
+                <th style="width:15%" colspan="2">{{ option|headnom }}</th>
                 <th style="width:22.5%" id="leg-barre">Barre</th>
-                <th style="width:10%">Messages</th>
+                <th style="width:10%">{{ option|headcount }}</th>
             </tr>
         {% else %}
             <tr>
@@ -71,13 +71,13 @@
                 <th style="width:47.5%" colspan="5">Premiers {{ annee2 }}</th>
             </tr>
             <tr>
-                <th style="width:10%">Messages</th>
+                <th style="width:10%">{{ option|headcount }}</th>
                 <th style="width:22.5%" id="leg-barre">Barre</th>
-                <th style="width:15%">Membre</th>
+                <th style="width:15%">{{ option|headnom }}</th>
                 <th style="width:5%">Mois</th>
-                <th style="width:15%">Membre</th>
+                <th style="width:15%">{{ option|headnom }}</th>
                 <th style="width:22.5%" id="leg-barre">Barre</th>
-                <th style="width:10%">Messages</th>
+                <th style="width:10%">{{ option|headcount }}</th>
             </tr>
         {% endif %}
 

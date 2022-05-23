@@ -56,21 +56,28 @@
                 <th style="width:47.5%" colspan="5">Classement {{ mois2 }} {{ annee2 }}</th>
             </tr>
             <tr>
-                <th style="width:10%">Messages</th>
+                <th style="width:10%">{{ option|headcount }}</th>
                 <th style="width:22.5%" id="leg-barre">Barre</th>
-                <th style="width:15%" colspan="2">Membre</th>
+                <th style="width:15%" colspan="2">{{ option|headnom }}</th>
                 <th style="width:5%">Rang</th>
-                <th style="width:15%" colspan="3">Membre</th>
+                <th style="width:15%" colspan="3">{{ option|headnom }}</th>
                 <th style="width:22.5%" id="leg-barre">Barre</th>
-                <th style="width:10%">Messages</th>
+                <th style="width:10%">{{ option|headcount }}</th>
             </tr>
         {% else %}
-            <tr><th colspan="4">Classement {{ mois }} {{ annee }}</th></tr>
             <tr>
-                <th>Rang</th>
-                <th>Emote</th>
-                <th id="leg-barre">Barre</th>
-                <th>Utilisations</th>
+                <th style="width:47.5%" colspan="3">Classement {{ mois1 }} {{ annee1 }}</th>
+                <th style="width:5%">VS</th>
+                <th style="width:47.5%" colspan="4">Classement {{ mois2 }} {{ annee2 }}</th>
+            </tr>
+            <tr>
+                <th style="width:10%">{{ option|headcount }}</th>
+                <th style="width:22.5%" id="leg-barre">Barre</th>
+                <th style="width:15%">{{ option|headnom }}</th>
+                <th style="width:5%">Rang</th>
+                <th style="width:15%" colspan="2">{{ option|headnom }}</th>
+                <th style="width:22.5%" id="leg-barre">Barre</th>
+                <th style="width:10%">{{ option|headcount }}</th>
             </tr>
         {% endif %}
 

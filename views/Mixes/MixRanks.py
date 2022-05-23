@@ -85,7 +85,7 @@ def iFrameMixRank(request,mix,option):
     mois,annee,obj=all.split("?")
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
     user=request.user
-    if obj==None:
+    if obj=="None" or obj==None:
         obj=user.id
     
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
@@ -111,8 +111,8 @@ def iFrameMixRank(request,mix,option):
         return render(request,"companion/Ranks/iFrameRanks_ranks.html",ctx)
     else:
         for guild in listeMixs:
-            connexion,curseur=connectSQL(guild["ID"],dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
             try:
+                connexion,curseur=connectSQL(guild["ID"],dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
                 ligne=curseur.execute("SELECT * FROM {0}{1} WHERE ID={2}".format(moisDB,anneeDB,obj)).fetchone()
                 ligne["Nom"]=guild["Nom"]
                 ligne["ID"]=guild["ID"]

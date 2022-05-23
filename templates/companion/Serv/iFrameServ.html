@@ -31,9 +31,9 @@
             <tr><th colspan="5">Classement {{ mois }} {{ annee }}</th></tr>
             <tr>
                 <th>Rang</th>
-                <th colspan="2">Membre</th>
+                <th colspan="2">{{ option|headnom }}</th>
                 <th id="leg-barre">Barre</th>
-                <th>Messages</th>
+                <th>{{ option|headcount }}</th>
             </tr>
         {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
             <tr><th colspan="6">Classement {{ mois }} {{ annee }}</th></tr>
@@ -49,9 +49,9 @@
             <tr><th colspan="4">Classement {{ mois }} {{ annee }}</th></tr>
             <tr>
                 <th>Rang</th>
-                <th>Emote</th>
+                <th>{{ option|headnom }}</th>
                 <th id="leg-barre">Barre</th>
-                <th>Utilisations</th>
+                <th>{{ option|headcount }}</th>
             </tr>
         {% endif %}
 

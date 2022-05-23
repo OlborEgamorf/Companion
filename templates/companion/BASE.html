@@ -9,59 +9,10 @@
     
     <title>{{ guildname }} - OT Companion</title>
     <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'companion/Scripts.js' %}" crossorigin="anonymous"></script>
 </head>
 
 <script type="text/javascript">
-
-    function sleep (time) {
-        return new Promise((resolve) => setTimeout(resolve, time));
-    }
-    
-
-    function resizeIframe(obj) {
-        if (obj.src != "https://olbortrack.com/companion/iframeblank") {
-            obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
-        }
-    }
-
-    function showBar(id) {
-        document.getElementById(id).style.opacity = 100;
-        sleep(500).then(() => {document.getElementById(id).style.fontSize = "20px"})
-    }    
-
-    function hideBar(id) {
-        document.getElementById(id).style.opacity = 0;
-        sleep(500).then(() => {document.getElementById(id).style.fontSize = "0"})
-    }  
-
-    function clickServ(obj) {
-        obj.style.backgroundColor = "#36F";
-    }
-
-    function searchName(n) {
-        // Declare variables
-        var input, filter, table, tr, td, i, txtValue;
-        input = document.getElementById("searchTable");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("tableot");
-        if (table == null) {
-            table = document.getElementById("tablecompare")
-        }
-        tr = table.getElementsByTagName("tr");
-
-        // Loop through all table rows, and hide those who don't match the search query
-        for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[n];
-            if (td) {
-                txtValue = td.textContent || td.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
-                }
-            }
-        }
-    }
 
     function getTwemoji(id,obj) {
         var td = document.createElement("div")
@@ -74,71 +25,23 @@
         obj.appendChild(td)
     }
 
-    function devBar() {
-        var reduce=document.getElementById("reduce")
-        var full=document.getElementById("full")
-
-        reduce.style.opacity=0
-        sleep(500).then(() => {
-            reduce.style.display="none"
-            full.style.display="inherit"
-            sleep(200).then(() => {full.style.opacity=100})
-        })
-    }
-
-    function undevBar() {
-        var reduce=document.getElementById("reduce")
-        var full=document.getElementById("full")
-
-        full.style.opacity=0
-        sleep(500).then(() => {
-            full.style.display="none"
-            reduce.style.display="inherit"
-            sleep(200).then(() => {reduce.style.opacity=100})
-        })
-    }
-
     function AJAX(pin) {
-        var pin = document.getElementById("pin")
-        var httpRequest = new XMLHttpRequest()
-        httpRequest.onreadystatechange = function () {
-            if (httpRequest.readyState === 4) {
-                pin.innerHTML = httpRequest.responseText
-            }
-        }
-        console.log(pin.innerHTML)
-        if (pin.innerHTML == "Épingler à l'accès rapide") {
-            httpRequest.open("GET","/companion/pin/add?guild={{ guildid }}&command={{ command }}&option={{ option }}&plus={{ plus }}",true)
-        } else {
-            httpRequest.open("GET","/companion/pin/del?guild={{ guildid }}&command={{ command }}&option={{ option }}&plus={{ plus }}",true)
-        }
-        
-        httpRequest.send()
-    }
-
-    function devBarMobile() {
-        sidebar = document.getElementById("side")
-        sidebar.style.left=0
-        childs=sidebar.children
-        for (i = 0; i < childs.length;i++) {
-            childs[i].style.width="400px"
-            childs[i].style.borderRadius=0
-            childs[i].children[1].style.opacity = 100
-            childs[i].children[1].style.fontSize = "20px"
+    var pin = document.getElementById("pin")
+    var httpRequest = new XMLHttpRequest()
+    httpRequest.onreadystatechange = function () {
+        if (httpRequest.readyState === 4) {
+            pin.innerHTML = httpRequest.responseText
         }
     }
-
-    function undevBarMobile() {
-        sidebar = document.getElementById("side")
-        sidebar.style.left=""
-        childs=sidebar.children
-        for (i = 0; i < childs.length;i++) {
-            childs[i].style.width=""
-            childs[i].style.borderRadius=""
-            childs[i].children[1].style.opacity = 0
-            childs[i].children[1].style.fontSize = 0
-        }
+    console.log(pin.innerHTML)
+    if (pin.innerHTML == "Épingler à l'accès rapide") {
+        httpRequest.open("GET","/companion/pin/add?guild={{ guildid }}&command={{ command }}&option={{ option }}&plus={{ plus }}",true)
+    } else {
+        httpRequest.open("GET","/companion/pin/del?guild={{ guildid }}&command={{ command }}&option={{ option }}&plus={{ plus }}",true)
     }
+    
+    httpRequest.send()
+}
 
 </script>
 
@@ -196,23 +99,23 @@
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png"></span>
                 <span id="Stats" class="text-bar">Statistiques</span>
             </a>
-            <a href="/companion/{{ guildid }}/polls" onmouseenter="showBar('Sondages')" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
+            <a  onmouseenter="showBar('Sondages')" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604052315136050/poll.png"></span>
                 <span id="Sondages" class="text-bar">Sondages</span>
             </a>
-            <a href="/companion/{{ guildid }}/sv" onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" onclick="clickServ(this)">
+            <a  onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604056203231252/sv.png"></span>
                 <span id="SV" class="text-bar">Savez-Vous ?</span>
             </a>
-            <a href="/companion/{{ guildid }}/anniv" onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" onclick="clickServ(this)">
+            <a  onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888141462066303056/anniv.png"></span>
                 <span id="Anniv" class="text-bar">Anniversaires</span>
             </a>
-            <a href="/companion/{{ guildid }}/outils" onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" onclick="clickServ(this)">
+            <a  onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604051069407272/outils.png"></span>
                 <span id="Outils" class="text-bar">Outils</span>
             </a>
-            <a href="/companion/{{ guildid }}/admin" onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" onclick="clickServ(this)">
+            <a  onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604058883420170/admin.png"></span>
                 <span id="Admin" class="text-bar">Administration</span>
             </a>
