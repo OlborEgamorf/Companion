@@ -82,7 +82,7 @@ def viewEvol(request,guild,option):
         ctx["listeObjs"]=listeObj
     
     table=curseur.execute("SELECT * FROM evol{0}{1}{2}".format(moisDB,anneeDB,obj)).fetchall()
-    table=collapseEvol(table)  
+    table=collapseEvol(table)
     table.reverse() 
     ctx["rank"]=table
     ctx["max"]=max(list(map(lambda x:x["Count"],table)))

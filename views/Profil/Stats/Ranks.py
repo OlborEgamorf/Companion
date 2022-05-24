@@ -2,76 +2,79 @@ from math import inf
 
 from companion.Getteurs import *
 from companion.outils import (connectSQL, dictOptions, dictRefCommands,
-                              dictRefOptions, dictRefPlus, getCommands,
-                              getMoisAnnee, getTimesMix, listeOptions,
+                              dictRefOptions, dictRefPlus, getCommands, getGuilds,
+                              getMoisAnnee, getMoisAnneePerso, getTimesMix, listeOptions,
                               rankingClassic, tableauMois)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 
 @login_required(login_url="/login")
-def mixRank(request,mix,option):
+def mixRank(request,option):
     mois,annee = request.GET.get("mois"),request.GET.get("annee")
-    mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
     user=request.user
 
     maxi=-inf
-    dictStats={}
+    stats=[]
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionUser,curseurUser=connectSQL("OT",user,"Titres",None,None)
     
-    mix_ids,infosMix,listeMixs=getInfoMix(user,mix,curseurGet)
+    infos=getAllInfos(curseur,curseurUser,connexionUser,user)
+    full_guilds=getGuilds(request.user,curseurGet)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
 
-    for guild in mix_ids:
-        try:
-            connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
-            for i in curseur.execute("SELECT * FROM {0}{1} ORDER BY Rank ASC LIMIT 1000".format(moisDB,anneeDB)).fetchall():
-                if i["ID"] not in dictStats:
-                    dictStats[i["ID"]]=i["Count"]
-                else:
-                    dictStats[i["ID"]]+=i["Count"]
-        except:
-            pass
-    
-    stats=list(map(lambda x:{"ID":x,"Count":dictStats[x]},dictStats))
-    assert stats!=[]
+    if option not in ("messages","voice"):
+        mois,annee,moisDB,anneeDB=getMoisAnneePerso(mois,annee)
+        for guild in full_guilds:
+            try:
+                connexion,curseur=connectSQL(guild["ID"],dictOptions[option],"Stats",moisDB,anneeDB)
+                for i in curseur.execute("SELECT * FROM perso{0}{1}{2} ORDER BY Count DESC LIMIT 200".format(moisDB,anneeDB,user.id)).fetchall():
+                    if option in ("emotes","reactions"):
+                        stats.append(getEmoteTable(i,curseurGet))
+
+                    elif option in ("salons","voicechan"):
+                        stats.append(getChannels(i,curseurGet))
+
+                    elif option=="freq":
+                        stats.append(getFreq(i))
+
+                    maxi=max(maxi,i["Count"])
+            except:
+                pass
+
+    else:
+        mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
+        for guild in full_guilds:
+            try:
+                connexion,curseur=connectSQL(guild["ID"],dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
+                ligne=curseur.execute("SELECT * FROM {0}{1} WHERE ID={2}".format(moisDB,anneeDB,user.id)).fetchone()
+                ligne["Nom"]=guild["Nom"]
+                ligne["ID"]=guild["ID"]
+                ligne["Icon"]=guild["Icon"]
+                maxi=max(maxi,ligne["Count"])
+                stats.append(ligne)
+            except:
+                pass
+
     stats.sort(key=lambda x:x["Count"],reverse=True)
-    if len(stats)>150:
-        stats=stats[:150]
-    rankingClassic(stats)
-
-    for i in stats:
-        if option in ("messages","voice","mots"):
-            infos=getUserInfoMix(i["ID"],mix_ids,curseurGet)
-            i["Nom"]=infos["Nom"]
-            i["Avatar"]=infos["Avatar"]
-        elif option in ("emotes","reactions"):
-            infos=getEmoteTable(i,curseurGet)
-            i["Nom"]=infos["Nom"]
-        else:
-            i["Nom"]=getNom(i["ID"],option,curseurGet,False)
-
-        maxi=max(maxi,i["Count"])
+    if maxi<0:
+        maxi=1
 
     connexion.close()
 
-    if maxi<=0:
-        maxi=1
-
-    listeMois,listeAnnee=getTimesMix(mix_ids,option)
+    listeMois,listeAnnee=getTimesMix(list(map(lambda x:x["ID"],full_guilds)),option)
 
     ctx={"rank":stats,"max":maxi,
     "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
-    
-    "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,"guildname":infosMix["Nom"],"guildid":"mixes/{0}".format(infosMix["Nombre"]),
+    "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "commands":["ranks","periods"],"dictCommands":dictRefCommands,"command":"ranks",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":["","compare"] if option in ("messages","voice","mots") else ["serv","perso","compare"],"dictPlus":dictRefPlus,"plus":"" if option in ("messages","voice","mots") else "serv",
-    "travel":True,"selector":True,"obj":None,"mix":True,"listeMix":listeMixs,"nbmix":infosMix["Nombre"],
-    "pin":getPin(user,curseurGet,"mixes/{0}".format(infosMix["Nombre"]),option,"ranks","")}
+    "lisPlus":["","compare"], "dictPlus":dictRefPlus,"plus":"",
+    "travel":True,"selector":True,"obj":None,
+    "pin":getPin(user,curseurGet,"profil/{0}".format(user.id),option,"ranks","")}
 
-    return render(request, "companion/Ranks/ranks.html", ctx)
+    return render(request, "companion/Profil/ProfilRanks.html", ctx)
 
 
 
@@ -92,8 +95,8 @@ def iFrameMixRank(request,mix,option):
     nom=getNom(obj,option,curseurGet,False)
     if option in ("salons","voicechan"):
         for guild in listeMixs:
-            connexion,curseur=connectSQL(guild["ID"],dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
             try:
+                connexion,curseur=connectSQL(guild["ID"],dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
                 for i in curseur.execute("SELECT * FROM {0}{1}{2} ORDER BY Rank ASC LIMIT 150".format(moisDB,anneeDB,obj)).fetchall():
                     ligne=getUserTable(i,curseurGet,guild["ID"])
                     stats.append(ligne)

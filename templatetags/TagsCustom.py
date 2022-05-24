@@ -147,6 +147,10 @@ def nomsearch(option):
     if option in ("salons","voicechan"):
         return "un salon"
 
+def getI(liste,i):
+    return liste[i]
+
+
 register.filter("usedict", useDict)
 register.filter("tempsvoice",formatCount)
 register.filter("len",getLen)
@@ -169,3 +173,5 @@ register.filter("statshome",statshome)
 register.filter("headnom",enteteNom)
 register.filter("headcount",enteteCount)
 register.filter("nomsearch",nomsearch)
+
+register.filter("getI",getI)

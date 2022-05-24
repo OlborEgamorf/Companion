@@ -130,9 +130,9 @@
                     <td>{{ i.Rank }} ({{ i.RankIntern }})</td>
                     <td>
                         {% if i.Icon %}
-                            <a href="/companion/{{ i.ID }}"><img src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}.png?size=128"></a>
+                            <a href="/companion/{{ i.IDGuild }}"><img src="https://cdn.discordapp.com/icons/{{ i.IDGuild }}/{{ i.Icon }}.png?size=128"></a>
                         {% else %}
-                            <a href="/companion/{{ i.ID }}"><img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            <a href="/companion/{{ i.IDGuild }}"><img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
                         {% endif %}
                     </td>
                     <td style="text-align: start;">{{ i.Nom }}</td>

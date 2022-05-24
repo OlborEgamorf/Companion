@@ -45,7 +45,7 @@ def graphEvol(request,guild,option):
 
         div1,div2,div3,div4=linePlots(guild,option,curseur,curseurGet,obj,moisDB,anneeDB)
     else:
-        div1,div2,div3,div4=linePlots(guild,option,curseur,curseurGet,user,moisDB,anneeDB)
+        div1,div2,div3,div4=linePlots(guild,option,curseur,curseurGet,user.id,moisDB,anneeDB)
 
     connexion.close()
     ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":None,"fig6":None,"fig7":None,

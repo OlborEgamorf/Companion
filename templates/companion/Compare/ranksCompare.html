@@ -86,7 +86,15 @@
                 <td>{{ i.Count|tempsvoice:option }}</td>
                 <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }} ; margin-top:15px"></div></td>
                 <td style="text-align: end;">{{ i.Nom }}</td>
-                {% if option == "messages" or option == "mots" or option == "voice" %}
+                {% if mix and command == "periods" %}
+                    <td>
+                        {% if i.Icon %}
+                            <img src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}.png?size=128">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                        {% endif %}
+                    </td>
+                {% elif option == "messages" or option == "mots" or option == "voice" %}
                     <td>
                         {% if i.Avatar %}
                             <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
@@ -102,7 +110,15 @@
 
                 <td>{{ i.Rank }}</td>
                 {% if i.Count2 %}
-                    {% if option == "messages" or option == "mots" or option == "voice" %}
+                    {% if mix and command == "periods" %}
+                        <td>
+                            {% if i.Icon2 %}
+                                <img src="https://cdn.discordapp.com/icons/{{ i.ID2 }}/{{ i.Icon2 }}.png?size=128">
+                            {% else %}
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                            {% endif %}
+                        </td>
+                    {% elif option == "messages" or option == "mots" or option == "voice" %}
                         {% if i.Avatar2 %}
                             <td><img src="https://cdn.discordapp.com/avatars/{{ i.ID2 }}/{{ i.Avatar2 }}.png?size=128"></td>
                         {% elif i.Count2 %}

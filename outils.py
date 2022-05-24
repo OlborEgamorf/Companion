@@ -10,10 +10,10 @@ tableauMois={"01":"Janvier","02":"Février","03":"Mars","04":"Avril","05":"Mai",
 
 dictOptions={"messages":"Messages","voice":"Voice","salons":"Salons","voicechan":"Voicechan","emotes":"Emotes","reactions":"Reactions","mots":"Mots","freq":"Freq","p4":"P4","tortues":"Tortues","tortuesduo":"TortuesDuo","trivialversus":"TrivialVersus","trivialbr":"TrivialBR","trivialparty":"TrivialParty","morpion":"Morpion","matrice":"Matrice","divers":"Divers"}
 
-listeCommands=["ranks","periods","evol","first","jours","rapport"]
-listeOptions=["home","messages","voice","emotes","freq","salons","voicechan","reactions","divers"]
+listeCommands=["","ranks","periods","evol","first","jours","rapport"]
+listeOptions=["home","messages","voice","emotes","salons","voicechan","freq","reactions","divers"]
 listePlus=["","graphs","compare"]
-dictRefCommands={"ranks":"Classements","periods":"Périodes","serv":"Serveur","perso":"Perso","evol":"Évolutions","first":"Premiers","roles":"Rôles","jours":"Jours","moy":"Moyennes","rapport":"Rapports","mondial":"Mondial","badges":"Badges","":""}
+dictRefCommands={"ranks":"Classements","periods":"Périodes","serv":"Serveur","perso":"Perso","evol":"Évolutions","first":"Premiers","roles":"Rôles","jours":"Jours","moy":"Moyennes","rapport":"Rapports","mondial":"Mondial","badges":"Badges","":"Récap"}
 dictRefOptions={"home":"Accueil","messages":"Messages","voice":"Vocal","salons":"Salons","voicechan":"Salons vocaux","emotes":"Emotes","reactions":"Réactions","mots":"Mots","freq":"Fréquences","divers":"Divers"}
 dictRefPlus={"":"Tableaux","graphs":"Graphiques","compare":"Comparateur","perso":"Pour vous","serv":"Pour le serveur","compareperso":"Comparateur personnel","obj":"Pour un objet","pantheon":"Panthéon"}
 

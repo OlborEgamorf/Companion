@@ -17,12 +17,15 @@ from companion.views.Jours.Jours import iFrameJour, viewJours
 from companion.views.Jours.JoursGraph import graphJours, iFrameGraphJours
 from companion.views.Mixes.DelMix import delMix
 from companion.views.Mixes.MixPeriods import iFrameMixPeriods, mixPeriods
+from companion.views.Mixes.MixPeriodsCompare import viewMixPeriodsCompare
 from companion.views.Mixes.MixPerso import iFrameMixPerso, mixPerso
 from companion.views.Mixes.MixRanks import iFrameMixRank, mixRank
+from companion.views.Mixes.MixRanksCompare import viewMixRankCompare
 from companion.views.Mixes.MixServ import iFrameMixServ, mixServ
+from companion.views.Mixes.MixServCompare import viewMixServCompare
 from companion.views.Mondial.emotesmondial import emotesMondial, iframeEmotes
 from companion.views.Mondial.EmotesWW import emotesMondialGuild
-from companion.views.OT.OTTitres import viewOTStats, viewOTTitres
+from companion.views.OT.OTTitres import viewOTStats, viewOTSupport, viewOTTitres
 from companion.views.Periods.Periods import (iFramePeriods, iFramePeriodsJeux,
                                              periodsJeux, viewPeriods)
 from companion.views.Periods.PeriodsCompare import viewPeriodsCompare
@@ -41,6 +44,7 @@ from companion.views.Ranks.Rank import (iFrameRank, iFrameRankJeux, rankJeux,
 from companion.views.Ranks.RanksCompare import viewRankCompare
 from companion.views.Ranks.RanksGraph import graphRanks, iFrameGraphRanks
 from companion.views.Rapports.NewRapports import viewRapports
+from companion.views.RecapStats import addMoreRecap, viewRecapStats
 from companion.views.Roles.Roles import iFrameRoles
 
 urlpatterns = [
@@ -48,6 +52,7 @@ urlpatterns = [
     path("<int:guild>",viewGuildHome,name="guild-home"),
 
     path("<int:guild>/home",viewStatsHome,name="stats-home"),
+    path("<int:guild>/<str:option>",viewRecapStats,name="stats-ranks"),
     path("<int:guild>/<str:option>/ranks/",viewRank,name="stats-ranks"),
     path("<int:guild>/<str:option>/periods/",viewServ,name="stats-periods"),
     path("<int:guild>/<str:option>/evol/",viewEvol,name="stats-evol"),
@@ -56,6 +61,7 @@ urlpatterns = [
     path("<int:guild>/<str:option>/rapport/",viewRapports,name="stats-rapport"),
     #path("<int:guild>/<str:option>/roles",viewRoles,name="stats-roles"),
     path("<int:guild>/emotes/mondial/",emotesMondialGuild,name="guild-emotes-mondial"),
+    path("<int:guild>/<str:option>/recapmore",addMoreRecap,name="stats-ranks"),
 
     path("<int:guild>/<str:option>/periods/perso",viewPeriods,name="stats-serv"),
     path("<int:guild>/<str:option>/ranks/perso",viewPerso,name="stats-perso"),
@@ -116,6 +122,9 @@ urlpatterns = [
 
     path("mixes/<int:mix>/<str:option>/periods/perso",mixPeriods,name="stats-serv"),
     path("mixes/<int:mix>/<str:option>/ranks/perso",mixPerso,name="stats-perso"),
+    path("mixes/<int:mix>/<str:option>/ranks/compare",viewMixRankCompare,name="compare-ranks"),
+    path("mixes/<int:mix>/<str:option>/periods/compare",viewMixServCompare,name="compare-periods"),
+    path("mixes/<int:mix>/<str:option>/periods/compareperso",viewMixPeriodsCompare,name="compare-periods"),
 
     path("mixes/<int:mix>/<str:option>/iframeranks",iFrameMixRank,name="iframe-ranks"),
     path("mixes/<int:mix>/<str:option>/iframeperiods",iFrameMixPeriods,name="iframe-periods"),
@@ -130,5 +139,6 @@ urlpatterns = [
 
     path("ot/titres",viewOTTitres,name="del-mix"),
     path("ot/stats",viewOTStats,name="del-mix"),
+    path("ot/support",viewOTSupport,name="del-mix"),
     
 ]

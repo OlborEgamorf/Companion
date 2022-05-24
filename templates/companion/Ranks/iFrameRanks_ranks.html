@@ -35,11 +35,9 @@
                     {% if option == "messages" or option == "mots" or option == "voice" or obj != None %}
                         <td>
                             {% if i.Avatar %}
-                                <a href="/companion/profil/{{ i.ID }}">
-                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
                             {% else %}
-                                <a href="/companion/profil/{{ i.ID }}">
-                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
                             {% endif %}
                         </td>
                     {% elif option == "emotes" or option == "reactions" %}
@@ -53,11 +51,9 @@
                     {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
                         <td>
                             {% if i.Emote != None %}
-                                <a href="/companion/profil/{{ i.ID }}">
-                                <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}"></a>
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}">
                             {% else %}
-                                <a href="/companion/profil/{{ i.ID }}">
-                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
                             {% endif %}
                         </td>
                     {% endif %}

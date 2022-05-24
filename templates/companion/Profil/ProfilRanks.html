@@ -2,8 +2,8 @@
 {% block script %}
 <script type="text/javascript">
     
-    function newSite(id,mois,annee,obj) {
-        var site = "/companion/{{ guildid }}/{{ option }}/iframeserv?data="+mois+"?"+annee+"?"+id
+    function newSite(id,obj) {
+        var site = "/companion/{{ guildid }}/{{ option }}/iframeranks?data={{ mois }}?{{ annee }}?"+id        
         document.getElementById('iframeevol').src = site;
         try {document.getElementById("elselect").id = NaN}
         catch {}
@@ -15,44 +15,33 @@
 
 
 
-{% block stats %}
+{% block page %}
 {% load TagsCustom %}
 
 <div class="searchTable">
     {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
-        <input type="text" id="searchTable" onkeyup="searchName(3)" placeholder="Recherchez {{ option|nomsearch }}">
+        <input type="text" id="searchTable" onkeyup="searchName(2)" placeholder="Recherchez un serveur">
+    {% elif option == "emotes" or option == "reactions" %}
+        <input type="text" id="searchTable" onkeyup="searchName(2)" placeholder="Recherchez une emote">
     {% else %}
-        <input type="text" id="searchTable" onkeyup="searchName(2)" placeholder="Recherchez {{ option|nomsearch }}">
+        <input type="text" id="searchTable" onkeyup="searchName(1)" placeholder="Recherchez {{ option|nomsearch }}">
     {% endif %}
 </div>
 
 <div class="stats">
     <table id="tableot">
         {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" or obj != None %}
-            <tr><th colspan="6">Panthéon - Le classement des classements</th></tr>
+            <tr><th colspan="5">Classement {{ mois }} {{ annee }}</th></tr>
             <tr>
-                <th>Rang (base)</th>
-                <th>Date</th>
+                <th>Rang</th>
                 <th colspan="2">{{ option|headnom }}</th>
                 <th id="leg-barre">Barre</th>
                 <th>{{ option|headcount }}</th>
             </tr>
-        {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
-            <tr><th colspan="7">Panthéon - Le classement des classements</th></tr>
-            <tr>
-                <th>Rang (base)</th>
-                <th>Date</th>
-                <th colspan="2">Joueur</th>
-                <th id="leg-barre">Barre</th>
-                <th>Points</th>
-                <th>W/L</th>
-                <th>Badge</th>
-            </tr>
         {% else %}
-            <tr><th colspan="5">Panthéon - Le classement des classements</th></tr>
+            <tr><th colspan="4">Classement {{ mois }} {{ annee }}</th></tr>
             <tr>
-                <th>Rang (base)</th>
-                <th>Date</th>
+                <th>Rang</th>
                 <th>{{ option|headnom }}</th>
                 <th id="leg-barre">Barre</th>
                 <th>{{ option|headcount }}</th>
@@ -61,12 +50,11 @@
 
         {% for i in rank %}
             {% if i.ID == id %}
-                <tr class="user" onClick="newSite('{{ i.ID }}','{{ i.Mois }}','{{ i.Annee }}',this)">
+                <tr class="user" onClick="newSite('{{ i.ID }}',this,'{{ mix }}')">
             {% else %}
-                <tr onClick="newSite('{{ i.ID }}','{{ i.Mois }}','{{ i.Annee }}',this)">
+                <tr onClick="newSite('{{ i.ID }}',this,'{{ mix }}')">
             {% endif %}
-                    <td>{{ i.Rank }} ({{ i.RankOri }})</td>
-                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                    <td>{{ i.Rank }}</td>
                     {% if option == "messages" or option == "mots" or option == "voice" or obj != None %}
                         <td>
                             {% if i.Avatar %}
@@ -113,4 +101,4 @@
     </table>
     <iframe id="iframeevol" src="/companion/iframeblank?option={{ option }}&command={{ command }}&plus={{ plus }}" scrolling="no" onload="resizeIframe(this)"></iframe>
 </div>
-{% endblock stats %}
+{% endblock page %}

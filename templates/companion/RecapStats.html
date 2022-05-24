@@ -1,0 +1,310 @@
+{% extends "companion/BASE.html" %}
+
+
+{% block stats %}
+{% load TagsCustom %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    function add(command) {
+        var httpRequest = new XMLHttpRequest()
+        var table = document.getElementById("ranks")
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                var data = JSON.parse(httpRequest.response)
+                console.log(data[0])
+                for (i=0 ; i<data[0].length ; i++) {
+                    console.log(i,data[0][i])
+                    $("#ranks").append(`<tr><td>${data[0][i].Rank}</td><td><a href="/companion/profil/${data[0][i].ID}"><img src="https://cdn.discordapp.com/avatars/${data[0][i].ID}/${data[0][i].Avatar}?size=128"></a></td><td>${data[0][i].Nom}</td><td class="barretd"><div class="barre" style="width:calc(100%*${data[0][i].Count}/${table.dataset.max});background-color: ${data[0][i].Color}"></div></td><td>${data[0][i].Count}</td></tr>`)
+
+                    }
+                    
+                }
+                
+            }
+        
+        httpRequest.open("GET","/companion/{{ guildid }}/{{ option }}/recapmore?mois={{ mois }}&annee={{ annee }}&command="+command,true)
+        httpRequest.send()
+    }
+
+
+    function AJAX(pin) {
+    var pin = document.getElementById("pin")
+    var httpRequest = new XMLHttpRequest()
+    httpRequest.onreadystatechange = function () {
+        if (httpRequest.readyState === 4) {
+            pin.innerHTML = httpRequest.responseText
+        }
+    }
+    if (pin.innerHTML == "Épingler à l'accès rapide") {
+        httpRequest.open("GET","/companion/pin/add?guild={{ guildid }}&command={{ command }}&option={{ option }}&plus={{ plus }}",true)
+    } else {
+        httpRequest.open("GET","/companion/pin/del?guild={{ guildid }}&command={{ command }}&option={{ option }}&plus={{ plus }}",true)
+    }
+    
+    httpRequest.send()
+}
+</script>
+
+<div class="div-profil">
+    <table class="table-recap" id="ranks" data-max="{{ ranks|getI:1 }}" onclick="add('ranks')">
+        {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
+            <tr><th colspan="5">Classement global</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th colspan="2">{{ option|headnom }}</th>
+                <th id="leg-barre">Barre</th>
+                <th>{{ option|headcount }}</th>
+            </tr>
+        {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+            <tr><th colspan="6">Classement global</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th colspan="2">Joueur</th>
+                <th id="leg-barre">Barre</th>
+                <th>Points</th>
+                <th>Badge</th>
+            </tr>
+        {% else %}
+            <tr><th colspan="4">Classement global</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>{{ option|headnom }}</th>
+                <th id="leg-barre">Barre</th>
+                <th>{{ option|headcount }}</th>
+            </tr>
+        {% endif %}
+
+        {% for i in ranks|getI:0 %}
+        {% if i.ID == id %}
+            <tr class="user">
+        {% else %}
+            <tr>
+        {% endif %}
+                <td>{{ i.Rank }}</td>
+                {% if option == "messages" or option == "mots" or option == "voice" %}
+                    <td>
+                        {% if i.Avatar %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                    </td>
+                {% elif option == "emotes" or option == "reactions" %}
+                    <td>
+                        {% if i.Animated %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                        {% endif %}
+                    </td>
+                {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                    <td>
+                        {% if i.Emote != None %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                    </td>
+                {% endif %}
+                <td style="text-align: start;">{{ i.Nom }}</td>
+                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ ranks|getI:1 }}); background-color: {{ i.Color }}"></div></td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
+                {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                    <td>
+                        {% if i.BadgeJeu != None %}
+                            <img src='{{ i.BadgeJeu|badgeurl }}' class='badge'>
+                        {% endif %}
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+
+    {% if first %}
+        <table class="table-recap">
+            {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
+                <tr><th colspan="5">Premiers sur les 5 derniers mois</th></tr>
+                <tr>
+                    <th>Période</th>
+                    <th colspan="2">{{ option|headnom }}</th>
+                    <th id="leg-barre">Barre</th>
+                    <th>{{ option|headcount }}</th>
+                </tr>
+            {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                <tr><th colspan="5">Premier sur les 5 derniers mois</th></tr>
+                <tr>
+                    <th>Rang</th>
+                    <th colspan="2">Joueur</th>
+                    <th id="leg-barre">Barre</th>
+                    <th>Points</th>
+                </tr>
+            {% else %}
+                <tr><th colspan="4">Premiers sur les 5 derniers moiss</th></tr>
+                <tr>
+                    <th>Période</th>
+                    <th>{{ option|headnom }}</th>
+                    <th id="leg-barre">Barre</th>
+                    <th>{{ option|headcount }}</th>
+                </tr>
+            {% endif %}
+            {% for i in first|getI:0 %}
+                {% if i.ID == id %}
+                    <tr class="user">
+                {% else %}
+                    <tr>
+                {% endif %}
+                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                    {% if option == "messages" or option == "mots" or option == "voice" %}
+                        <td>
+                            {% if i.Avatar %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                            {% else %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            {% endif %}
+                        </td>
+                    {% elif option == "emotes" or option == "reactions" %}
+                        <td>
+                            {% if i.Animated %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                            {% else %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                            {% endif %}
+                        </td>
+                    {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                        <td>
+                            {% if i.Emote != None %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}"></a>
+                            {% else %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                    <td style="text-align: start;">{{ i.Nom }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ first|getI:1 }}); background-color: {{ i.Color }}"></div></td>
+                    <td>{{ i.Count|tempsvoice:option }}</td>
+                </tr>
+            {% endfor %}
+    </table>
+    {% endif %}
+
+    {% if periods %}
+        <table class="table-recap">
+            <tr><th colspan="4">Vos 5 derniers mois</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>Date</th>
+                <th>Barre</th>
+                <th>{{ option|headcount }}</th>
+            </tr>
+            {% for i in periods|getI:0 %}
+                <tr>
+                    <td>{{ i.Rank }}</td>
+                    <td id="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ periods|getI:1 }}); background-color: {{ color }}"></div></td>
+                    <td>{{ i.Count|tempsvoice:option }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    {% if evol %}
+        <table class="table-recap">
+            <tr><th colspan="5">Statistiques évolution {{ mois }} {{ annee }}, {{ nom }}</th></tr>
+        <tr>
+            <th colspan="2">Rang</th>
+            <th>Date</th>
+            <th id="leg-barre">Barre</th>
+            <th>{{ option|headcount }}</th>
+        </tr>
+        {% for i in evol|getI:0 %}
+            <tr class="evol">
+                {% if i.Evol > 0 %}
+                    <td style="background-color: green;">{{ i.Rank }}</td>
+                    <td><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png"> {{ i.Evol }}</td>
+                {% elif i.Evol < 0 %}
+                    <td style="background-color: red;">{{ i.Rank }}</td>
+                    <td> {{ i.Evol }}<img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png"></td>
+                {% else %}
+                    <td colspan="2">{{ i.Rank }}</td>
+                {% endif %}
+                <td class="date">{{ i.Jour }} / {{ i.Mois }} / {{ i.Annee }}</td>
+                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ evol|getI:1 }}); background-color: {{ color }}"></div></td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% endif %}
+
+    {% if jours %}
+    <table class="table-recap">
+        <tr><th colspan="4">Classement jours {{ mois }} {{ annee }}</th></tr>
+        <tr>
+            <th>Rang</th>
+            <th>Date</th>
+            <th id="leg-barre">Barre</th>
+            <th>{{ option|headcount }}</th>
+        </tr>
+        {% for i in jours|getI:0 %}
+            <tr>
+                <td>{{ i.Rank }}</td>
+                <td class="date">{{ i.Jour }} / {{ i.Mois }} / {{ i.Annee }}</td>
+                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ jours|getI:1 }})"></div></td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+
+    {% if perso %}
+        <table class="table-recap">
+            {% if option == "emotes" or option == "reactions" %}
+                <tr><th colspan="5">Vos meilleures emotes sur les 5 derniers mois</th></tr>
+                <tr>
+                    <th>Rang</th>
+                    <th colspan="2">{{ option|headnom }}</th>
+                    <th id="leg-barre">Barre</th>
+                    <th>{{ option|headcount }}</th>
+                </tr>
+            {% else %}
+                <tr><th colspan="4">Vos meilleures emotes sur les 5 derniers mois</th></tr>
+                <tr>
+                    <th>Rang</th>
+                    <th>{{ option|headnom }}</th>
+                    <th id="leg-barre">Barre</th>
+                    <th>{{ option|headcount }}</th>
+                </tr>   
+            {% endif %}
+            
+            {% for i in perso|getI:0 %}
+                <tr>
+                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                    {% if option == "emotes" or option == "reactions" %}
+                        <td>
+                            {% if i.Animated %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.gif?size=128" style="border-radius: 0%;">
+                            {% else %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}.png?size=128" style="border-radius: 0%;">
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                    <td style="text-align: start;">{{ i.Nom }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ perso|getI:1 }}); background-color: {{ color }}"></div></td>
+                    <td>{{ i.Count|tempsvoice:option }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</div>
+    
+
+
+{% endblock stats %}

@@ -11,6 +11,7 @@ def CompanionStats(func):
             try:
                 connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
                 hideblind=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
+                assert hideblind!=None
                 assert not hideblind["Blind"]
                 assert not hideblind["Leave"]
                 assert curseurGuild.execute("SELECT * FROM stats").fetchone()["Active"]

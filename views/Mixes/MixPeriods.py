@@ -22,24 +22,21 @@ def mixPeriods(request,mix,option):
     mix_ids,infosMix,listeMixs=getInfoMix(user,mix,curseurGet)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
 
+    dictStats={}
     if option not in ("messages","voice","mots"):
         listeObj=[]
         for guild in mix_ids:
             try:
                 connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
                 for i in curseur.execute("SELECT * FROM glob ORDER BY Rank ASC LIMIT 300").fetchall():
-                    it=0
-                    while it<len(listeObj) and it!=-1:
-                        if listeObj[it]["ID"]==i["ID"]:
-                            listeObj[it]["Count"]+=i["Count"]
-                            it=-1
-                        else:
-                            it+=1
-                    if it!=-1:
-                        listeObj.append(i)
+                    if i["ID"] not in dictStats:
+                        dictStats[i["ID"]]=i["Count"]
+                    else:
+                        dictStats[i["ID"]]+=i["Count"]
             except:
                 pass
-
+        
+        listeObj=list(map(lambda x:{"ID":x,"Count":dictStats[x]},dictStats))
         listeObj.sort(key=lambda x:x["Count"],reverse=True)
         if len(listeObj)>150:
             listeObj=listeObj[:150]
@@ -105,7 +102,7 @@ def mixPeriods(request,mix,option):
     "guildname":infosMix["Nom"],"guildid":"mixes/{0}".format(infosMix["Nombre"]),
     "commands":["ranks","periods"],"dictCommands":dictRefCommands,"command":"periods",
     "options":listeOptions,"dictOptions":dictRefOptions,"option":option,
-    "lisPlus":["serv","perso"],"dictPlus":dictRefPlus,"plus":"perso",
+    "lisPlus":["serv","perso"] if option in ("salons","voicechan") else ["serv","perso","compare","compareperso"],"dictPlus":dictRefPlus,"plus":"perso",
     "travel":False,"selector":True,"obj":obj,"listeObjs":listeObj,"mix":True,"listeMix":listeMixs,"nbmix":infosMix["Nombre"],
     "pin":getPin(user,curseurGet,"mixes/{0}".format(infosMix["Nombre"]),option,"ranks","")}
 
@@ -123,14 +120,17 @@ def iFrameMixPeriods(request,mix,option):
     mois,annee,moisDB,anneeDB=getMoisAnnee(tableauMois[mois],annee)
     user=request.user
     if obj=="None" or obj==None:
-        obj=user.id
+        obj=""
     
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     mix_ids,infosMix,listeMixs=getInfoMix(user,mix,curseurGet)
 
     stats=[]
     maxi=-inf
-    nom=getNom(obj,option,curseurGet,False)
+    if obj=="":
+        nom=getNom(user.id,option,curseurGet,False)
+    else:
+        nom=getNom(obj,option,curseurGet,False)
     if option in ("salons","voicechan"):
         for guild in listeMixs:
             try:
