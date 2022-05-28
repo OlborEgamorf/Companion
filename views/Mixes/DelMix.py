@@ -1,6 +1,7 @@
+from companion.tools.outils import connectSQL
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-from companion.outils import connectSQL
+
 
 @login_required(login_url="/login")
 def delMix(request,mix):

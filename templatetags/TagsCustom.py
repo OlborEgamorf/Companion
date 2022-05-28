@@ -1,4 +1,5 @@
 from django import template
+from companion.tools.outils import dictRefCommands, dictRefOptions, dictRefPlus,dictOptions
 
 register = template.Library()
 
@@ -36,17 +37,14 @@ def soustraction(op1,op2):
 def getLen(liste):
     return len(liste)
 
-def getRankRank(stats,option):
-    return stats[option]["rank"]
+def getRankDeux(stats):
+    return [stats["deux"]]
 
-def getRankFirst(stats,option):
-    return stats[option]["first"]
+def getRankFirst(stats):
+    return [stats["first"]]
 
-def getRankPerso(stats,option):
-    return stats[option]["perso"]
-
-def getRankBest(stats,option):
-    return stats[option]["best"]
+def getRankBest(stats):
+    return [stats["bestperiod"]]
 
 def getListBadges(badges,jeu):
     return badges[jeu]
@@ -101,21 +99,29 @@ def lexiquePlus(plus):
     if plus=="graph":
         return "Graphiques : Affiche les statistiques dans différents graphiques, pour mieux visualiser."   
 
-def statshome(option):
+def statshome(option,perso):
     if option=="messages":
-        return "Résumé messages envoyés"
+        if perso:
+            return "Messages envoyés"
+        return "Membre le plus actif en messages"
     if option=="voice":
-        return "Résumé temps passé en vocal"
+        if perso:
+            return "Temps passé en vocal"
+        return "Membre le plus actif en vocal"
     if option=="emotes":
-        return "Résumé emotes envoyées"
+        return "Emote la plus utilisée"
     if option=="freq":
-        return "Résumé heures d'activité"
+        return "Meilleure heure d'activité"
     if option=="salons":
-        return "Résumé salons textuels les plus actifs"
+        return "Salon textuel le plus actif"
     if option=="voicechan":
-        return "Résumé salons vocaux les plus actifs"
+        return "Salon vocal le plus actif"
     if option=="reactions":
-        return "Résumé réactions envoyées"
+        return "Réaction la plus utilisée"
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        if perso:
+            return dictOptions[option]
+        return "Meilleur joueur de {0}".format(dictOptions[option])
 
 def enteteNom(option):
     if option in ("messages","voice"):
@@ -126,6 +132,8 @@ def enteteNom(option):
         return "Heure"
     if option in ("salons","voicechan"):
         return "Salon"
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        return "Joueur"
 
 def enteteCount(option):
     if option in ("messages","salons","freq"):
@@ -134,6 +142,8 @@ def enteteCount(option):
         return "Temps en vocal"
     if option in ("emotes","reactions"):
         return "Utilisations"
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        return "Points"
 
 def nomsearch(option):
     if option in ("messages","voice"):
@@ -150,6 +160,13 @@ def nomsearch(option):
 def getI(liste,i):
     return liste[i]
 
+def getCommand(command):
+    return dictRefCommands[command]
+def getOption(option):
+    return dictRefOptions[option]
+def getPlus(plus):
+    return dictRefPlus[plus]
+
 
 register.filter("usedict", useDict)
 register.filter("tempsvoice",formatCount)
@@ -157,9 +174,8 @@ register.filter("len",getLen)
 register.filter("badgeurl",getUrlBadge)
 register.filter("badgename",getNomBadge)
 
-register.filter("getrank",getRankRank)
+register.filter("getdeux",getRankDeux)
 register.filter("getfirst",getRankFirst)
-register.filter("getperso",getRankPerso)
 register.filter("getbest",getRankBest)
 
 register.filter("getbadges",getListBadges)
@@ -175,3 +191,6 @@ register.filter("headcount",enteteCount)
 register.filter("nomsearch",nomsearch)
 
 register.filter("getI",getI)
+register.filter("getCommand",getCommand)
+register.filter("getOption",getOption)
+register.filter("getPlus",getPlus)

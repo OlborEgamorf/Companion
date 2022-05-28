@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://cdn.discordapp.com/avatars/699728606493933650/0859eb6e97dd8d92e6668c397bf4b311.webp?size=256">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
+    
+    <title>Olbor Track Companion</title>
+</head>
+
+{% load TagsCustom %}
+
+<body class="bodyiframe">
+    <table class="table-iframe">
+        <tr><th colspan="5">Classement {{ jour }} {{ mois }} {{ annee }} {{ nom }}</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th colspan="2">{{ option|headnom }}</th>
+                {% if plus != "graph" %}
+                    <th id="leg-barre">Barre</th>
+                {% endif %}
+                <th>{{ option|headcount }}</th>
+            </tr>
+            {% for i in rank %}
+                {% if i.ID == id %}
+                    <tr class="user">
+                {% else %}
+                    <tr>
+                {% endif %}
+                    <td>{{ i.Rank }}</td>
+                    {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                        <td>
+                            {% if i.Emote != None %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}">
+                            {% else %}
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                            {% endif %}
+                        </td>
+                    {% elif option == "messages" or option == "mots" or option == "voice" or obj != None %}
+                        <td>
+                            {% if i.Avatar %}
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128">
+                            {% else %}
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                            {% endif %}
+                        </td>
+                    {% elif option == "emotes" or option == "reactions" %}
+                        {% if i.Nom == "twemoji" %}
+                        <td onclick="getTwemoji('{{ i.ID }}',this)">
+                        {% else %}
+                        <td>
+                            <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}?size=128" style="border-radius: 0%;">
+                        {% endif %}
+                        </td>
+                    {% endif %}
+    
+                    <td style="text-align: start;">{{ i.Nom }}</td>
+                    {% if plus != "graph" %}
+                        <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
+                    {% endif %}
+                    <td>{{ i.Count|tempsvoice:option }}</td>
+                </tr>
+            {% endfor %}
+    </table>
+</body>
+
+</html>

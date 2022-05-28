@@ -26,7 +26,7 @@
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}"></span>
             <span id="Guild" class="text-bar">{{ guildname }}</span>
         </a>
-        <a href="/companion/{{ guildid }}/home" onmouseenter="showBar('Stats')" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
+        <a href="/companion/{{ guildid }}/stats" onmouseenter="showBar('Stats')" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png"></span>
             <span id="Stats" class="text-bar">Statistiques</span>
         </a>
@@ -66,7 +66,7 @@
     <div class="guild-stats">Où souhaitez-vous aller ?</div>
     <div class="all-guilds">
         {% if stats %}
-            <a href="/companion/{{ guildid }}/home">
+            <a href="/companion/{{ guildid }}/stats">
                 <div class="card-guild">
                     <span class="icon-guild">
                         <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png">

@@ -1,4 +1,4 @@
-{% extends "companion/Profil/BaseProfil.html" %}
+{% extends "companion/BASE.html" %}
 {% block script %}
 <script type="text/javascript">
 
@@ -13,7 +13,7 @@
 </script>
 {% endblock script %}
 
-{% block page %}
+{% block stats %}
 {% load TagsCustom %}
 
 <div class="guild-stats">Vous possèdez <strong>{{ coins }}</strong> OT Coins</div>
@@ -101,4 +101,4 @@
     </table>
 </div>
 </form>
-{% endblock page %}
+{% endblock stats %}

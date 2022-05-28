@@ -93,7 +93,7 @@
                 <span class="guild-name">{{ nom }}</span>
             </div>
         </a>
-        <a href="/companion/jeux/home">
+        <a href="/companion/ot/jeux/">
             <div class="card-guild">
                 <span class="icon-guild">
                     <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png">
@@ -139,28 +139,42 @@
         <div class="guild-stats">Accès rapide</div>
         <div class="all-guilds">
             {% for i in userpin %} 
-            {% if i.Option == "home" %} 
-                <a href="/companion/{{ i.Guild }}/home">
-            {% else %}
-                <a href="/companion/{{ i.Guild }}/{{ i.Option }}/{{ i.Command }}/{{ i.Plus }}">
-            {% endif %}
-                <div class="card-pin">
-                    <span class="icon-guild">
-                        {% if i.Guild == "jeux" %}
-                            <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png">
-                        {% elif i.Mix %}
-                            <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
-                        {% else %}
-                            <img class="img-guild" src="https://cdn.discordapp.com/icons/{{ i.Guild }}/{{ i.Icon }}?size=128">
-                        {% endif %}
-                    </span>
-                    {% if i.Guild == "jeux" %}
-                        <span class="guild-name">{{ i.Nom }}<br><br>{{ i.Option|usedict:dictOptionsJeux }}<br>{{ i.Command|usedict:dictCommands }}<br>{{ i.Plus|usedict:dictPlus }}</span>
+                {% if i.Guild == "ot/jeux" %}
+                    {% if i.Option == "home" %} 
+                        <a href="/companion/{{ i.Guild }}/">
+                    {% elif i.Plus == "" %}
+                        <a href="/companion/{{ i.Guild }}/{{ i.Command }}/{{ i.Option }}">
                     {% else %}
-                        <span class="guild-name">{{ i.Nom }}<br><br>{{ i.Option|usedict:dictOptions }}<br>{{ i.Command|usedict:dictCommands }}<br>{{ i.Plus|usedict:dictPlus }}</span>
+                        <a href="/companion/{{ i.Guild }}/{{ i.Command }}/{{ i.Plus }}/{{ i.Option }}">
                     {% endif %}
+                    <div class="card-pin">
+                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png">
+                {% elif i.Mix %} 
+                    {% if i.Option == "home" %} 
+                        <a href="/companion/{{ i.Guild }}/">
+                    {% elif i.Plus == "" %}
+                        <a href="/companion/{{ i.Guild }}/{{ i.Command }}/{{ i.Option }}">
+                    {% else %}
+                        <a href="/companion/{{ i.Guild }}/{{ i.Command }}/{{ i.Plus }}/{{ i.Option }}">
+                    {% endif %}
+                    <div class="card-pin">
+                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
+                {% else %} 
+                    {% if i.Option == "home" %} 
+                        <a href="/companion/{{ i.Guild }}/stats">
+                    {% elif i.Plus == "" %}
+                        <a href="/companion/{{ i.Guild }}/stats/{{ i.Command }}/{{ i.Option }}">
+                    {% else %}
+                        <a href="/companion/{{ i.Guild }}/stats/{{ i.Command }}/{{ i.Plus }}/{{ i.Option }}">
+                    {% endif %}
+                    <div class="card-pin">
+                    <img class="img-guild" src="https://cdn.discordapp.com/icons/{{ i.Guild }}/{{ i.Icon }}?size=128">
+                        
+                {% endif %}
+                <span class="guild-name">{{ i.Nom }}<br><br>{{ i.Option|getOption }}<br>{{ i.Command|getCommand }}<br>{{ i.Plus|getPlus }}</span>
                 </div>
-            </a>
+                </a>
+            
             {% endfor %}
         </div>
     {% endif %}
@@ -173,7 +187,7 @@
     {% endif %}
     <div class="all-guilds">
         {% for mix in mixes %}
-            <a id="{{ guild.ID }}" href="/companion/mixes/{{ mix.ID }}/messages/ranks">
+            <a id="{{ guild.ID }}" href="/companion/mixes/{{ mix.ID }}/ranks/messages">
                 <div class="card-mix" style="width: calc({{ mix.Liste|len }} * 120px + ({{ mix.Liste|len }} - 1) * 5px);">
                     {% for guild in mix.Liste %}
                         {% if guild.Icon != None %}

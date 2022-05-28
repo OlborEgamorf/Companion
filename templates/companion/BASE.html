@@ -6,10 +6,87 @@
     <link rel="shortcut icon" href="https://media.discordapp.net/attachments/726034739550486618/908452059496448000/capucheB.png">
     {% load static %}
     <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
-    
     <title>{{ guildname }} - OT Companion</title>
     <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
     <script src="{% static 'companion/Scripts.js' %}" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="{% static 'companion/jquery-ui-1.13.1/jquery-ui.css' %}">
+    <script src="{% static 'companion/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'companion/jquery-ui-1.13.1/jquery-ui.min.js' %}"></script>
+    <script>
+        $( function() {
+            $.widget( "custom.iconselectmenu", $.ui.selectmenu, {
+            _renderItem: function( ul, item ) {
+                var li = $( "<li>" ),
+                wrapper = $( "<div>", { text: item.label } );
+        
+                if ( item.disabled ) {
+                li.addClass( "ui-state-disabled" );
+                }
+        
+                $( "<span>", {
+                style: item.element.attr( "data-style" ),
+                "class": "ui-icon " + item.element.attr( "data-class" )
+                })
+                .appendTo( wrapper );
+        
+                return li.append( wrapper ).appendTo( ul );
+            }
+            });
+        
+            $( "#obj" )
+            .iconselectmenu()
+            .iconselectmenu( "menuWidget" )
+                .addClass( "ui-menu-icons customicons" );
+            
+            $( "#obj2" )
+            .iconselectmenu()
+            .iconselectmenu( "menuWidget" )
+                .addClass( "ui-menu-icons customicons" );
+        
+        } );
+    </script>
+
+    {% if obj != None %}
+        <style>
+            {% for i in listeObjs %}
+                {% if option == "messages" or option == "voice" %}
+                    {% if i.Avatar %}
+                        .ui-icon.o{{ i.ID }} {
+                            background: url("https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128") 0 0 no-repeat;
+                            background-size: contain;
+                            border-radius:100%
+                        }
+                    {% else %}
+                        .ui-icon.o{{ i.ID }} {
+                            background: url("https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png") 0 0 no-repeat;
+                            background-size: contain;
+                            border-radius:100%
+                        }
+                    {% endif %}
+                {% elif option == "emotes" or option == "reactions" %}
+                    .ui-icon.o{{ i.ID }} {
+                        background: url("https://cdn.discordapp.com/emojis/{{ i.ID }}?size=128") 0 0 no-repeat;
+                        background-size: contain;
+                    }
+                
+                {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                    {% if i.Emote != None %}
+                        .ui-icon.o{{ i.ID }} {
+                            background: url("https://cdn.discordapp.com/emojis/{{ i.Emote }}") 0 0 no-repeat;
+                            background-size: contain;
+                        }
+                    {% else %}
+                        .ui-icon.o{{ i.ID }} {
+                            background: url("https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png") 0 0 no-repeat;
+                            background-size: contain;
+                            border-radius:100%
+                        }
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </style>
+    {% endif %}
 </head>
 
 <script type="text/javascript">
@@ -68,22 +145,41 @@
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
             <span id="OT" class="text-bar">Olbor Track - Accueil</span>
         </a>
-        <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}?size=128"></span>
-            <span id="Focus" class="text-bar">{{ nom }}</span>
-        </a>
-        {% if guildid == 'jeux' %}
-            <a href="/companion/jeux/home" class="ot-logo" style="background-color: #696969;" onmouseenter="showBar('0')" onmouseleave="hideBar('0')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img style="border-radius: 0;" src="https://cdn.discordapp.com/attachments/752150155276451993/971138748349812816/Alldf.png"></span>
-                <span id="0" class="text-bar">Classements jeux</span>
-            </a>
-        {% elif not mix %}
-            <a href="/companion/{{ guildid }}" onmouseenter="showBar('Guild')" onmouseleave="hideBar('Guild')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}"></span>
-                <span id="Guild" class="text-bar">{{ guildname }}</span>
+        {% if profil %}
+            {% if id == idprofil %}
+                <a href="/companion/profil/{{ id }}" style="background-color: {{ color }};" onmouseenter="showBar('user')" onmouseleave="hideBar('user')" onclick="clickServ(this)">
+                <span class="little-icon-guild"><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}"></span>
+                <span id="user" class="text-bar">{{ nom }}</span>
+            {% else %}
+                <a href="/companion/profil/{{ id }}" onmouseenter="showBar('user')" onmouseleave="hideBar('user')" onclick="clickServ(this)">
+                <span class="little-icon-guild"><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}"></span>
+                <span id="user" class="text-bar">{{ nom }}</span>
+            {% endif %}
+        {% else %}
+            <a href="/companion/profil/{{ id }}" onmouseenter="showBar('Focus')" onmouseleave="hideBar('Focus')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}?size=128"></span>
+                <span id="Focus" class="text-bar">{{ nom }}</span>
             </a>
         {% endif %}
-        {% if mix %}
+
+        {% if ot %}
+            <a href="/companion/ot/jeux/" class="ot-logo" onmouseenter="showBar('Jeux')" onmouseleave="hideBar('Jeux')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/980097681898754088/Diamond.png"></span>
+                <span id="Jeux" class="text-bar">Classements jeux</span>
+            </a>
+            <a href="/companion/ot/stats" class="ot-logo" onmouseenter="showBar('Stats')" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png"></span>
+                <span id="Stats" class="text-bar">Statistiques mondiales</span>
+            </a>
+            <a href="/companion/ot/titres" class="ot-logo" onmouseenter="showBar('Titres')" onmouseleave="hideBar('Titres')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/980097681592553552/VIP.png"></span>
+                <span id="Titres" class="text-bar">Titres</span>
+            </a>
+            <a href="/companion/ot/support" class="ot-logo" onmouseenter="showBar('Support')" onmouseleave="hideBar('Support')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/emojis/823972936033370132.gif"></span>
+                <span id="Support" class="text-bar">Supporter le projet</span>
+            </a>
+        {% elif mix %}
             {% for i in listeMix %}
                 <a href="/companion/{{ i.ID }}" onmouseenter="showBar('{{ i.ID }}')" onmouseleave="hideBar('{{ i.ID }}')" onclick="clickServ(this)">
                     <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}"></span>
@@ -94,12 +190,25 @@
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/977152614275887124/Trash.png"></span>
                 <span id="Del" class="text-bar">Supprimer le mix</span>
             </a>
-        {% elif guildid != 'jeux' %}
+        {% elif profil %}
+            <a href="/companion/profil/{{ id }}/stats" onmouseenter="showBar('Stats')" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png"></span>
+                <span id="Stats" class="text-bar">Statistiques</span>
+            </a>
+            <a href="/companion/profil/{{ id }}/titres" class="ot-logo" onmouseenter="showBar('Titres')" onmouseleave="hideBar('Titres')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/980097681592553552/VIP.png"></span>
+                <span id="Titres" class="text-bar">Titres et personnalisation</span>
+            </a>
+        {% else %}
+            <a href="/companion/{{ guildid }}" onmouseenter="showBar('Guild')" onmouseleave="hideBar('Guild')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}"></span>
+                <span id="Guild" class="text-bar">{{ guildname }}</span>
+            </a>
             <a href="/companion/{{ guildid }}/home" onmouseenter="showBar('Stats')" style="background-color: #696969;" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png"></span>
                 <span id="Stats" class="text-bar">Statistiques</span>
             </a>
-            <a  onmouseenter="showBar('Sondages')" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
+            <a onmouseenter="showBar('Sondages')" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604052315136050/poll.png"></span>
                 <span id="Sondages" class="text-bar">Sondages</span>
             </a>
@@ -120,92 +229,315 @@
                 <span id="Admin" class="text-bar">Administration</span>
             </a>
         {% endif %}
-        <a onclick="AJAX()" onmouseenter="showBar('pin')" onmouseleave="hideBar('pin')">
-            <span class="little-icon-guild"><img src="https://cdn.discordapp.com/attachments/726034739550486618/976423325205155910/PIN.png"></span>
-            {% if pin %}
-            <span id="pin" class="text-bar">Retirer de l'accès rapide</span>
-            {% else %} 
-            <span id="pin" class="text-bar">Épingler à l'accès rapide</span>
-            {% endif %}
-        </a>
+        
+        {% if pagestats %}
+            <a onclick="AJAX()" onmouseenter="showBar('pin')" onmouseleave="hideBar('pin')">
+                <span class="little-icon-guild"><img src="https://cdn.discordapp.com/attachments/726034739550486618/976423325205155910/PIN.png"></span>
+                {% if pin %}
+                <span id="pin" class="text-bar">Retirer de l'accès rapide</span>
+                {% else %} 
+                <span id="pin" class="text-bar">Épingler à l'accès rapide</span>
+                {% endif %}
+            </a>
+        {% endif %}
 
     </div>
 
     <div class="profil-infos">
-        <div>
-            {% if guildid == 'jeux' %}
-                <img class="profil-avatar" src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png">
-            {% elif mix %}
-                {% for i in listeMix %}
-                    <img class="profil-avatar" src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}">
-                {% endfor %}
-            {% else %}
-                <img class="profil-avatar" src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}">
-            {% endif %}
-            <div class="profil-texte">
-                <div class="texte-gros">
-                    {{ guildname }}
+        {% if profil %}
+            <div>
+                {% if id == idprofil or guildscom|len != 0 %}
+                    <img class="profil-avatar" src="https://cdn.discordapp.com/avatars/{{ idprofil }}/{{ avatarprofil }}">
+                    <div class="profil-texte">
+                        <div class="texte-gros">
+                            {{ nomprofil }}
+                            {% if vip == True %}
+                                <img class="profil-badges" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515315048448/VipmotifCrop400.png" alt="Badge VIP">
+                            {% endif %}
+                            {% if testeur == True %}
+                                <img class="profil-badges" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515080183859/TesteursmotifCrop400.png" alt="Badge Testeur">
+                            {% endif %}</div>
+                        <div class="texte-titre">
+                            {% if emote != None %}
+                                <img class="profil-emote" src="https://cdn.discordapp.com/emojis/{{ emote }}" alt="Emote de {{ nom }}">
+                            {% endif %}
+                            {{ titre }}</div>
+                    
+                    </div>
+                {% else %}
+                    {% if emote != None %}
+                        <img class="profil-avatar" src="https://cdn.discordapp.com/emojis/{{ emote }}" alt="Emote de {{ nom }}">
+                    {% else %}
+                        <img class="profil-avatar" src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                    {% endif %}
+                    <div class="profil-texte">
+                        <div class="texte-gros">
+                            {{ titre }}
+                            {% if vip == True %}
+                                <img class="profil-badges" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515315048448/VipmotifCrop400.png" alt="Badge VIP">
+                            {% endif %}
+                            {% if testeur == True %}
+                                <img class="profil-badges" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515080183859/TesteursmotifCrop400.png" alt="Badge Testeur">
+                            {% endif %}</div>
+                    </div>
+                {% endif %}
+            </div>
+        {% elif ot %}
+            <div>
+                <img class="profil-avatar" src="https://cdn.discordapp.com/attachments/726034739550486618/977557244969353216/FULL.png">
+                <div class="profil-texte">
+                    <div class="texte-gros">
+                        Olbor Track
+                    </div>
+                    {% if guildid == "ot/jeux" %}
+                        <div class="texte-titre">
+                            Jeux | {{ command|getCommand }} - {{ plus|getPlus }} : {{ option|getOption }}
+                        </div>
+                    {% else %} 
+                        <div class="texte-titre">
+                            Stats mondiales
+                        </div>
+                    {% endif %}
+                    
                 </div>
             </div>
-        </div>
+        {% else %}
+            <div>
+                {% if mix %}
+                    {% for i in listeMix %}
+                        <img class="profil-avatar" src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}">
+                    {% endfor %}
+                {% else %}
+                    <img class="profil-avatar" src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}">
+                {% endif %}
+                <div class="profil-texte">
+                    <div class="texte-gros">{{ guildname }}</div>
+                    {% if pagestats %}
+                        <div class="texte-titre">{{ command|getCommand }} - {{ plus|getPlus }} : {{ option|getOption }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
     </div>
 
-    <div class="navbar" id="reduce">
-        <a class="select">{{ option|usedict:dictOptions }}</a>
-        {% if command != None %}
-            <a class="select">{{ command|usedict:dictCommands }}</a>
-        {% endif %}
-        {% if plus != None %}
-            <a class="select">{{ plus|usedict:dictPlus }}</a>
-        {% endif %}
-        <a onclick="devBar()">+</a>
+    {% if pagestats %}
+        <nav class="mega-menu">
+            <ul class="mega-menu-main">
+                
+                {% if guildid == "ot/jeux" %}
+                    <li class="lvl-0">
+                        <a href="/companion/ot/jeux/">Accueil</a>
+                    </li>
+
+                    <li class="lvl-0">
+                        <a>Récap</a>
+                        <ul class="mega-menu-tab">
+                            <li class="lvl-1">
+                                <h2>Options</h2>
+                                <ul class="lvl-2">
+                                    {% for o in options %}
+                                        {% if o != "divers" %}
+                                            <li><a href="/companion/ot/jeux/recap/{{ o }}">{{ o|getOption }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                {% elif not mix %}
+                    <li class="lvl-0">
+                        <a href="/companion/{{ guildid }}/stats">Accueil</a>
+                    </li>
+
+                    <li class="lvl-0">
+                        <a>Récap</a>
+                        <ul class="mega-menu-tab">
+                            <li class="lvl-1">
+                                <h2>Options</h2>
+                                <ul class="lvl-2">
+                                    {% for o in options %}
+                                        {% if o != "divers" %}
+                                            <li><a href="/companion/{{ guildid }}/stats/recap/{{ o }}">{{ o|getOption }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
         
-    </div>
-
-    <div id="full" style="display:none ; opacity:0">
-        {% if options != None %}
-            <div class="navbar">
-                {% for o in options %}
-                    {% if option == o %}
-                        <a class="select">{{ o|usedict:dictOptions }}</a>
-                    {% elif o == "home" %}
-                        <a href="/companion/{{ guildid }}/{{ o }}" onclick="clickServ(this)">{{ o|usedict:dictOptions }}</a>
-                    {% else %}
-                        <a href="/companion/{{ guildid }}/{{ o }}/ranks" onclick="clickServ(this)">{{ o|usedict:dictOptions }}</a>
-                    {% endif %}
-                {% endfor %}
-                <a onclick="undevBar()">-</a>
-            </div>
-        {% endif %}
-
-        {% if commands != None %}
-            <div class="navbar">
-                {% for c in commands %}
-                    {% if command == c %}
-                        <a class="select">{{ c|usedict:dictCommands }}</a>
-                    {% else %}
-                        <a href="/companion/{{ guildid }}/{{ option }}/{{ c }}" onclick="clickServ(this)">{{ c|usedict:dictCommands }}</a>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        {% if selector != False %}
-            <div class="navbar">
-                {% for p in lisPlus %}
-                    {% if plus == p %}
-                        <a class="select">{{ p|usedict:dictPlus }}</a>
-                    {% else %} 
-                        {% if p == "" or p == "serv" %}
-                            <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}" onclick="clickServ(this)">{{ p|usedict:dictPlus }}</a>
-                        {% else %}
-                            <a href="/companion/{{ guildid }}/{{ option }}/{{ command }}/{{ p }}" onclick="clickServ(this)">{{ p|usedict:dictPlus }}</a>
+                <li class="lvl-0">
+                    <a>Classements</a>
+                    <ul class="mega-menu-tab">
+                        <li class="lvl-1">
+                            <h2>Global</h2>
+                            <ul class="lvl-2">
+                                <li><a href="/companion/{{ guildid }}/ranks">Global</a></li>
+                            </ul>
+                        </li>
+                        {% for o in options %}
+                            <li class="lvl-1">
+                                <h2>{{ o|getOption }}</h2>
+                                <ul class="lvl-2">
+                                    {% if mix and o != "divers" %} 
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/{{ o }}">Tableaux</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/compare/{{ o }}">Comparateur</a></li>
+                                    {% elif o == "emotes" or o == "salons" or o == "voicechan" or o == "freq" or o == "reactions" %}
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/{{ o }}">Tableaux - Serveur</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/perso/{{ o }}">Tableaux - Vous</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/obj/{{ o }}">Tableaux - Objets</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/graphs/{{ o }}">Graphiques</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/compare/{{ o }}">Comparateur</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/compareperso/{{ o }}">Comparateur personnel</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/pantheon/{{ o }}">Panthéon</a></li>
+                                    {% elif o == "messages" or o == "voice" %} 
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/{{ o }}">Tableaux</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/graphs/{{ o }}">Graphiques</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/compare/{{ o }}">Comparateur</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/pantheon/{{ o }}">Panthéon</a></li>
+                                    {% elif o == "tortues" or o == "tortuesduo" or o == "p4" or o == "matrice" or o == "morpion" or o == "trivialversus" or o == "trivialbr" or o == "trivialparty" %}
+                                        <li><a href="/companion/ot/jeux/ranks/{{ o }}">Tableaux</a></li>
+                                        <li><a href="/companion/ot/jeux/ranks/graphs/{{ o }}">Graphiques</a></li>
+                                        <li><a href="/companion/ot/jeux/ranks/compare/{{ o }}">Comparateur</a></li>
+                                        <li><a href="/companion/ot/jeux/ranks/pantheon/{{ o }}">Panthéon</a></li>
+                                    {% elif o == "divers" %}
+                                        <li><a href="/companion/{{ guildid }}/stats/ranks/{{ o }}">Tableaux</a></li>
+                                    {% endif %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+        
+                <li class="lvl-0">
+                    <a>Périodes</a>
+                    <ul class="mega-menu-tab">
+                        {% for o in options %}
+                            <li class="lvl-1">
+                                <h2>{{ o|getOption }}</h2>
+                                <ul class="lvl-2">
+                                    {% if mix and o != "divers" %}
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/{{ o }}">Tableaux - Serveurs</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/perso/{{ o }}">Tableaux - Vous</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/compare/{{ o }}">Comparateur</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/compareperso/{{ o }}">Comparateur personnel</a></li>
+                                    {% elif o == "emotes" or o == "salons" or o == "voicechan" or o == "freq" or o == "reactions" %}
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/{{ o }}">Tableaux - Serveur</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/perso/{{ o }}">Tableaux - Vous</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/graphs/{{ o }}">Graphiques</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/compare/{{ o }}">Comparateur</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/compareperso/{{ o }}">Comparateur personnel</a></li>
+                                    {% elif o == "messages" or o == "voice" %}
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/{{ o }}">Tableaux - Serveur</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/perso/{{ o }}">Tableaux - Vous</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/graphs/{{ o }}">Graphiques</a></li>
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/compareperso/{{ o }}">Comparateur personnel</a></li>
+                                    {% elif o == "tortues" or o == "tortuesduo" or o == "p4" or o == "matrice" or o == "morpion" or o == "trivialversus" or o == "trivialbr" or o == "trivialparty" %}
+                                        <li><a href="/companion/ot/jeux/periods/{{ o }}">Tableaux</a></li>
+                                        <li><a href="/companion/ot/jeux/periods/graphs/{{ o }}">Graphiques</a></li>
+                                        <li><a href="/companion/ot/jeux/periods/compare/{{ o }}">Comparateur</a></li>
+                                    {% elif o == "divers" %}
+                                        <li><a href="/companion/{{ guildid }}/stats/periods/{{ o }}">Tableaux</a></li>
+                                    {% endif %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                
+                {% if not mix %}
+                <li class="lvl-0">
+                    <a>Évolutions</a>
+                    <ul class="mega-menu-tab">
+                        {% for o in options %}
+                        {% if o != "divers" %}
+                            <li class="lvl-1">
+                                <h2>{{ o|getOption }}</h2>
+                                    <ul class="lvl-2">
+                                        {% if guildid == "ot/jeux" %} 
+                                            <li><a href="/companion/ot/jeux/evol/{{ o }}">Tableaux</a></li>
+                                            <li><a href="/companion/ot/jeux/evol/graphs/{{ o }}">Graphiques</a></li>
+                                            <li><a href="/companion/ot/jeux/evol/compare/{{ o }}">Comparateur</a></li>
+                                        {% else %}
+                                            <li><a href="/companion/{{ guildid }}/stats/evol/{{ o }}">Tableaux</a></li>
+                                            <li><a href="/companion/{{ guildid }}/stats/evol/graphs/{{ o }}">Graphiques</a></li>
+                                            <li><a href="/companion/{{ guildid }}/stats/evol/compare/{{ o }}">Comparateur</a></li>
+                                        {% endif %}
+                                    </ul>
+                            </li>
                         {% endif %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endif %}
-    </div>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endif %}
+                
+                {% if not mix %}
+                <li class="lvl-0">
+                    <a>Premiers</a>
+                    <ul class="mega-menu-tab">
+                        <li class="lvl-1">
+                            <h2>Global</h2>
+                            <ul class="lvl-2">
+                                <li><a href="#">Global</a></li>
+                            </ul>
+                        </li>
+                        {% for o in options %}
+                        {% if o != "divers" %}
+                            <li class="lvl-1">
+                                <h2>{{ o|getOption }}</h2>
+                                    <ul class="lvl-2">
+                                        {% if guildid == "ot/jeux" %} 
+                                            <li><a href="/companion/ot/jeux/evol/{{ o }}">Tableaux</a></li>
+                                            <li><a href="/companion/ot/jeux/evol/graphs/{{ o }}">Graphiques</a></li>
+                                            <li><a href="/companion/ot/jeux/evol/compare/{{ o }}">Comparateur</a></li>
+                                        {% else %}
+                                            <li><a href="/companion/{{ guildid }}/stats/evol/{{ o }}">Tableaux</a></li>
+                                            <li><a href="/companion/{{ guildid }}/stats/evol/graphs/{{ o }}">Graphiques</a></li>
+                                            <li><a href="/companion/{{ guildid }}/stats/evol/compare/{{ o }}">Comparateur</a></li>
+                                        {% endif %}
+                                    </ul>
+                            </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endif %}
+                
+                {% if pagestats and ot %}
+                    <li class="lvl-0">
+                        <a>Badges</a>
+                        <ul class="mega-menu-tab">
+                            <li class="lvl-1">
+                                <h2>Options</h2>
+                                <ul class="lvl-2">
+                                    {% for o in options %}
+                                        <li><a href="/companion/ot/jeux/badges/{{ o }}">{{ o|getOption }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                {% elif not mix %}
+                    <li class="lvl-0">
+                        <a>Rapports</a>
+                        <ul class="mega-menu-tab">
+                            <li class="lvl-1">
+                                <h2>Options</h2>
+                                <ul class="lvl-2">
+                                    {% for o in options %}
+                                        {% if o != "divers" %}
+                                            <li><a href="/companion/{{ guildid }}/stats/rapport/{{ o }}">{{ o|getOption }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
+        
+            </ul>
+        </nav>
+    {% endif %}
 
     {% if travel or obj != None %}
         <form action="" method="get" class="form-example">
@@ -231,15 +563,49 @@
                 </select>
             {% endif %}
             {% if obj != None %}
-                <select name="obj">
-                    {% for i in listeObjs %}
-                        {% if i.ID == obj %}
-                            <option value="{{ i.ID }}" selected>{{ i.Nom }}</option>
-                        {% else %}
-                            <option value="{{ i.ID }}">{{ i.Nom }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
+                {% if doubleObj %}
+                    <fieldset>
+                        <select name="obj" id="obj">
+                            {% for i in listeObjs %}
+                                {% if i.ID == user1ID %}
+                                    <option value="{{ i.ID }}" data-class="o{{ i.ID }}" selected>{{ i.Nom }}</option>
+                                {% else %}
+                                    <option value="{{ i.ID }}" data-class="o{{ i.ID }}">{{ i.Nom }}</option>
+                                {% endif %}
+                            {% endfor %}
+                            
+                        </select>
+                    </fieldset>
+                    VS
+                    <fieldset>
+                        <select name="obj2" id="obj2">
+                            {% for i in listeObjs %}
+                                {% if i.ID == user2ID %}
+                                    <option value="{{ i.ID }}" data-class="o{{ i.ID }}" selected>{{ i.Nom }}</option>
+                                {% else %}
+                                    <option value="{{ i.ID }}" data-class="o{{ i.ID }}">{{ i.Nom }}</option>
+                                {% endif %}
+                            {% endfor %}
+                            
+                        </select>
+                    </fieldset>
+                {% else %}
+                    <fieldset>
+                        <select name="obj" id="obj">
+                            {% for i in listeObjs %}
+                                {% if i.ID == obj %}
+                                    <option value="{{ i.ID }}" data-class="o{{ i.ID }}" selected>{{ i.Nom }}</option>
+                                {% else %}
+                                    <option value="{{ i.ID }}" data-class="o{{ i.ID }}">{{ i.Nom }}</option>
+                                {% endif %}
+                            {% endfor %}
+                            
+                        </select>
+                    </fieldset>
+                {% endif %}
+                
+
+                
             {% endif %}
                 <input type="submit" value="Charger" onclick="clickServ(this)">
             </div>
