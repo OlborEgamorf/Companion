@@ -2,8 +2,8 @@ from math import inf
 
 from companion.tools.Getteurs import *
 from companion.tools.outils import (connectSQL, dictOptions, dictRefCommands,
-                              dictRefOptions, dictRefPlus, getCommands, getMoisAnnee,
-                              getMoisAnneePerso, getPlus, getTablePerso, getTimesMix,
+                              dictRefOptions, dictRefPlus, getMoisAnnee,
+                              getMoisAnneePerso, getTablePerso, getTimesMix,
                               listeOptions, rankingClassic,tableauMois)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render

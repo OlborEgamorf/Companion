@@ -1,10 +1,11 @@
 from math import inf
 
 import plotly.graph_objects as go
+from companion.templatetags.TagsCustom import enteteCount
 from companion.tools.Getteurs import (getChannels, getEmoteTable, getFreq, getPin,
                                 getUserInfo)
 from companion.tools.outils import (connectSQL, dictOptions, getTablePerso,
-                              listeOptions)
+                              listeOptions, voiceAxe)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from plotly.offline import plot
@@ -89,11 +90,12 @@ def linePlot(guild,option,user,obj,color,perso,period):
 
     listeLabels=list(map(lambda x:"20{1}-{0}".format(x["Mois"],x["Annee"]),table))
     listeCount=list(map(lambda x:x["Count"], table))
+    plus,div=voiceAxe(option,listeCount)
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=listeLabels, y=listeCount, text=listeCount, mode='lines+markers+text', marker=dict(color=color, size=12), line=dict(color=color), textposition="top center",hovertemplate = "%{y}"))
+    fig.add_trace(go.Scatter(x=listeLabels, y=listeCount, text=listeCount, mode='lines+markers+text', marker=dict(color=color, size=12), line=dict(color=color), textposition="top center",hovertemplate = "%{y}",name="Courbe"))
 
-    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Périodes - Messages",xaxis_title="Dates",yaxis_title="Messages",hovermode="x")
+    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Périodes d'activité - évolution {0}".format(enteteCount(option).lower()),xaxis_title="Dates",yaxis_title=enteteCount(option)+plus,hovermode="x")
     fig.update_yaxes(automargin=True)
     fig.update_xaxes(showgrid=False, zeroline=False,rangeslider_visible=True,type="date",rangeselector=dict(font_color="#111",
             buttons=list([
@@ -139,7 +141,7 @@ def linePlot(guild,option,user,obj,color,perso,period):
 
     if save!=i:
         figAn.add_trace(go.Scatter(x=mois, y=listeCount[save:], text=listeCount[save:], mode='lines+markers+text', marker=dict(color=colors[nb], size=10), line=dict(color=colors[nb]), textposition="top center",name="20{0}".format(act),hovertemplate = "%{y}"))
-    figAn.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Périodes - Comparaison de chaque année",xaxis_title="Dates",yaxis_title="Messages",hovermode="x")
+    figAn.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Périodes d'activité - mise en parallèle de chaque année",xaxis_title="Dates",yaxis_title=enteteCount(option)+plus,hovermode="x")
     figAn.update_yaxes(automargin=True)
     figAn.update_xaxes(showgrid=False, zeroline=False,categoryorder='category ascending',ticktext=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Décembre"],tickvals=[1,2,3,4,5,6,7,8,9,10,11,12])
 
@@ -170,11 +172,31 @@ def linePlot(guild,option,user,obj,color,perso,period):
 
     if perso or obj!=False:
         figRanks = go.Figure()
-        figRanks.add_trace(go.Scatter(x=listeLabels, y=listeRanks, text=listeRanks, mode='lines+markers+text', marker=dict(color=color, size=12), line=dict(color=color), textposition="top center",hovertemplate = "%{y}"))
+        figRanks.add_trace(go.Scatter(x=listeLabels, y=listeRanks, text=listeRanks, mode='lines+markers+text', marker=dict(color=color, size=12), line=dict(color=color), textposition="top center",hovertemplate = "%{y}",name="Courbe"))
 
-        figRanks.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Périodes - Rangs",xaxis_title="Dates",yaxis_title="Rangs",hovermode="x")
+        figRanks.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Périodes d'activité - évolution du rang",xaxis_title="Dates",yaxis_title="Rang",hovermode="x")
         figRanks.update_yaxes(automargin=True,autorange="reversed")
-        figRanks.update_xaxes(showgrid=False, zeroline=False,rangeslider_visible=True)
+        figRanks.update_xaxes(showgrid=False, zeroline=False,rangeslider_visible=True,type="date",rangeselector=dict(font_color="#111",
+            buttons=list([
+                dict(count=3,
+                     label="3 mois",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=6,
+                     label="6 mois",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=1,
+                     label="1 an",
+                     step="year",
+                     stepmode="backward"),
+                dict(count=2,
+                     label="2 ans",
+                     step="year",
+                     stepmode="backward"),
+                dict(label="Tout",step="all")
+            ])
+        ),)
 
         return plot(fig,output_type='div'), plot(figRanks,output_type='div'),  plot(figAn,output_type='div'), plot(figBox,output_type='div')
     else:

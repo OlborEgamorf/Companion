@@ -24,37 +24,6 @@ dictDivers={3:"Images envoyées",2:"GIFs envoyés",1:"Fichiers envoyés",4:"Lien
 with open('os/SQL.txt') as f:
     root = f.read().strip()
 
-def getCommands(option):
-    liste=listeCommands.copy()
-    if option not in ("messages","voice"):
-        liste.remove("jours")
-    """if option=="emotes":
-        liste.append("mondial")"""
-    if option=="home":
-        liste=[]
-    if option=="divers":
-        liste=["ranks","periods"]
-    return liste
-
-def getPlus(command,option):
-    if command=="jours":
-        liste=["","graphs"]
-    elif command=="ranks" and option=="divers":
-        liste=["serv","perso","obj"]
-    elif command=="periods" and option=="divers":
-        liste=["serv","perso"]
-    elif command=="periods" and option in ("emotes","salons","voicechan","reactions","freq"):
-        liste=["serv","perso","graphs","compare","compareperso"]
-    elif command=="periods" and option not in ("emotes","salons","voicechan","reactions","freq"):
-        liste=["serv","perso","graphs","compareperso"]
-    elif command=="ranks" and option in ("emotes","salons","voicechan","reactions","freq"):
-        liste=["serv","perso","obj","pantheon","graphs","compare","compareperso"]
-    elif command=="ranks" and option not in ("emotes","salons","voicechan","reactions","freq"):
-        liste=["","pantheon","graphs","compare"]
-    else:
-        liste=listePlus.copy()
-    return liste
-
 
 def getTimes(guild,option,categ):
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
@@ -154,7 +123,7 @@ def getMoisAnneePerso(mois,annee):
 
 
 def getGuild(guild):
-    guild_full=requests.get("https://discord.com/api/v9/guilds/{0}".format(guild),headers={"Authorization":"Bot Njk5NzI4NjA2NDkzOTMzNjUw.XpYnDA.ScdeM2sFekTRHY5hubkwg0HWDPU"})
+    guild_full=requests.get("https://discord.com/api/v9/guilds/{0}".format(guild),headers={"Authorization":"Bot //TOKEN//"})
     assert guild_full.status_code==200
     guild_full=guild_full.json()
     return guild_full
@@ -276,7 +245,9 @@ def getTablePerso(guild,option,id,idobj,period,tri):
     for i in curseurF.execute("SELECT Mois,Annee FROM first{0}".format(period)).fetchall():
         try:
             connection,curseur=connectSQL(guild,option,categ,i["Mois"],i["Annee"])
-            if id==guild:
+            if categ=="Jeux":
+                stat=curseur.execute("SELECT Rank,Count,Mois,Annee,ID,W,L FROM {0}{1} WHERE ID={2}".format(tableauMois[i["Mois"]],i["Annee"],id)).fetchone()
+            elif id==guild:
                 stat=curseur.execute("SELECT Mois,Annee,SUM(Count) AS Count FROM {0}{1}".format(tableauMois[i["Mois"]],i["Annee"])).fetchone()
             elif not idobj:
                 stat=curseur.execute("SELECT Rank,Count,Mois,Annee,ID FROM {0}{1} WHERE ID={2}".format(tableauMois[i["Mois"]],i["Annee"],id)).fetchone()
@@ -353,3 +324,23 @@ def getCommon(guilds_me,user,curseurGet):
             guild=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(i["ID"])).fetchone()
             listeCom.append({"ID":i["ID"],"Icon":guild["Icon"],"Nom":guild["Nom"]})
     return listeCom
+
+def voiceAxe(option:str,listeCount:list) -> int:
+    if option in ("voice","voicechan"):
+        maxi=max(listeCount)
+        if maxi<60:
+            mesure=" (en secondes)"
+            div=1
+        elif maxi<3600:
+            mesure=" (en minutes)"
+            div=60
+        elif maxi<86400:
+            mesure=" (en heures)"
+            div=3600
+        else:
+            mesure=" (en jours)"
+            div=86400
+        for i in range(len(listeCount)):
+            listeCount[i]=round(listeCount[i]/div,2)
+        return mesure,div
+    return "",1

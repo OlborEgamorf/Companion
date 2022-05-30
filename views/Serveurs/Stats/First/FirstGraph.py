@@ -1,11 +1,11 @@
 from math import inf
 
 import plotly.graph_objects as go
+from companion.templatetags.TagsCustom import enteteCount, enteteNom
 from companion.tools.Decorator import CompanionStats
-from companion.tools.Getteurs import (chooseGetteur, getChannels, getEmoteTable, getFreq, getNom,
-                                getPin, getUserInfo, getUserTable)
+from companion.tools.Getteurs import chooseGetteur, getNom, getPin, getUserInfo
 from companion.tools.outils import (connectSQL, dictOptions, getTablePerso,
-                              listeOptions, tableauMois)
+                                    listeOptions, tableauMois, voiceAxe)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from plotly.offline import plot
@@ -28,7 +28,7 @@ def graphFirst(request,guild,option):
     else:
         hexa="#"+"0"*(6-len(hexa))+hexa
     
-    div1,div2=linePlot(guild,option,user,hexa,curseur,curseurGet)
+    div1,div2=linePlot(guild,option,user,hexa,curseur,curseurGet,True)
 
     #connexion.close()
     ctx={"fig":div1,"fig2":div2,"fig3":None,"fig4":None,"fig5":None,"fig6":None,"fig7":None,"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],"pagestats":True,
@@ -60,8 +60,11 @@ def iFrameGraphFirst(request,guild,option):
     ctx={"rank":stats,"id":user.id,"max":maxi,"option":option,"plus":"graph"}
     return render(request, "companion/Stats/First/iFrameFirstGraph.html", ctx)
 
-def linePlot(guild,option,user,color,curseur,curseurGet):
-    first=curseur.execute("SELECT * FROM firstM ORDER BY DateID ASC").fetchall()
+def linePlot(guild,option,user,color,curseur,curseurGet,graphnb,annee=None):
+    if annee==None or annee=="":
+        first=curseur.execute("SELECT * FROM firstM ORDER BY DateID ASC").fetchall()
+    else:
+        first=curseur.execute("SELECT * FROM firstM WHERE Annee='{0}' ORDER BY DateID ASC".format(annee)).fetchall()
     
     moy=[]
     noms=[]
@@ -92,10 +95,13 @@ def linePlot(guild,option,user,color,curseur,curseurGet):
         dictNoms[i["ID"]]=nom
         dictColors[i["ID"]]=hexa
 
+    listeCount=list(map(lambda x:x["Count"],first))
+    plus,div=voiceAxe(option,listeCount)
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=list(map(lambda x:"20{1}-{0}".format(x["Mois"],x["Annee"]),first)), 
-        y=list(map(lambda x:x["Count"],first)), 
+        y=listeCount, 
         text=noms, 
         mode='lines+markers', 
         marker=dict(color="gold", size=10), 
@@ -106,9 +112,13 @@ def linePlot(guild,option,user,color,curseur,curseurGet):
     
     if option in ("messages","voice","mots"):
         perso=getTablePerso(guild,dictOptions[option],user.id,False,"M","periodAsc")
+        listeCount=list(map(lambda x:x["Count"],perso))
+        # FILTER POUR METTRE QUE ANNEE
+        for i in range(len(listeCount)):
+            listeCount[i]=round(listeCount[i]/div,2)
         fig.add_trace(go.Scatter(
             x=list(map(lambda x:"20{1}-{0}".format(x["Mois"],x["Annee"]),perso)), 
-            y=list(map(lambda x:x["Count"],perso)), 
+            y=listeCount, 
             text=list(map(lambda x:x["Rank"],perso)), 
             mode='lines+markers', 
             marker=dict(color=color, size=10), 
@@ -116,9 +126,13 @@ def linePlot(guild,option,user,color,curseur,curseurGet):
             hovertemplate = "%{y}<br>%{text}e",
             name="Vous"))
 
+    listeCount=list(map(lambda x:x["Count"],moy))
+    for i in range(len(listeCount)):
+        listeCount[i]=round(listeCount[i]/div,2)
+
     fig.add_trace(go.Scatter(
         x=list(map(lambda x:"20{1}-{0}".format(x["Mois"],x["Annee"]),moy)), 
-        y=list(map(lambda x:x["Count"],moy)), 
+        y=listeCount, 
         text=noms, 
         mode='lines+markers', 
         marker=dict(color="turquoise", size=10), 
@@ -126,7 +140,7 @@ def linePlot(guild,option,user,color,curseur,curseurGet):
         hovertemplate = "%{y}",
         name="Moyenne du serveur"))
 
-    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Périodes - Messages",xaxis_title="Dates",yaxis_title="Messages",hovermode="x")
+    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Pour chaque mois d'activité, comparaison entre vous, le premier, et la moyenne du serveur en terme de {0}".format(enteteCount(option).lower()),xaxis_title="Date",yaxis_title=enteteCount(option)+plus,hovermode="x")
     fig.update_yaxes(automargin=True)
     fig.update_xaxes(showgrid=False, zeroline=False,rangeslider_visible=True,type="date",rangeselector=dict(font_color="#111",
             buttons=list([
@@ -150,34 +164,36 @@ def linePlot(guild,option,user,color,curseur,curseurGet):
             ])
         ),)
 
-    idsDist=curseur.execute("SELECT DISTINCT ID FROM firstM").fetchall()
-    nbfirst=[]
-    colorsNb=[]
-    nomsNb=[]
-    for i in idsDist:
-        nbfirst.append({"ID":i["ID"],"Count":curseur.execute("SELECT Count() AS Nombre FROM firstM WHERE ID={0}".format(i["ID"])).fetchone()["Nombre"]})
-        nomsNb.append(dictNoms[i["ID"]])
-        colorsNb.append(dictColors[i["ID"]])
-    counts=list(map(lambda x:x["Count"],nbfirst))
+    if graphnb:
+        idsDist=curseur.execute("SELECT DISTINCT ID FROM firstM").fetchall()
+        nbfirst=[]
+        colorsNb=[]
+        nomsNb=[]
+        for i in idsDist:
+            nbfirst.append({"ID":i["ID"],"Count":curseur.execute("SELECT Count() AS Nombre FROM firstM WHERE ID={0}".format(i["ID"])).fetchone()["Nombre"]})
+            nomsNb.append(dictNoms[i["ID"]])
+            colorsNb.append(dictColors[i["ID"]])
+        counts=list(map(lambda x:x["Count"],nbfirst))
 
-    figNb=go.Figure(data=go.Bar(x=list(map(lambda x:str(x["ID"]),idsDist)),y=counts,marker_color=colorsNb,text=counts,textposition="auto"))
+        figNb=go.Figure(data=go.Bar(x=list(map(lambda x:str(x["ID"]),idsDist)),y=counts,marker_color=colorsNb,text=counts,textposition="auto"))
 
-    figNb.update_layout(
-        
-        paper_bgcolor="#111",
-        plot_bgcolor="#333",
-        font_family="Roboto",
-        font_color="white",
-        xaxis={
-            'categoryorder':'total descending',
-            "rangeslider":{"visible":True},
-            "title":"Membres",
-            "range":[-0.5,20.5 if len(nbfirst)>20 else len(nbfirst)+0.5]},
-        yaxis_title="Nombre de fois premier",
-        height=750,
-        title="Messages envoyés sur la période globale - Top 150"
-    )
-    figNb.update_yaxes(automargin=True)
-    figNb.update_xaxes(ticktext=nomsNb,tickvals=list(map(lambda x:str(x["ID"]),idsDist)))
+        figNb.update_layout(
+            
+            paper_bgcolor="#111",
+            plot_bgcolor="#333",
+            font_family="Roboto",
+            font_color="white",
+            xaxis={
+                'categoryorder':'total descending',
+                "rangeslider":{"visible":True},
+                "title":enteteNom(option),
+                "range":[-0.5,20.5 if len(nbfirst)>20 else len(nbfirst)+0.5]},
+            yaxis_title="Nombre de fois premier",
+            height=750,
+            title="Nombre de fois premiers au classement"
+        )
+        figNb.update_yaxes(automargin=True)
+        figNb.update_xaxes(ticktext=nomsNb,tickvals=list(map(lambda x:str(x["ID"]),idsDist)))
 
-    return plot(fig,output_type='div'), plot(figNb,output_type='div')
+        return plot(fig,output_type='div'), plot(figNb,output_type='div')
+    return plot(fig,output_type='div')

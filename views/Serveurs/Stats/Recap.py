@@ -9,6 +9,10 @@ from companion.tools.outils import (collapseEvol, connectSQL, dictOptions,
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
+from companion.views.Serveurs.Stats.Evol.EvolGraph import linePlots
+from companion.views.Serveurs.Stats.First.FirstGraph import linePlot
+
+from companion.views.Serveurs.Stats.Ranks.RanksGraph import barPlot
 
 
 def recapJeux(request,option):
@@ -45,16 +49,20 @@ def viewRecapStats(request,guild,option):
     if option in ("messages","voice") or categ=="Jeux":
         ranks=getRanks(request,guild,option,"",curseur=curseur,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB)
         evol=getEvol(request,guild,option,curseur=curseur,moisDB=moisDB,anneeDB=anneeDB,user=user.id)
+        div1=barPlot(guild,option,user,curseur,curseurGet,moisDB,anneeDB,False)
+        div2=linePlots(guild,option,curseur,curseurGet,user.id,moisDB,anneeDB,True)
         if moisDB=="glob" or moisDB=="to":
             periods=getPeriods(request,guild,option,moisDB=moisDB,anneeDB=anneeDB)
             first=getFirst(request,guild,option,curseur=curseurGL,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB)
             jours=None
+            div3=linePlot(guild,option,user,color,curseurGL,curseurGet,False,annee=anneeDB)
         else:
             if categ!="Jeux":
                 jours=getJours(request,guild,option,curseur=curseurGL,moisDB=moisDB,anneeDB=anneeDB)
             else:
                 jours=None
             periods,first=None,None
+            div3=None
         perso=None
         obj,listeObj=None,None
     else:
@@ -100,7 +108,7 @@ def viewRecapStats(request,guild,option):
         "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
         "command":"ranks","options":listeOptionsJeux,"option":option,"plus":"",
         "travel":True,"selector":True,"obj":obj,"ot":True,"pagestats":True,
-        "pin":pin}
+        "pin":pin,"fig":div1,"fig2":div2,"fig3":div3}
         return render(request, "companion/Stats/Recap.html", ctx)
     else:
         listeMois,listeAnnee=getTimes(guild,option,"Stats")
@@ -111,7 +119,7 @@ def viewRecapStats(request,guild,option):
         "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
         "command":"recap","options":listeOptions,"option":option,"plus":"",
         "travel":True,"selector":True,"obj":obj,"listeObjs":listeObj,"pagestats":True,
-        "pin":pin}
+        "pin":pin,"fig":div1,"fig2":div2,"fig3":div3}
 
         return render(request, "companion/Stats/Recap.html", ctx)
 

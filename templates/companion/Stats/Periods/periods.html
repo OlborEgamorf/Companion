@@ -91,36 +91,73 @@
 
 <div class="stats">
     <table id="tableot">
-        <tr><th colspan="4">Périodes mensuelles</th></tr>
-        <tr>
-            <th onclick="sortTable(0)">Rang</th>
-            <th onclick="sortTable(1)">Date</th>
-            <th>Barre</th>
-            <th onclick="sortTable(3)">{{ option|headcount }}</th>
-        </tr>
-        {% for i in rankMois %}
-            <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
-                <td>{{ i.Rank }}</td>
-                <td data-date="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
-                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ color }}"></div></td>
-                <td>{{ i.Count|tempsvoice:option }}</td>
+        {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+            <tr><th colspan="5">Périodes mensuelles</th></tr>
+            <tr>
+                <th onclick="sortTable(0)">Rang</th>
+                <th onclick="sortTable(1)">Date</th>
+                <th>Barre</th>
+                <th onclick="sortTable(3)">{{ option|headcount }}</th>
+                <th>W/L</th>
+            </tr>
+            {% for i in rankMois %}
+                <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
+                    <td>{{ i.Rank }}</td>
+                    <td data-date="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ color }}"></div></td>
+                    <td>{{ i.Count|tempsvoice:option }}</td>
+                    <td>{{ i.W }} / {{ i.L }}</td>
+                </tr>
+            {% endfor %}
+            <tr><th colspan="4">Périodes annuelles</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>Date</th>
+                <th id="leg-barre">Barre</th>
+                <th>{{ option|headcount }}</th>
+                <th>W/L</th>
+            </tr>
+            {% for i in rankAnnee %}
+                <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
+                    <td>{{ i.Rank }}</td>
+                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ color }}"></div></td>
+                    <td>{{ i.Count|tempsvoice:option }}</td>
+                    <td>{{ i.W }} / {{ i.L }}</td>
+                </tr>
+            {% endfor %}
+        {% else %} 
+            <tr><th colspan="4">Périodes mensuelles</th></tr>
+            <tr>
+                <th onclick="sortTable(0)">Rang</th>
+                <th onclick="sortTable(1)">Date</th>
+                <th>Barre</th>
+                <th onclick="sortTable(3)">{{ option|headcount }}</th>
+            </tr>
+            {% for i in rankMois %}
+                <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
+                    <td>{{ i.Rank }}</td>
+                    <td data-date="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ color }}"></div></td>
+                    <td>{{ i.Count|tempsvoice:option }}</td>
+                </tr>
+            {% endfor %}
+            <tr><th colspan="4">Périodes annuelles</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>Date</th>
+                <th id="leg-barre">Barre</th>
+                <th>{{ option|headcount }}</th>
+            </tr>
+            {% for i in rankAnnee %}
+                <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
+                    <td>{{ i.Rank }}</td>
+                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ color }}"></div></td>
+                    <td>{{ i.Count|tempsvoice:option }}</td>
             </tr>
         {% endfor %}
-        <tr><th colspan="4">Périodes annuelles</th></tr>
-        <tr>
-            <th>Rang</th>
-            <th>Date</th>
-            <th id="leg-barre">Barre</th>
-            <th>Messages</th>
-        </tr>
-        {% for i in rankAnnee %}
-            <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
-                <td>{{ i.Rank }}</td>
-                <td>{{ i.Mois }}/{{ i.Annee }}</td>
-                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ color }}"></div></td>
-                <td>{{ i.Count|tempsvoice:option }}</td>
-            </tr>
-        {% endfor %}
+        {% endif %}
     </table>
     <iframe id="iframeevol" src="/companion/iframeblank?option={{ option }}&command={{ command }}&plus={{ plus }}" scrolling="no" onload="resizeIframe(this)"></iframe>
 </div>

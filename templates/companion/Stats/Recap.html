@@ -501,6 +501,30 @@
     </table>
     {% endif %}
 
+    {% if fig != None %}
+    <div class="graphs-recap">
+        {% autoescape off %}
+        {{ fig }}
+        {% endautoescape %}
+    </div>
+    {% endif %}
+
+    {% if fig2 != None %}
+    <div class="graphs-recap">
+        {% autoescape off %}
+        {{ fig2 }}
+        {% endautoescape %}
+    </div>
+    {% endif %}
+
+    {% if fig3 != None %}
+    <div class="graphs-recap">
+        {% autoescape off %}
+        {{ fig3 }}
+        {% endautoescape %}
+    </div>
+    {% endif %}
+
 </div>
     
 

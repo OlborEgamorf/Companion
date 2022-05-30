@@ -3,18 +3,32 @@ from math import inf
 from companion.tools.Decorator import CompanionStats
 from companion.tools.Getteurs import *
 from companion.tools.outils import (collapseEvol, connectSQL, dictOptions,
-                              getMoisAnnee, getTimes, listeOptions,
-                              tableauMois)
+                                    getMoisAnnee, getTimes, listeOptions,
+                                    listeOptionsJeux, tableauMois)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
+def compareEvolJeux(request,option):
+    return viewEvolCompare(request,"OT",option)
 
 @login_required(login_url="/login")
 @CompanionStats
 def viewEvolCompare(request,guild,option):
     user=request.user
+
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        pin=getPin(user,curseurGet,"jeux",option,"ranks","")
+        categ="Jeux"
+        connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
+    else:
+        pin=getPin(user,curseurGet,guild,option,"ranks","")
+        categ="Stats"
+        guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
+
     mois,annee = request.GET.get("mois"),request.GET.get("annee")
-    if option in ("messages","voice","mots"):
+    if option in ("messages","voice","mots") or categ=="Jeux":
         obj1 = user.id
         obj2 = request.GET.get("obj")
     else:
@@ -22,14 +36,9 @@ def viewEvolCompare(request,guild,option):
         obj2 = request.GET.get("obj2")
 
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
-    
-    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
-    user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
-    guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
+    listeMois,listeAnnee=getTimes(guild,option,categ)
 
-    listeMois,listeAnnee=getTimes(guild,option,"Stats")
-
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
+    connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
     listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC LIMIT 150").fetchall()
     if option in ("emotes","reactions"):
         listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
@@ -39,6 +48,8 @@ def viewEvolCompare(request,guild,option):
         listeObj=list(map(lambda x:getFreq(x),listeObj))
     elif option in ("messages","voice","mots"):
         listeObj=list(map(lambda x:getUserTable(x,curseurGet,guild),listeObj))
+    elif categ=="Jeux":
+        listeObj=list(map(lambda x:getUserJeux(x,curseurGet,option),listeObj))
 
     listeObj=list(filter(lambda x:x["ID"]!=user.id,listeObj))
     listeObj=list(filter(lambda x:x["Nom"]!="Ancien membre",listeObj))
@@ -48,7 +59,7 @@ def viewEvolCompare(request,guild,option):
     if obj2==None:
         obj2=listeObj[0]["ID"]
 
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
+    connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
     
     table=curseur.execute("SELECT * FROM evol{0}{1}{2}".format(moisDB,anneeDB,obj1)).fetchall()
     table=collapseEvol(table)  
@@ -66,15 +77,26 @@ def viewEvolCompare(request,guild,option):
             if not period[0]["Collapse"]:
                 table[i]["Collapse"]=False
 
-    maxi=max(max(list(map(lambda x:x["Count"],table))),max(list(map(lambda x:x["Count"],table2))))
-    ctx={"rank":table,"max":maxi,"pagestats":True,
-    "id":user.id,"color":None,"nom":user_full["Nom"],"avatar":user_full["Avatar"],
-    "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
-    "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
-    "command":"evol","options":listeOptions,"option":option,"plus":"compare",
-    "travel":True,"selector":True,"listeObjs":listeObj,"obj":int(obj2),
-    "user1ID":int(obj1),"user2ID":int(obj2),
-    "pin":getPin(user,curseurGet,guild,option,"evol","compare")}
+    if categ=="Jeux":
+        maxi=max(max(list(map(lambda x:x["Count"],table))),max(list(map(lambda x:x["Count"],table2))))
+        ctx={"rank":table,"max":maxi,"pagestats":True,"ot":True,
+        "id":user.id,"color":None,"nom":user_full["Nom"],"avatar":user_full["Avatar"],
+        "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+        "guildname":"Classement jeux","guildid":"ot/jeux",
+        "command":"evol","options":listeOptionsJeux,"option":option,"plus":"compare",
+        "travel":True,"selector":True,"listeObjs":listeObj,"obj":int(obj2),
+        "user1ID":int(obj1),"user2ID":int(obj2),
+        "pin":getPin(user,curseurGet,"ot/jeux",option,"evol","compare")}
+    else:
+        maxi=max(max(list(map(lambda x:x["Count"],table))),max(list(map(lambda x:x["Count"],table2))))
+        ctx={"rank":table,"max":maxi,"pagestats":True,
+        "id":user.id,"color":None,"nom":user_full["Nom"],"avatar":user_full["Avatar"],
+        "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+        "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
+        "command":"evol","options":listeOptions,"option":option,"plus":"compare",
+        "travel":True,"selector":True,"listeObjs":listeObj,"obj":int(obj2),
+        "user1ID":int(obj1),"user2ID":int(obj2),
+        "pin":getPin(user,curseurGet,guild,option,"evol","compare")}
 
     if option in ("messages","voice","mots"):
         infos1=getUserInfo(obj1,curseurGet,guild)
@@ -92,6 +114,24 @@ def viewEvolCompare(request,guild,option):
             ctx["user2Nom"]=infos2["Nom"]
         else:
             ctx["user2Nom"]="Ancien membre"
+    elif categ=="Jeux":
+        connexionUser,curseurUser=connectSQL("OT",obj1,"Titres",None,None)
+        infos1=getAllInfos(curseurGet,curseurUser,connexionUser,obj1)
+        if infos1!=None:
+            ctx["user1Color"]=infos1["Couleur"]
+            ctx["user1Emote"]=infos1["Emote"]
+            ctx["user1Nom"]=infos1["Full"]
+        else:
+            ctx["user1Nom"]="Vous"
+    
+        connexionUser,curseurUser=connectSQL("OT",obj2,"Titres",None,None)
+        infos2=getAllInfos(curseurGet,curseurUser,connexionUser,obj2)
+        if infos2!=None:
+            ctx["user2Color"]=infos2["Couleur"]
+            ctx["user2Emote"]=infos2["Emote"]
+            ctx["user2Nom"]=infos2["Full"]
+        else:
+            ctx["user2Nom"]="Inconnu"
     else:
         ctx["user1Nom"]=getNom(obj1,option,curseurGet,False)
         ctx["user2Nom"]=getNom(obj2,option,curseurGet,False)

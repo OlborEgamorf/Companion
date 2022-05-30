@@ -33,7 +33,7 @@
 
 <div class="stats" style="width:80%">
     <table id="tablecompare">
-        {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
+        {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" or option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
             <tr>
                 <th style="width:45%" colspan="4"> 
                     {% if option == "messages" or option == "mots" or option == "voice" %}
@@ -47,6 +47,12 @@
                             <img src="https://cdn.discordapp.com/emojis/{{ user1ID }}.gif?size=128" style="border-radius: 0%;">
                         {% else %}
                             <img src="https://cdn.discordapp.com/emojis/{{ user1ID }}.png?size=128" style="border-radius: 0%;">
+                        {% endif %}
+                    {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                        {% if user1Emote != None %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ user1Emote }}">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
                         {% endif %}
                     {% endif %}
                 {{ user1Nom }}</th>
@@ -63,6 +69,12 @@
                             <img src="https://cdn.discordapp.com/emojis/{{ user2ID }}.gif?size=128" style="border-radius: 0%;">
                         {% else %}
                             <img src="https://cdn.discordapp.com/emojis/{{ user2ID }}.png?size=128" style="border-radius: 0%;">
+                        {% endif %}
+                    {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                        {% if user2Emote != None %}
+                            <img src="https://cdn.discordapp.com/emojis/{{ user2Emote }}">
+                        {% else %}
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
                         {% endif %}
                     {% endif %}
                 {{ user2Nom }}</th>

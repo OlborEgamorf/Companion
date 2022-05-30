@@ -75,6 +75,14 @@
                     </div>
                 </a>
             {% endfor %}
+            <a href="https://discord.com/oauth2/authorize?client_id=699728606493933650&permissions=120259472576&scope=bot">
+                <div class="card-guild">
+                    <span class="icon-guild">
+                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png">
+                    </span>
+                    <span class="guild-name">Ajoutez un serveur</span>
+                </div>
+            </a>
         </div>
         <div class="searchTable">
             <input type="text" name="name-mix" id="name-mix" style="display: none;" placeholder="Nommez votre mix">
@@ -82,8 +90,7 @@
         </div>
     </form>
         
-
-    <div class="guild-stats">Autres</div>
+    <div class="guild-stats">Profil</div>
     <div class="all-guilds">
         <a href="/companion/profil/{{ id }}">
             <div class="card-guild">
@@ -93,10 +100,30 @@
                 <span class="guild-name">{{ nom }}</span>
             </div>
         </a>
+        <a href="/companion/profil/{{ id }}/stats">
+            <div class="card-guild">
+                <span class="icon-guild">
+                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png">
+                </span>
+                <span class="guild-name">Statistiques</span>
+            </div>
+        </a>
+        <a href="/companion/profil/{{ id }}/titres">
+            <div class="card-guild">
+                <span class="icon-guild">
+                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/980097681592553552/VIP.png">
+                </span>
+                <span class="guild-name">Titres et personnalisation</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="guild-stats">Mondial</div>
+    <div class="all-guilds">
         <a href="/companion/ot/jeux/">
             <div class="card-guild">
                 <span class="icon-guild">
-                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png">
+                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/980097681898754088/Diamond.png">
                 </span>
                 <span class="guild-name">Classements jeux</span>
             </div>
@@ -104,7 +131,7 @@
         <a href="/companion/ot/stats">
             <div class="card-guild">
                 <span class="icon-guild">
-                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
+                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png">
                 </span>
                 <span class="guild-name">Stats mondiales</span>
             </div>
@@ -117,20 +144,44 @@
                 <span class="guild-name">Soutenir le projet</span>
             </div>
         </a>
-        <a href="https://discord.gg/kMQz7nF">
+        <a href="/companion/ot/titres">
             <div class="card-guild">
                 <span class="icon-guild">
-                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/976176189532176414/servtest.png">
+                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/980097681592553552/VIP.png">
                 </span>
-                <span class="guild-name">Serveur de tests</span>
+                <span class="guild-name">Titres</span>
             </div>
         </a>
-        <a href="https://discord.com/oauth2/authorize?client_id=699728606493933650&permissions=120259472576&scope=bot">
+    </div>
+
+    <div class="guild-stats">Vos Mix</div>
+    {% if mixalert == True %}
+        <div id="alert-mix" class="guild-stats" style="background-color: green;">Mix créé !</div>
+    {% elif mixalert == False %}
+        <div id="alert-mix" class="guild-stats" style="background-color: red;">Impossible de créer ce mix. Vous devez choisir 2 à 5 serveurs, et faire en sorte que le mix n'existe pas déjà.</div>
+    {% endif %}
+    <div class="all-guilds">
+        {% for mix in mixes %}
+            <a id="{{ guild.ID }}" href="/companion/mixes/{{ mix.ID }}/ranks/messages">
+                <div class="card-mix" style="width: calc({{ mix.Liste|len }} * 120px + ({{ mix.Liste|len }} - 1) * 5px);">
+                    {% for guild in mix.Liste %}
+                        {% if guild.Icon != None %}
+                            <span class="icon-guild">
+                                <img class="img-guild" src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}.png?size=128" alt="Icone du serveur {{ guild.Nom }}">
+                            </span>
+                        {% endif %}     
+                    {% endfor %}
+                    <span class="guild-name" style="width: calc({{ mix.Liste|len }}* 120px - 10px);">{{ mix.Nom }}</span>
+                </div>
+            </a>
+        {% endfor %}
+
+        <a onclick="checkBoxes()">
             <div class="card-guild">
                 <span class="icon-guild">
                     <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png">
                 </span>
-                <span class="guild-name">Ajoutez un serveur</span>
+                <span id="create-mix" class="guild-name">Créez un mix</span>
             </div>
         </a>
     </div>
@@ -178,38 +229,6 @@
             {% endfor %}
         </div>
     {% endif %}
-
-    <div class="guild-stats">Vos Mix</div>
-    {% if mixalert == True %}
-        <div id="alert-mix" class="guild-stats" style="background-color: green;">Mix créé !</div>
-    {% elif mixalert == False %}
-        <div id="alert-mix" class="guild-stats" style="background-color: red;">Impossible de créer ce mix. Vous devez choisir 2 à 5 serveurs, et faire en sorte que le mix n'existe pas déjà.</div>
-    {% endif %}
-    <div class="all-guilds">
-        {% for mix in mixes %}
-            <a id="{{ guild.ID }}" href="/companion/mixes/{{ mix.ID }}/ranks/messages">
-                <div class="card-mix" style="width: calc({{ mix.Liste|len }} * 120px + ({{ mix.Liste|len }} - 1) * 5px);">
-                    {% for guild in mix.Liste %}
-                        {% if guild.Icon != None %}
-                            <span class="icon-guild">
-                                <img class="img-guild" src="https://cdn.discordapp.com/icons/{{ guild.ID }}/{{ guild.Icon }}.png?size=128" alt="Icone du serveur {{ guild.Nom }}">
-                            </span>
-                        {% endif %}     
-                    {% endfor %}
-                    <span class="guild-name" style="width: calc({{ mix.Liste|len }}* 120px - 10px);">{{ mix.Nom }}</span>
-                </div>
-            </a>
-        {% endfor %}
-
-        <a onclick="checkBoxes()">
-            <div class="card-guild">
-                <span class="icon-guild">
-                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png">
-                </span>
-                <span id="create-mix" class="guild-name">Créez un mix</span>
-            </div>
-        </a>
-    </div>
 
     <div class="footer-ot" style="margin-bottom: 0;">
         <span class="footer-links">

@@ -69,7 +69,7 @@ def home(request):
                 mix=curseurMix.execute("SELECT * FROM mixes_{0} WHERE Nombre={1}".format(user.id,i["Guild"][6:])).fetchone()
                 i["Nom"]="Mix {0}".format(mix["Nom"])
                 i["Mix"]=True
-            elif i["Guild"]=="jeux":
+            elif i["Guild"]=="ot/jeux":
                 i["Nom"]="Jeux"
             else:
                 infos=getGuildInfo(i["Guild"],curseurGet)

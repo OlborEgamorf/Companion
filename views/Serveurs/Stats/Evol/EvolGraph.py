@@ -1,10 +1,11 @@
 import plotly.graph_objects as go
+from companion.templatetags.TagsCustom import enteteCount, enteteNom
 from companion.tools.Decorator import CompanionStats
 from companion.tools.Getteurs import (getChannels, getEmoteTable, getFreq,
                                       getNom, getPin, getUserInfo)
 from companion.tools.outils import (collapseEvol, connectSQL, dictOptions,
                                     getMoisAnnee, getTablePerso, getTimes,
-                                    listeOptions, tableauMois)
+                                    listeOptions, tableauMois, voiceAxe)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from plotly.offline import plot
@@ -42,9 +43,9 @@ def graphEvol(request,guild,option):
         if len(listeObj)>150:
             listeObj=listeObj[:150]
 
-        div1,div2,div3,div4=linePlots(guild,option,curseur,curseurGet,obj,moisDB,anneeDB)
+        div1,div2,div3,div4=linePlots(guild,option,curseur,curseurGet,obj,moisDB,anneeDB,False)
     else:
-        div1,div2,div3,div4=linePlots(guild,option,curseur,curseurGet,user.id,moisDB,anneeDB)
+        div1,div2,div3,div4=linePlots(guild,option,curseur,curseurGet,user.id,moisDB,anneeDB,False)
 
     connexion.close()
     ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":None,"fig6":None,"fig7":None,
@@ -80,7 +81,7 @@ def iFrameGraphEvol(request,guild,option):
     return render(request, "companion/Stats/Ranks/iFrameRanks_evol.html", ctx)
 
 
-def linePlots(guild,option,curseur,curseurGet,user,moisDB,anneeDB):
+def linePlots(guild,option,curseur,curseurGet,user,moisDB,anneeDB,recap):
     if option in ("messages","voice","mots"):
         infosUser=getUserInfo(user,curseurGet,guild)
         hexa=hex(infosUser["Color"])[2:]
@@ -98,16 +99,21 @@ def linePlots(guild,option,curseur,curseurGet,user,moisDB,anneeDB):
     listeCountBase=list(map(lambda x:x["Count"], table))
     rank=table[-1]["Rank"]
 
+    plus,div=voiceAxe(option,listeCountBase)
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=listeLabels, y=listeCountBase, mode='lines', line=dict(color=infosUser["Color"],width=3)))
-    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Evolution",xaxis_title="Dates",                  yaxis_title="Messages",hovermode="x")
+    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Évolution {0} sur toute la période".format(enteteCount(option).lower()),xaxis_title="Date",yaxis_title=enteteCount(option)+plus,hovermode="x")
     fig.update_yaxes(automargin=True)
     xaxeEvol(moisDB,fig)
+
+    if recap:
+        return plot(fig,output_type='div')
 
 
     figRank = go.Figure()
     figRank.add_trace(go.Scatter(x=listeLabels, y=listeRanks, mode='lines', line=dict(color=infosUser["Color"],width=3.5)))
-    figRank.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Evolution",xaxis_title="Dates",yaxis_title="Rang",hovermode="x")
+    figRank.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Évolution du rang dans le classement sur toute la période",xaxis_title="Date",yaxis_title="Rang",hovermode="x")
     figRank.update_yaxes(automargin=True,autorange="reversed")
     xaxeEvol(moisDB,figRank)
 
@@ -129,9 +135,11 @@ def linePlots(guild,option,curseur,curseurGet,user,moisDB,anneeDB):
             hexa=None
         listeLabels=list(map(lambda x:"20{0}-{1}-{2}".format(x["Annee"],x["Mois"],x["Jour"]),evol))
         listeCount=list(map(lambda x:x["Count"], evol))
+        for i in range(len(listeCount)):
+            listeCount[i]=round(listeCount[i]/div,2)
         figAutour.add_trace(go.Scatter(x=listeLabels, y=listeCount, mode='lines', name=nom, line=dict(color=hexa)))
 
-    figAutour.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Evolution",xaxis_title="Dates",yaxis_title="Messages",hovermode="x unified")
+    figAutour.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Évolution {0} comparée avec les {1}s autour dans le classement".format(enteteCount(option).lower(),enteteNom(option).lower()),xaxis_title="Date",yaxis_title=enteteCount(option)+plus,hovermode="x unified")
     figAutour.update_yaxes(automargin=True)
     xaxeEvol(moisDB,figAutour)
 
@@ -154,6 +162,8 @@ def linePlots(guild,option,curseur,curseurGet,user,moisDB,anneeDB):
             else:
                 listeLabels=list(map(lambda x:"2020-01-{0}".format(x["Jour"]),avant))
             listeCount=list(map(lambda x:x["Count"], avant))
+            for j in range(len(listeCount)):
+                listeCount[j]=round(listeCount[j]/div,2)
             figAvAp.add_trace(go.Scatter(x=listeLabels, y=listeCount, mode='lines', name="{0}/{1}<br>Période précedente".format(perso[i-1]["Mois"],perso[i-1]["Annee"]), line=dict(color="turquoise")))
         
         if moisDB=="to":
@@ -170,12 +180,14 @@ def linePlots(guild,option,curseur,curseurGet,user,moisDB,anneeDB):
             else:
                 listeLabels=list(map(lambda x:"2020-01-{0}".format(x["Jour"]),apres))
             listeCount=list(map(lambda x:x["Count"], apres))
+            for j in range(len(listeCount)):
+                listeCount[j]=round(listeCount[j]/div,2)
             figAvAp.add_trace(go.Scatter(x=listeLabels, y=listeCount, mode='lines', name="{0}/{1}<br>Période suivante".format(perso[i+1]["Mois"],perso[i+1]["Annee"]), line=dict(color="gold")))
         
         if moisDB=="to":
-            figAvAp.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Evolution",xaxis_title="Dates",yaxis_title="Messages",hovermode="x unified",xaxis_tickformat = '%d / %m')
+            figAvAp.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Évolution {0} sur la période, comparé à l'année précédente et suivante".format(enteteCount(option).lower()),xaxis_title="Dates",yaxis_title=enteteCount(option),hovermode="x unified",xaxis_tickformat = '%d / %m')
         else:
-            figAvAp.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Evolution",xaxis_title="Dates",yaxis_title="Messages",hovermode="x unified",xaxis_tickformat = "%d")
+            figAvAp.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Évolution {0} sur la période, comparé au mois précédent et suivant".format(enteteCount(option).lower()),xaxis_title="Date",yaxis_title=enteteCount(option),hovermode="x unified",xaxis_tickformat = "%d")
         figAvAp.update_yaxes(automargin=True)
         figAvAp.update_xaxes(showgrid=False, zeroline=False,rangeslider_visible=True,rangeselector=dict(font_color="#111"),type="date")
         #xaxeEvol(moisDB,figAvAp)  

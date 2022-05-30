@@ -2,17 +2,19 @@ import calendar
 from math import inf
 
 import plotly.graph_objects as go
+from companion.templatetags.TagsCustom import enteteCount, enteteNom, formatCount
 from companion.tools.Decorator import CompanionStats
-from companion.tools.Getteurs import (chooseGetteur, getChannels, getEmoteTable, getFreq, getNom,
-                                getPin, getUserInfo, getUserJeux, getUserTable)
+from companion.tools.Getteurs import chooseGetteur, getNom, getPin, getUserInfo
 from companion.tools.outils import (connectSQL, dictOptions, getMoisAnnee,
-                              getTablePerso, getTimes, listeOptions,
-                              tableauMois)
-from companion.templatetags.TagsCustom import formatCount
+                                    getTablePerso, getTimes, listeOptions,
+                                    tableauMois, voiceAxe)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from plotly.offline import plot
 
+
+def graphRanksJeux(request,option):
+    return graphRanks(request,"OT",option)
 
 @login_required(login_url="/login")
 @CompanionStats
@@ -28,7 +30,8 @@ def graphRanks(request,guild,option):
 
     listeMois,listeAnnee=getTimes(guild,option,"Stats")
 
-    div1,div2=barPlot(guild,option,user,curseur,curseurGet,moisDB,anneeDB,True)
+    div1=barPlot(guild,option,user,curseur,curseurGet,moisDB,anneeDB,False)
+    div2=barAnim(guild,option,curseur,curseurGet,moisDB,anneeDB)
 
     if moisDB=="glob":
         if option in ("messages","voice","mots"):
@@ -36,22 +39,20 @@ def graphRanks(request,guild,option):
         else:
             div3=None
         div4,div5,div6=None,None,None
-        div7=None
     elif moisDB=="to":
+        div3=heatmapAnnee(guild,option,annee)
         div4,div5=pointPlot(guild,option,curseur,curseurGet,moisDB,anneeDB)
-        div3,div6,div7=None
+        div6=None
     else:
+        div3=linePlot(guild,option,user,curseur,curseurGet,mois,annee,moisDB,anneeDB)
         if option in ("messages","voice","mots"):
-            div3=heatmapMois(guild,option,tableauMois[moisDB],anneeDB)
+            div4=heatmapMois(guild,option,tableauMois[moisDB],anneeDB)
         else:
-            div3=None
-        div4,div5=pointPlot(guild,option,curseur,curseurGet,moisDB,anneeDB)
-        div6=linePlot(guild,option,user,curseur,curseurGet,mois,annee,moisDB,anneeDB)
-
-        div7=barAnim(guild,option,curseur,curseurGet,moisDB,anneeDB)
+            div4=None
+        div5,div6=pointPlot(guild,option,curseur,curseurGet,moisDB,anneeDB)
 
     connexion.close()
-    ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":div5,"fig6":div6,"fig7":div7,"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+    ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":div5,"fig6":div6,"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
     "command":"ranks","options":listeOptions,"option":option,"plus":"graphs","travel":True,"selector":True,"obj":None,"pagestats":True,
     "pin":getPin(user,curseurGet,guild,option,"ranks","graphs")}
     return render(request, "companion/Stats/Graphiques.html", ctx)
@@ -77,7 +78,7 @@ def iFrameGraphRanks(request,guild,option):
         maxi=max(maxi,i["Count"])
 
     ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"option":option,"plus":"graph"}
-    return render(request, "companion/Ranks/iFrameRanks_ranks.html", ctx)
+    return render(request, "companion/Stats/Ranks/iFrameRanks_ranks.html", ctx)
 
 
 
@@ -95,18 +96,7 @@ def barPlot(guild,option,user,curseur,curseurGet,moisDB,anneeDB,circular):
         reste=None
 
     for i in table:
-
-        if option in ("messages","voice","mots"):
-            ligne=getUserTable(i,curseurGet,guild)
-
-        elif option in ("emotes","reactions"):
-            ligne=getEmoteTable(i,curseurGet)
-
-        elif option in ("salons","voicechan"):
-            ligne=getChannels(i,curseurGet)
-
-        elif option=="freq":
-            ligne=getFreq(i)
+        ligne=chooseGetteur(option,"Stats",i,guild,curseurGet)
 
         if ligne["Nom"]=="Ancien membre" or option not in ("messages","voice","mots"):
             pass
@@ -124,6 +114,8 @@ def barPlot(guild,option,user,curseur,curseurGet,moisDB,anneeDB,circular):
         counts.append(i["Count"])
         ids.append(str(i["ID"]))
     
+    plus=voiceAxe(option,counts)[0]
+    
     fig=go.Figure(data=go.Bar(x=ids,y=counts,marker_color=colors,text=counts,textposition="auto"))
 
     fig.update_layout(
@@ -135,11 +127,11 @@ def barPlot(guild,option,user,curseur,curseurGet,moisDB,anneeDB,circular):
         xaxis={
             'categoryorder':'total descending',
             "rangeslider":{"visible":True},
-            "title":"Membres",
+            "title":enteteNom(option),
             "range":[-0.5,20.5 if len(table)>20 else len(table)+0.5]},
-        yaxis_title="Messages",
+        yaxis_title=enteteCount(option)+plus,
         height=750,
-        title="Messages envoyés sur la période globale - Top 150"
+        title="{0} sur la période - Top 150".format(enteteCount(option))
     )
     fig.update_yaxes(automargin=True)
     fig.update_xaxes(ticktext=names,tickvals=ids)
@@ -160,6 +152,20 @@ def barPlot(guild,option,user,curseur,curseurGet,moisDB,anneeDB,circular):
         return plot(fig,output_type='div'), plot(figCirc,output_type='div')
     else:
         return plot(fig,output_type='div')
+
+def collapseAnim(table:list) -> list:
+    temp=(table[0]["Mois"],table[0]["Annee"])
+    dates=[]
+    if len(table)>31:
+        dates.append(table[0])
+        for i in range(1,len(table)-1):
+            if temp!=(table[i]["Mois"],table[i]["Annee"]):
+                dates.append(table[i])
+                temp=(table[i]["Mois"],table[i]["Annee"])
+        dates.append(table[-1])
+    else:
+        dates=table.copy()
+    return dates
 
 
 def barAnim(guild,option,curseur,curseurGet,moisDB,anneeDB):
@@ -183,7 +189,17 @@ def barAnim(guild,option,curseur,curseurGet,moisDB,anneeDB):
             infos={"ID":i,"Nom":nom,"Color":None}
         dictInfos[i]=infos
     connexionRap,curseurRap=connectSQL(guild,"Rapports","Stats","GL","")
-    dates=curseurRap.execute("SELECT DISTINCT Jour FROM ranks WHERE Mois='{0}' AND Annee='{1}' AND Type='{2}' ORDER BY Jour ASC".format(tableauMois[moisDB],anneeDB,dictOptions[option])).fetchall()
+    if moisDB=="glob":
+        dates=curseurRap.execute("SELECT DISTINCT Jour,Mois,Annee FROM ranks WHERE Type='{0}' ORDER BY DateID ASC".format(dictOptions[option])).fetchall()
+        dates=collapseAnim(dates)
+    elif moisDB=="to":
+        dates=curseurRap.execute("SELECT DISTINCT Jour,Mois,Annee FROM ranks WHERE Annee='{0}' AND Type='{1}' ORDER BY DateID ASC".format(anneeDB,dictOptions[option])).fetchall()
+        dates=collapseAnim(dates)
+    else:
+        dates=curseurRap.execute("SELECT DISTINCT Jour FROM ranks WHERE Mois='{0}' AND Annee='{1}' AND Type='{2}' ORDER BY Jour ASC".format(tableauMois[moisDB],anneeDB,dictOptions[option])).fetchall()
+
+    maxi=table[0]["Count"]
+    plus,div=voiceAxe(option,[maxi])
     
     fig_dict = {
         "data": [],
@@ -191,7 +207,7 @@ def barAnim(guild,option,curseur,curseurGet,moisDB,anneeDB):
         "frames": []
     }
     fig_dict["layout"]["xaxis"] = {'categoryorder':'total descending', "title": "Rang", "automargin":True,"range":[0,15.5 if len(table)>15 else len(table)+0.5], "showgrid":False}
-    fig_dict["layout"]["yaxis"] = {"title": "Messages","range":[0,table[0]["Count"]*1.1]}
+    fig_dict["layout"]["yaxis"] = {"title": enteteCount(option)+plus,"range":[0,round(maxi/div,2)*1.1]}
     fig_dict["layout"]["hovermode"] = "closest"
     fig_dict["layout"]["showlegend"] = False
     fig_dict["layout"]["paper_bgcolor"] = "#111"
@@ -248,9 +264,14 @@ def barAnim(guild,option,curseur,curseurGet,moisDB,anneeDB):
         "steps": []
     }
 
-    jour = dates[0]["Jour"]
+    jour = dates[0]
     for membre in ids:
-        evol=curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Jour='{3}'".format(moisDB,anneeDB,membre,jour)).fetchone()
+        if moisDB=="glob":
+            evol=curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Jour='{3}' AND Mois='{4}' AND Annee='{5}'".format(moisDB,anneeDB,membre,jour["Jour"],jour["Mois"],jour["Annee"])).fetchone()
+        elif moisDB=="to":
+            evol=curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Jour='{3}' AND Mois='{4}'".format(moisDB,anneeDB,membre,jour["Jour"],jour["Mois"])).fetchone()
+        else:
+            evol=curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Jour='{3}'".format(moisDB,anneeDB,membre,jour["Jour"])).fetchone()
         if evol==None:
             data_dict = {
                 "x": [None,None],
@@ -264,10 +285,10 @@ def barAnim(guild,option,curseur,curseurGet,moisDB,anneeDB):
         else:
             data_dict = {
                 "x": [evol["Rank"],evol["Rank"]],
-                "y": [0,evol["Count"]],
+                "y": [0,round(evol["Count"]/div,2)],
                 "name": membre,
                 "mode": "lines+text",
-                "text": [evol["Count"],dictInfos[membre]["Nom"]],
+                "text": [round(evol["Count"]/div,2),dictInfos[membre]["Nom"]],
                 "textposition":"top center",
                 "line":{"color":dictInfos[membre]["Color"],"width":14}
             }
@@ -275,10 +296,20 @@ def barAnim(guild,option,curseur,curseurGet,moisDB,anneeDB):
 
     
     for jour in dates:
-        formatDate="{0}/{1}/20{2}".format(jour["Jour"],tableauMois[moisDB],anneeDB)
+        if moisDB=="glob":
+            formatDate="{0}/{1}/20{2}".format(jour["Jour"],jour["Mois"],jour["Annee"])
+        elif moisDB=="to":
+            formatDate="{0}/{1}/20{2}".format(jour["Jour"],jour["Mois"],anneeDB)
+        else:
+            formatDate="{0}/{1}/20{2}".format(jour["Jour"],tableauMois[moisDB],anneeDB)
         frame = {"data": [], "name":formatDate }
         for membre in ids:
-            evol=curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Jour='{3}'".format(moisDB,anneeDB,membre,jour["Jour"])).fetchone()
+            if moisDB=="glob":
+                evol=curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Jour='{3}' AND Mois='{4}' AND Annee='{5}'".format(moisDB,anneeDB,membre,jour["Jour"],jour["Mois"],jour["Annee"])).fetchone()
+            elif moisDB=="to":
+                evol=curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Jour='{3}' AND Mois='{4}'".format(moisDB,anneeDB,membre,jour["Jour"],jour["Mois"])).fetchone()
+            else:
+                evol=curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Jour='{3}'".format(moisDB,anneeDB,membre,jour["Jour"])).fetchone()
 
             if evol==None:
                 data_dict = {
@@ -293,10 +324,10 @@ def barAnim(guild,option,curseur,curseurGet,moisDB,anneeDB):
             else:
                 data_dict = {
                     "x": [evol["Rank"],evol["Rank"]],
-                    "y": [0,evol["Count"]],
+                    "y": [0,round(evol["Count"]/div,2)],
                     "name": membre,
                     "mode": "lines+text",
-                    "text": [evol["Count"],dictInfos[membre]["Nom"]],
+                    "text": [round(evol["Count"]/div,2),dictInfos[membre]["Nom"]],
                     "textposition":"top center",
                     "line":{"color":dictInfos[membre]["Color"],"width":14}
                 }
@@ -353,6 +384,14 @@ def pointPlot(guild,option,curseur,curseurGet,moisDB,anneeDB):
 
     figCount = go.Figure()   
     figRank = go.Figure() 
+
+    plus,div=voiceAxe(option,listeMax)
+    for i in range(len(listeNow)):
+        listeNow[i]=round(listeNow[i]/div,2)
+    for i in range(len(listeMed)):
+        listeMed[i]=round(listeMed[i]/div,2)
+    for i in range(len(listeMoy)):
+        listeMoy[i]=round(listeMoy[i]/div,2)
     
     if moisDB=="to": 
         figCount.add_trace(go.Scatter(x=listeNow,y=listeIDs,marker=dict(color="crimson", size=12),mode="markers",name="Cette année"))
@@ -364,14 +403,14 @@ def pointPlot(guild,option,curseur,curseurGet,moisDB,anneeDB):
     figCount.add_trace(go.Scatter(x=listeMed,y=listeIDs,marker=dict(color="gold", size=8),mode="markers",name="Médiane"))
     figCount.add_trace(go.Scatter(x=listeMoy,y=listeIDs,marker=dict(color="cyan", size=8),mode="markers",name="Moyenne"))
     figCount.add_trace(go.Scatter(x=listeMax,y=listeIDs,marker=dict(color="yellowgreen", size=8),mode="markers",name="Maximum"))
-    figCount.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Indicateurs sur le nombre de messages envoyés",xaxis_title="Messages",yaxis_title="Membres",legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
+    figCount.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Indicateurs sur le nombre de {0} pour le Top 15".format(enteteCount(option).lower()),xaxis_title=enteteCount(option)+plus,yaxis_title=enteteNom(option),legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
     figCount.update_yaxes(automargin=True,ticktext=listeNoms,tickvals=listeIDs)
     figCount.update_xaxes(showgrid=False, zeroline=False)
 
     figRank.add_trace(go.Scatter(x=listeRankMed,y=listeIDs,marker=dict(color="gold", size=8),mode="markers",name="Médiane"))
     figRank.add_trace(go.Scatter(x=listeRankMoy,y=listeIDs,marker=dict(color="turquoise", size=8),mode="markers",name="Moyenne"))
     figRank.add_trace(go.Scatter(x=listeRankMax,y=listeIDs,marker=dict(color="yellowgreen", size=8),mode="markers",name="Minimum"))
-    figRank.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Indicateurs sur les rangs",xaxis_title="Rang",yaxis_title="Membres",legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
+    figRank.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Indicateurs sur les rangs pour le Top 15",xaxis_title="Rang",yaxis_title=enteteNom(option),legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
     figRank.update_yaxes(automargin=True,ticktext=listeNoms,tickvals=listeIDs)
     figRank.update_xaxes(showgrid=False, zeroline=False,autorange="reversed")
 
@@ -411,7 +450,7 @@ def heatmapMois(guild,option,mois,annee):
         else:
             semaine=(int(i["Jour"])+6-jour)//7
         listeHeat[semaine][jour]=somme
-        labels[semaine][jour]="{0}/{1}/{2} - {3}".format(i["Jour"],mois,annee,formatCount(somme,option))
+        labels[semaine][jour]="{0}/{1}/{2}<br>{3}".format(i["Jour"],mois,annee,formatCount(somme,option))
 
     listeHeat.reverse()
     labels.reverse()
@@ -423,11 +462,61 @@ def heatmapMois(guild,option,mois,annee):
                     textfont={"size":11},
                     colorscale="YlGnBu"))
                     
-    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=500,title="Calendrier des messages envoyés")
+    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=500,title="Calendrier {0} chaque jour du mois".format(enteteCount(option)))
     fig.update_yaxes(automargin=True, showgrid=False, zeroline=False)
     fig.update_xaxes(showgrid=False, zeroline=False)
     return plot(fig,output_type='div')
 
+
+def heatmapAnnee(guild,option,annee):
+    annee=annee[2:4]
+    listeMois=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Décembre"]
+    listeMois.reverse()
+    listeHeat=[[None]*31 for i in range(12)]
+    labels=[[""]*31 for i in range(12)]
+    connexion,curseur=connectSQL(guild,"Rapports","Stats","GL","")
+    
+    for i in range(12):
+        try:
+            mois=tableauMois[listeMois[i].lower()]            
+            dates=curseur.execute("SELECT DISTINCT Jour FROM ranks WHERE Mois='{0}' AND Annee='{1}' AND Type='{2}'".format(mois,annee,dictOptions[option])).fetchall()
+            for j in dates:
+                somme=curseur.execute("SELECT SUM(Count) AS Total FROM ranks WHERE Jour='{0}' AND Mois='{1}' AND Annee='{2}' AND Type='{3}'".format(j["Jour"],mois,annee,dictOptions[option])).fetchone()["Total"]
+                jour=int(j["Jour"])-1
+                listeHeat[i][jour]=somme
+                labels[i][jour]=formatCount(somme,option)
+                if option in ("voice","voicechan"):
+                    if len(labels[i][jour].split(" "))>=3:
+                        descip=""
+                        for z in range(len(labels[i][jour].split(" "))):
+                            if z==2:
+                                descip+="\n"
+                            descip+=labels[i][jour].split(" ")[z]+" "
+                        labels[i][jour]=descip
+        except:
+            pass
+    
+    i=0
+    while i!=len(listeHeat):
+        if listeHeat[i].count(None)==31:
+            del listeHeat[i]
+            del listeMois[i]
+            del labels[i]
+        else:
+            i+=1
+
+    fig = go.Figure(data=go.Heatmap(
+                    x=[i for i in range(1,32)],
+                    y=listeMois,
+                    z=listeHeat,
+                    text=labels,
+                    texttemplate="%{text}",
+                    textfont={"size":10},
+                    colorscale="YlGnBu"))
+                    
+    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",title="Calendrier {0} chaque jour d'activité du serveur sur l'année".format(enteteCount(option).lower()),height=600,xaxis_title="Jours",yaxis_title="Mois")
+    fig.update_yaxes(automargin=True)
+    return plot(fig,output_type='div')
 
 
 def heatmapGlobal(guild,option,curseur):
@@ -469,7 +558,7 @@ def heatmapGlobal(guild,option,curseur):
                     textfont={"size":14},
                     colorscale="YlGnBu"))
                     
-    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",title="Calendrier des messages envoyés")
+    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",title="Calendrier {0} chaque mois d'activité du serveur".format(enteteCount(option).lower()))
     fig.update_yaxes(automargin=True)
     return plot(fig,output_type='div')
 
@@ -485,6 +574,7 @@ def linePlot(guild,option,user,curseur,curseurGet,mois,annee,moisDB,anneeDB):
     listeDates=[]
     listeX,listeY,listeR=[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]
     mini=inf
+    maxi=-inf
 
     stop=3 if len(table)>3 else len(table)
     ids=list(map(lambda x:x["ID"],table))[:stop]
@@ -504,15 +594,20 @@ def linePlot(guild,option,user,curseur,curseurGet,mois,annee,moisDB,anneeDB):
                 listeY[i].append(count["Count"])
                 listeR[i].append("{0}e".format(count["Rank"]))
                 mini=min(count["Count"],mini)
+                maxi=max(count["Count"],maxi)
+
+    plus,div=voiceAxe(option,[maxi])
 
     listeDates.sort()
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=["{0}/{1}".format(str(i)[2:4],str(i)[0:2]) for i in listeDates], y=[mini//1.5 for i in range(len(listeDates))],mode='none',name=""))
+    fig.add_trace(go.Scatter(x=["{0}/{1}".format(str(i)[2:4],str(i)[0:2]) for i in listeDates], y=[mini/div//1.5 for i in range(len(listeDates))],mode='none',name=""))
 
     dictLine={2:"dash",3:"dot"}
     colors=[]
 
     for i in range(stop):
+        for j in range(len(listeY[i])):
+            listeY[i][j]=round(listeY[i][j]/div,2)
         if option in ("messages","voice","mots"):
             infos=getUserInfo(ids[i],curseurGet,guild)
             hexa=hex(infos["Color"])[2:]
@@ -532,7 +627,7 @@ def linePlot(guild,option,user,curseur,curseurGet,mois,annee,moisDB,anneeDB):
         else:
             fig.add_trace(go.Scatter(x=listeX[i], y=listeY[i],mode='lines+markers+text',name=nom,marker=dict(color=color, size=12),line=dict(color=color,dash=dictLine[count]),text=listeR[i],textposition="top center"))
 
-    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Evolution des trois premiers sur les 10 derniers mois",xaxis_title="Dates",yaxis_title="Messages",hovermode="x unified",legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
+    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Évolution des trois premiers du classement sur les 10 derniers mois",xaxis_title="Dates",yaxis_title=enteteCount(option)+plus,hovermode="x unified",legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
     fig.update_yaxes(automargin=True)
     fig.update_xaxes(showgrid=False, zeroline=False)
     return plot(fig,output_type='div')

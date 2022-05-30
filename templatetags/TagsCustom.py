@@ -72,6 +72,8 @@ def lexiqueOption(option):
         return "Salons vocaux : correspond aux statistiques du temps passé en vocal par les membres dans chaque salon vocal."
     if option=="reactions":
         return "Réactions : correspond aux statistiques des réactions laissées sur les messages par les membres du serveur."
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        return "Jeux : correspond aux classements des différents jeux proposé sur Olbor Track."
 
 def lexiqueCommande(command):
     if command=="ranks":

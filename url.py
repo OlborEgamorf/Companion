@@ -23,13 +23,14 @@ from companion.views.Profil.Titres import viewProfilTitres
 from companion.views.Serveurs.Home import viewGuildHome
 from companion.views.Serveurs.Stats.Evol.Evol import (evolJeux, iFrameEvol,
                                                       viewEvol)
-from companion.views.Serveurs.Stats.Evol.EvolCompare import viewEvolCompare
+from companion.views.Serveurs.Stats.Evol.EvolCompare import (compareEvolJeux,
+                                                             viewEvolCompare)
 from companion.views.Serveurs.Stats.Evol.EvolGraph import (graphEvol,
                                                            iFrameGraphEvol)
-from companion.views.Serveurs.Stats.First.First import (iFrameFirst,
+from companion.views.Serveurs.Stats.First.First import (firstJeux, iFrameFirst,
                                                         iFrameFirstJeux,
                                                         viewFirst)
-from companion.views.Serveurs.Stats.First.FirstCompare import viewFirstCompare
+from companion.views.Serveurs.Stats.First.FirstCompare import compareFirstJeux, viewFirstCompare
 from companion.views.Serveurs.Stats.First.FirstGraph import (graphFirst,
                                                              iFrameGraphFirst)
 from companion.views.Serveurs.Stats.Home import statsHomeJeux, viewStatsHome
@@ -40,8 +41,8 @@ from companion.views.Serveurs.Stats.Periods.Periods import (iFramePeriods,
                                                             iFramePeriodsJeux,
                                                             periodsJeux,
                                                             viewPeriods)
-from companion.views.Serveurs.Stats.Periods.PeriodsCompare import \
-    comparePeriodsJeux,viewPeriodsCompare
+from companion.views.Serveurs.Stats.Periods.PeriodsCompare import (
+    comparePeriodsJeux, viewPeriodsCompare)
 from companion.views.Serveurs.Stats.Periods.PeriodsGraph import (
     graphPeriods, iFrameGraphPeriods)
 from companion.views.Serveurs.Stats.Periods.Serv import (iFrameServ,
@@ -56,7 +57,8 @@ from companion.views.Serveurs.Stats.Ranks.Rank import (iFrameRank,
                                                        iFrameRankJeux,
                                                        rankJeux, viewRank,
                                                        viewRankObj)
-from companion.views.Serveurs.Stats.Ranks.RanksCompare import compareRankJeux, viewRankCompare
+from companion.views.Serveurs.Stats.Ranks.RanksCompare import (compareRankJeux,
+                                                               viewRankCompare)
 from companion.views.Serveurs.Stats.Ranks.RanksGraph import (graphRanks,
                                                              iFrameGraphRanks)
 from companion.views.Serveurs.Stats.Rapports.Rapports import viewRapports
@@ -149,7 +151,7 @@ urlpatterns = [
     path("ot/jeux/ranks/<str:option>/",rankJeux,name="stats-ranks"),
     path("ot/jeux/periods/<str:option>/",periodsJeux,name="stats-periods"),
     path("ot/jeux/evol/<str:option>/",evolJeux,name="stats-evol"),
-    path("ot/jeux/first/<str:option>/",viewFirst,name="stats-first"),
+    path("ot/jeux/first/<str:option>/",firstJeux,name="stats-first"),
     path("ot/jeux/badges/<str:option>/",viewBadges,name="jeux-first"),
     path("ot/jeux/ranks/pantheon/<str:option>",pantheonJeux,name="stats-ranks"),
 
@@ -160,8 +162,8 @@ urlpatterns = [
 
     path("ot/jeux/ranks/compare/<str:option>",compareRankJeux,name="compare-ranks"),
     path("ot/jeux/periods/compare/<str:option>",comparePeriodsJeux,name="compare-periods"),
-    path("ot/jeux/evol/compare/<str:option>",viewEvolCompare,name="compare-evol"),
-    path("ot/jeux/first/compare/<str:option>",viewFirstCompare,name="compare-first"),
+    path("ot/jeux/evol/compare/<str:option>",compareEvolJeux,name="compare-evol"),
+    path("ot/jeux/first/compare/<str:option>",compareFirstJeux,name="compare-first"),
 
     #path("mondial/emotes",emotesMondial,name="emotes-mondial"),
     #path("<int:emote>/iframeemotesww",iframeEmotes,name="iframe-emotesww"),
