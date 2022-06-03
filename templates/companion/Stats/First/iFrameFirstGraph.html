@@ -16,7 +16,7 @@
 <body class="bodyiframe">
     <table class="table-iframe">
         <tr><th colspan="5">Liste des premiers</th></tr>
-            {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions"%}
+            {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" or option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
             <tr>
                 <th>Date</th>
                 <th colspan="2">{{ option|headnom }}</th>
@@ -45,6 +45,14 @@
                             {% else %}
                                 <a href="/companion/profil/{{ i.ID }}">
                                 <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            {% endif %}
+                        </td>
+                    {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+                        <td>
+                            {% if i.Emote != None %}
+                                <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}">
+                            {% else %}
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
                             {% endif %}
                         </td>
                     {% elif option == "emotes" or option == "reactions" %}

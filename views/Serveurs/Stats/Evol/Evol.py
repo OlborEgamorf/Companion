@@ -91,6 +91,8 @@ def iFrameEvol(request,guild,option):
         annee="20"+annee
     mois,annee,moisDB,anneeDB=getMoisAnnee(tableauMois[mois],annee)
     user=request.user
+
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     
     if option!="freq":
         connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
@@ -112,8 +114,8 @@ def iFrameEvol(request,guild,option):
         if option in ("messages","voice","mots"):
             for i in liste[table]:
                 if i["ID"] not in dictUsers:
-                    userTable=getUserTable(i,curseurGet,guild)
-                    if userTable["Nom"]!="Ancien membre":
+                    userTable=getUserTable(i,curseurGet,curseurGuild,guild)
+                    if userTable["Nom"]!="Ancien membre" and userTable["Nom"]!="Membre masqué":
                         dictUsers[i["ID"]]=[userTable["Color"],userTable["Nom"],userTable["Avatar"]]
                     else:
                         dictUsers[i["ID"]]=[None,userTable["Nom"],None]

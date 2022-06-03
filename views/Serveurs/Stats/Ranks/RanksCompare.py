@@ -20,6 +20,7 @@ def viewRankCompare(request,guild,option):
     user=request.user
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
     if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
         pin=getPin(user,curseurGet,"jeux",option,"ranks","")
@@ -39,13 +40,13 @@ def viewRankCompare(request,guild,option):
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB1],anneeDB1)
 
     for i in curseur.execute("SELECT * FROM {0}{1} ORDER BY Rank ASC LIMIT 150".format(moisDB1,anneeDB1)).fetchall():
-        stats1.append(chooseGetteur(option,categ,i,guild,curseurGet))
+        stats1.append(chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild))
         maxi=max(maxi,i["Count"])
 
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB2],anneeDB2)
 
     for i in curseur.execute("SELECT * FROM {0}{1} ORDER BY Rank ASC LIMIT 150".format(moisDB2,anneeDB2)).fetchall():
-        stats2.append(chooseGetteur(option,categ,i,guild,curseurGet))
+        stats2.append(chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild))
         maxi=max(maxi,i["Count"])
 
     connexion.close()

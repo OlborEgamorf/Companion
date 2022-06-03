@@ -188,7 +188,7 @@ def viewProfilHome(request,user):
     ctx={"badges":dictBadges,"stats":dictJeux,"jeux":liste,"guildscom":listeCom,"profil":True,
         "avatarprofil":user_avatar_profil,"idprofil":user,"nomprofil":user_name_profil,"guildname":user_name_profil,
         "avatar":user_avatar,"id":request.user.id,"nom":user_name,
-        "titre":infos["Full"],"color":infos["Couleur"],"emote":infos["Emote"],"custom":infos["Custom"],"coins":infos["Coins"],
+        "titre":infos["Full"],"color":infos["Color"],"emote":infos["Emote"],"custom":infos["Custom"],"coins":infos["Coins"],
         "vip":infos["VIP"],"testeur":infos["Testeur"],
         "messages":dictMessages,"salons":dictSalons,"emotes":listeEmotes,"vocal":dictVoc,"freq":listeFreq,
         "maxMess":maxiMess,"maxChan":maxiChan,"maxEmote":maxiEmote,"maxVoc":maxiVoc,"maxFreq":maxiFreq,

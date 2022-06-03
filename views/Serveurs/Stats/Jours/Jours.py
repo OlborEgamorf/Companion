@@ -48,12 +48,13 @@ def iFrameJour(request,guild,option):
     
     connexion,curseur=connectSQL(guild,"Rapports","Stats","GL",None)
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
 
     stats=[]
     maxi=-inf
     for i in curseur.execute("SELECT * FROM ranks WHERE Jour='{0}' AND Mois='{1}' AND Annee='{2}' AND Type='{3}' ORDER BY Rank ASC".format(jour,mois,annee,dictOptions[option])).fetchall():
 
-        stats.append(getUserTable(i,curseurGet,guild))
+        stats.append(getUserTable(i,curseurGet,curseurGuild,guild))
         maxi=max(maxi,i["Count"])
     
     connexion.close()

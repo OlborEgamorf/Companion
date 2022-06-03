@@ -28,7 +28,7 @@ def viewPeriods(request,guild,option):
         connexion,curseur=connectSQL("OT","Titres","Titres",None,None)
         color=curseur.execute("SELECT * FROM couleurs WHERE ID={0}".format(user.id)).fetchone()
         if color!=None:
-            color="#"+hex(int('%02x%02x%02x' % (color["R"], color["G"], color["B"]),base=16))[2:]
+            color=formatColor(hex(int('%02x%02x%02x' % (color["R"], color["G"], color["B"]),base=16)))
 
         ctx={"rankMois":None,"rankAnnee":None,"maxM":None,"maxA":None,"pagestats":True,"ot":True,
         "avatar":user_avatar,"id":user.id,"color":color,"nom":user_name,
@@ -41,7 +41,7 @@ def viewPeriods(request,guild,option):
         color=curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,user.id)).fetchone()["Color"]
 
         ctx={"rankMois":None,"rankAnnee":None,"maxM":None,"maxA":None,"pagestats":True,
-        "avatar":user_avatar,"id":user.id,"color":"#"+hex(color)[2:],"nom":user_name,
+        "avatar":user_avatar,"id":user.id,"color":color,"nom":user_name,
         "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
         "command":"periods","options":listeOptions,"option":option,"plus":"perso",
         "travel":False,"selector":True,
@@ -52,16 +52,8 @@ def viewPeriods(request,guild,option):
         ctx["rankMois"]=getTablePerso(guild,dictOptions[option],user.id,False,"M","countDesc")
         ctx["rankAnnee"]=getTablePerso(guild,dictOptions[option],user.id,False,"A","countDesc")
     else:
-        connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
-        listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC LIMIT 150").fetchall()
-        if option in ("emotes","reactions"):
-            listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
-        elif option in ("salons","voicechan"):
-            listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
-        elif option=="freq":
-            listeObj=list(map(lambda x:getFreq(x),listeObj))
-        elif option=="divers":
-            listeObj=list(map(lambda x:getDivers(x),listeObj))
+        connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
+        listeObj=objSelector(guild,option,categ,user,curseurGet,curseurGuild)
 
         if obj==None:
             obj=listeObj[0]["ID"]
@@ -99,6 +91,7 @@ def iFramePeriods(request,guild,option):
     else:
         categ="Stats"
         connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+        connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
     
@@ -118,7 +111,7 @@ def iFramePeriods(request,guild,option):
         if categ=="Jeux":
             stats.append(getUserJeux(i,curseurGet,option))
         else:
-            stats.append(getUserTable(i,curseurGet,guild))
+            stats.append(getUserTable(i,curseurGet,curseurGuild,guild))
         maxi=max(maxi,i["Count"])
     
     connexion.close()

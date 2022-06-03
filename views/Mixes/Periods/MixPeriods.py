@@ -131,9 +131,10 @@ def iFrameMixPeriods(request,mix,option):
     if option in ("salons","voicechan"):
         for guild in listeMixs:
             try:
+                connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
                 connexion,curseur=connectSQL(guild["ID"],dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
                 for i in curseur.execute("SELECT * FROM {0}{1}{2} ORDER BY Rank ASC LIMIT 150".format(moisDB,anneeDB,obj)).fetchall():
-                    ligne=getUserTable(i,curseurGet,guild["ID"])
+                    ligne=getUserTable(i,curseurGet,curseurGuild,guild["ID"])
                     stats.append(ligne)
                     maxi=max(maxi,i["Count"])
             except:

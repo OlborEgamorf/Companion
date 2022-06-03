@@ -16,6 +16,7 @@ def viewPantheon(request,guild,option):
     user=request.user
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
 
     if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
@@ -42,7 +43,7 @@ def viewPantheon(request,guild,option):
     maxi=-inf
     for i in table:
 
-        ligne=chooseGetteur(option,categ,i,guild,curseurGet)
+        ligne=chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild)
         
         ligne["RankOri"]=i["RankOri"]
         ligne["Mois"]=i["Mois"]

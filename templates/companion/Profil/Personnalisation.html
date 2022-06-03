@@ -1,29 +1,177 @@
 {% extends "companion/BASE.html" %}
 {% block stats %}
 {% load TagsCustom %}
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/a-color-picker@1.1.8/dist/acolorpicker.js"></script>
-<script>
-    console.log(AColorPicker)
-    AColorPicker.from('.div-profil')
-    .on('change', (picker, color) => {
-    document.body.style.backgroundColor = color;
-    });
-</script>
+{% load static %}
+<head>
+    <script>
+        $( function() {
+            $.widget( "custom.iconselectmenu", $.ui.selectmenu, {
+            _renderItem: function( ul, item ) {
+                var li = $( "<li>" ),
+                wrapper = $( "<div>", { text: item.label } );
+        
+                if ( item.disabled ) {
+                li.addClass( "ui-state-disabled" );
+                }
+        
+                $( "<span>", {
+                style: item.element.attr( "data-style" ),
+                "class": "ui-icon " + item.element.attr( "data-class" )
+                })
+                .appendTo( wrapper );
+        
+                return li.append( wrapper ).appendTo( ul );
+            }
+            });
+        
+            $( "#obj" )
+            .iconselectmenu()
+            .iconselectmenu( "menuWidget" )
+                .addClass( "ui-menu-icons customicons" );
+            
+            $( "#obj2" )
+            .iconselectmenu()
+            .iconselectmenu( "menuWidget" )
+                .addClass( "ui-menu-icons customicons" );
+        
+        } );
+    </script>
 
-<div class="guild-stats">Surnom</div>
+    <style>
+        {% for i in listeEmotes %}
+            .ui-icon.o{{ i.ID }} {
+                background: url("https://cdn.discordapp.com/emojis/{{ i.ID }}?size=128") 0 0 no-repeat;
+                background-size: contain;
+            }
+        {% endfor %}
+    </style>
+    <link rel="stylesheet" media="screen" type="text/css" href="{% static 'companion/colorpicker/src/coloris.css' %}" />
+    <script type="text/javascript" src="{% static 'companion/colorpicker/src/coloris.js' %}"></script>
+</head>
 
-<div class="div-profil">
+<div class="guild-stats">- Surnom -<br>Choisissez votre surnom personnalisé à afficher à côté de votre titre</div>
+
+<div class="div-profil" style="justify-content: center;">
     {% if coins > 1500 %}
-        <input type="text" name="surnom" value="{{ custom }}" maxlength="8">
+        <form action="" method="post" class="form-custom"> {% csrf_token %}
+            <input type="text" name="surnom" value="{{ custom }}" maxlength="8">
+            <input type="submit" value="Appliquer pour 1500 OT Coins"><img class="otcoin" src="https://cdn.discordapp.com/attachments/726034739550486618/959864834147622942/873226814527520809.webp">
+        </form>
     {% else %}
-        <input type="text" name="surnom" value="{{ custom }}" disabled="true">
+        <input type="text" value="{{ custom }}" disabled="true">
+        <input type="submit" value="Vous n'avez pas assez d'OT Coins !" disabled="true">
     {% endif %}
 </div>
 
 
+<div class="guild-stats">- Emote -<br>Choisissez l'emote qui vous représente. Mettre une emote NSFW est passible de bannissement de l'outil de personnalisation</div>
+<div class="div-profil" style="justify-content: center;">
+    {% if coins > 50 %}
+        <form action="" method="post" class="form-custom"> {% csrf_token %}
+            <fieldset>
+                <select name="emote" id="obj">
+                    {% for i in listeEmotes %}
+                        {% if i.ID == emote %}
+                            <option value="{{ i.ID }}" data-class="o{{ i.ID }}" selected>{{ i.Nom }}</option>
+                        {% else %}
+                            <option value="{{ i.ID }}" data-class="o{{ i.ID }}">{{ i.Nom }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </fieldset>
+            
+            <input type="submit" value="Appliquer pour 50 OT Coins"><img class="otcoin" src="https://cdn.discordapp.com/attachments/726034739550486618/959864834147622942/873226814527520809.webp">
+        </form>
+    {% else %}
+        <fieldset>
+            <select name="emote" id="obj" disabled="true">
+                {% for i in listeEmotes %}
+                    {% if i.ID == emote %}
+                        <option value="{{ i.ID }}" data-class="o{{ i.ID }}" selected>{{ i.Nom }}</option>
+                    {% else %}
+                        <option value="{{ i.ID }}" data-class="o{{ i.ID }}">{{ i.Nom }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </fieldset>
+        <input type="submit" value="Vous n'avez pas assez d'OT Coins !" disabled="true">
+    {% endif %}
 
-<div class="div-profil" acp-color="#EFE9E7">
 </div>
+
+<div class="guild-stats">- Couleur -<br>Choisissez la couleur associée à vous dans les parties et les classements</div>
+<div class="div-profil" style="justify-content: center;">
+    {% if coins > 50 %}
+        <form action="" method="post" class="form-custom"> {% csrf_token %}
+            <input type="text" value="{{ color }}" class="coloris" name="color">
+            <script>
+                Coloris({
+                el: '.coloris',
+                theme: 'large',
+                themeMode: 'dark',
+                format: 'hex',
+                alpha:false,
+                swatches: [
+                    '#264653',
+                    '#2a9d8f',
+                    '#e9c46a',
+                    '#f4a261',
+                    '#e76f51',
+                    '#d62828',
+                    '#023e8a',
+                    '#0077b6',
+                    '#0096c7',
+                    '#00b4d8',
+                    '#48cae4',
+                ]
+                });
+            
+            </script>
+            <input type="submit" value="Appliquer pour 50 OT Coins"><img class="otcoin" src="https://cdn.discordapp.com/attachments/726034739550486618/959864834147622942/873226814527520809.webp">
+        </form>
+    {% else %}
+        <input type="text" value="#FFFFFF" class="coloris" disabled="true">
+        <input type="submit" value="Vous n'avez pas assez d'OT Coins !" disabled="true">
+    {% endif %}
+
+</div>
+
+<div class="guild-stats">- Phrase de victoire -<br>Choisissez une phrase qui sera montrée sur votre carte de victoire en fin de partie</div>
+<div class="div-profil" style="justify-content: center;">
+    {% if coins > 50 %}
+        <form action="" method="post" class="form-custom"> {% csrf_token %}
+            <input type="text" name="phrase" value="{{ phrase }}" maxlength="35">
+            <input type="submit" value="Appliquer pour 50 OT Coins"><img class="otcoin" src="https://cdn.discordapp.com/attachments/726034739550486618/959864834147622942/873226814527520809.webp">
+        </form>
+    {% else %}
+        <input type="text" value="{{ custom }}" disabled="true">
+        <input type="submit" value="Vous n'avez pas assez d'OT Coins !" disabled="true">
+    {% endif %}
+</div>
+
+
+<div class="guild-stats">- Fond de votre carte de victoire -<br>Choisissez quel sera le fond de votre carte de victoire</div>
+<div class="div-profil" style="justify-content: center;">
+    {% if coins > 250 %}
+        <form action="" method="post" class="form-custom"> {% csrf_token %}
+            {% for i in listeFonds %} 
+                <span>
+                    {% if i.Path == fond %}
+                        <input type="radio" name="fond" value="{{ i.Path }}" id="{{ i.Path }}" checked>
+                    {% else %}
+                        <input type="radio" name="fond" value="{{ i.Path }}" id="{{ i.Path }}">
+                    {% endif %}
+                    <label for="{{ i.Path }}"><img src="{{ i.Lien }}" alt="{{ i.Nom }}"></label>
+                </span>
+            {% endfor %}
+            <input type="submit" value="Appliquer pour 250 OT Coins"><img class="otcoin" src="https://cdn.discordapp.com/attachments/726034739550486618/959864834147622942/873226814527520809.webp">
+        </form>
+    {% else %}
+        <input type="submit" value="Vous n'avez pas assez d'OT Coins !" disabled="true">
+    {% endif %}
+</div>
+
+
 
 
 {% endblock stats %}

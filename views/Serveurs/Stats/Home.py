@@ -18,6 +18,7 @@ def viewStatsHome(request,guild):
     perso_final=[]
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     user_avatar=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Avatar"]
     user_name=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(request.user.id)).fetchone()["Nom"]
 
@@ -53,10 +54,10 @@ def viewStatsHome(request,guild):
         perso={}
         try:
             top2=curseur.execute("SELECT * FROM glob ORDER BY Count DESC LIMIT 2").fetchall()
-            first=chooseGetteur(option,categ,top2[0],guild,curseurGet)
+            first=chooseGetteur(option,categ,top2[0],guild,curseurGet,curseurGuild)
 
             if len(top2)==2:
-                deux=chooseGetteur(option,categ,top2[1],guild,curseurGet)
+                deux=chooseGetteur(option,categ,top2[1],guild,curseurGet,curseurGuild)
             else:
                 deux=None
 
@@ -83,10 +84,10 @@ def viewStatsHome(request,guild):
                 perso={"rang":glob["Rank"],"count":glob["Count"],"option":option,"bestperiod":periods[0]}
             else:
                 top2=curseur.execute("SELECT * FROM persoTOGL{0} ORDER BY Count DESC LIMIT 2".format(user.id)).fetchall()
-                firstPerso=chooseGetteur(option,categ,top2[0],guild,curseurGet)
+                firstPerso=chooseGetteur(option,categ,top2[0],guild,curseurGet,curseurGuild)
 
                 if len(top2)==2:
-                    deuxPerso=chooseGetteur(option,categ,top2[1],guild,curseurGet)
+                    deuxPerso=chooseGetteur(option,categ,top2[1],guild,curseurGet,curseurGuild)
                 else:
                     deuxPerso=None
                 perso={"first":firstPerso,"deux":deuxPerso,"option":option}

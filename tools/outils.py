@@ -245,7 +245,7 @@ def getTablePerso(guild,option,id,idobj,period,tri):
     for i in curseurF.execute("SELECT Mois,Annee FROM first{0}".format(period)).fetchall():
         try:
             connection,curseur=connectSQL(guild,option,categ,i["Mois"],i["Annee"])
-            if categ=="Jeux":
+            if categ=="Jeux" and id!=guild:
                 stat=curseur.execute("SELECT Rank,Count,Mois,Annee,ID,W,L FROM {0}{1} WHERE ID={2}".format(tableauMois[i["Mois"]],i["Annee"],id)).fetchone()
             elif id==guild:
                 stat=curseur.execute("SELECT Mois,Annee,SUM(Count) AS Count FROM {0}{1}".format(tableauMois[i["Mois"]],i["Annee"])).fetchone()
@@ -344,3 +344,14 @@ def voiceAxe(option:str,listeCount:list) -> int:
             listeCount[i]=round(listeCount[i]/div,2)
         return mesure,div
     return "",1
+
+def createPhrase(text:(str or list)) -> str:
+    """Formate une liste de str pour en faire une phrase sans ' , pour que l'insertion dans les bases de données se fasse sans casse.
+    Entrée : 
+        args : liste de mots qui forme une phrase
+    Sortie :
+        descip : la phrase reconstituée"""
+    if type(text) in (list, tuple):
+        text=" ".join(text)
+    return text.replace("'","’")
+

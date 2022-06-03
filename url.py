@@ -25,14 +25,14 @@ from companion.views.Serveurs.Stats.Evol.Evol import (evolJeux, iFrameEvol,
                                                       viewEvol)
 from companion.views.Serveurs.Stats.Evol.EvolCompare import (compareEvolJeux,
                                                              viewEvolCompare)
-from companion.views.Serveurs.Stats.Evol.EvolGraph import (graphEvol,
-                                                           iFrameGraphEvol)
+from companion.views.Serveurs.Stats.Evol.EvolGraph import (graphEvol, graphEvolJeux,
+                                                           iFrameGraphEvol, iFrameGraphEvolJeux)
 from companion.views.Serveurs.Stats.First.First import (firstJeux, iFrameFirst,
                                                         iFrameFirstJeux,
                                                         viewFirst)
 from companion.views.Serveurs.Stats.First.FirstCompare import compareFirstJeux, viewFirstCompare
-from companion.views.Serveurs.Stats.First.FirstGraph import (graphFirst,
-                                                             iFrameGraphFirst)
+from companion.views.Serveurs.Stats.First.FirstGraph import (graphFirst, graphFirstJeux,
+                                                             iFrameGraphFirst, iFrameGraphFirstJeux)
 from companion.views.Serveurs.Stats.Home import statsHomeJeux, viewStatsHome
 from companion.views.Serveurs.Stats.Jours.Jours import iFrameJour, viewJours
 from companion.views.Serveurs.Stats.Jours.JoursGraph import (graphJours,
@@ -44,7 +44,7 @@ from companion.views.Serveurs.Stats.Periods.Periods import (iFramePeriods,
 from companion.views.Serveurs.Stats.Periods.PeriodsCompare import (
     comparePeriodsJeux, viewPeriodsCompare)
 from companion.views.Serveurs.Stats.Periods.PeriodsGraph import (
-    graphPeriods, iFrameGraphPeriods)
+    graphPeriods, graphPeriodsJeux, iFrameGraphPeriods, iFrameGraphPeriodsJeux)
 from companion.views.Serveurs.Stats.Periods.Serv import (iFrameServ,
                                                          iFrameServJeux,
                                                          viewServ)
@@ -59,8 +59,8 @@ from companion.views.Serveurs.Stats.Ranks.Rank import (iFrameRank,
                                                        viewRankObj)
 from companion.views.Serveurs.Stats.Ranks.RanksCompare import (compareRankJeux,
                                                                viewRankCompare)
-from companion.views.Serveurs.Stats.Ranks.RanksGraph import (graphRanks,
-                                                             iFrameGraphRanks)
+from companion.views.Serveurs.Stats.Ranks.RanksGraph import (graphRanks, graphRanksJeux,
+                                                             iFrameGraphRanks, iFrameGraphRanksJeux)
 from companion.views.Serveurs.Stats.Rapports.Rapports import viewRapports
 from companion.views.Serveurs.Stats.Recap import (addMoreRecap,
                                                   addMoreRecapJeux, recapJeux,
@@ -164,6 +164,17 @@ urlpatterns = [
     path("ot/jeux/periods/compare/<str:option>",comparePeriodsJeux,name="compare-periods"),
     path("ot/jeux/evol/compare/<str:option>",compareEvolJeux,name="compare-evol"),
     path("ot/jeux/first/compare/<str:option>",compareFirstJeux,name="compare-first"),
+
+    path("ot/jeux/ranks/graphs/<str:option>",graphRanksJeux,name="graphs-ranks"),
+    path("ot/jeux/periods/graphs/<str:option>",graphPeriodsJeux,name="graphs-periods"),
+    path("ot/jeux/evol/graphs/<str:option>",graphEvolJeux,name="graphs-periods"),
+    path("ot/jeux/first/graphs/<str:option>",graphFirstJeux,name="graphs-periods"),
+
+    path("ot/jeux/<str:option>/iframeranks/graphs",iFrameGraphRanksJeux,name="iframe-graphs-ranks"),
+    path("ot/jeux/<str:option>/iframeperiods/graphs",iFrameGraphPeriodsJeux,name="iframe-graphs-ranks"),
+    path("ot/jeux/<str:option>/iframeevol/graphs",iFrameGraphEvolJeux,name="iframe-graphs-ranks"),
+    path("ot/jeux/<str:option>/iframefirst/graphs",iFrameGraphFirstJeux,name="iframe-graphs-ranks"),
+
 
     #path("mondial/emotes",emotesMondial,name="emotes-mondial"),
     #path("<int:emote>/iframeemotesww",iframeEmotes,name="iframe-emotesww"),

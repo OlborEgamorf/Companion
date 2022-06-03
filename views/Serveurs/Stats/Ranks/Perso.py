@@ -18,6 +18,7 @@ def viewPerso(request,guild,option):
     user=request.user
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
     guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
@@ -39,7 +40,7 @@ def viewPerso(request,guild,option):
 
     for i in curseur.execute("SELECT * FROM perso{0}{1}{2} ORDER BY Count DESC LIMIT 200".format(moisDB,anneeDB,user.id)).fetchall():
 
-        ligne=chooseGetteur(option,"Stats",i,guild,curseurGet)
+        ligne=chooseGetteur(option,"Stats",i,guild,curseurGet,curseurGuild)
 
         if option!="divers":
             more=curseur.execute("SELECT * FROM {0}{1} WHERE ID={2}".format(moisDBGen,anneeDBGen,i["ID"])).fetchone()

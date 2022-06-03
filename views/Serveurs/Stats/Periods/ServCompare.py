@@ -17,17 +17,8 @@ def viewServCompare(request,guild,option):
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
     guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
-    listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC LIMIT 150").fetchall()
-    if option in ("emotes","reactions"):
-        listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
-    elif option in ("salons","voicechan"):
-        listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
-    elif option=="freq":
-        listeObj=list(map(lambda x:getFreq(x),listeObj))
-
-    listeObj=list(filter(lambda x:x["ID"]!=user.id,listeObj))
-    listeObj=list(filter(lambda x:x["Nom"]!="Ancien membre",listeObj))
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
+    listeObj=objSelector(guild,option,"Stats",user,curseurGet,curseurGuild)
 
     if obj1==None:
         obj1=listeObj[1]["ID"]

@@ -3,37 +3,53 @@ from math import inf
 import plotly.graph_objects as go
 from companion.templatetags.TagsCustom import enteteCount, enteteNom
 from companion.tools.Decorator import CompanionStats
-from companion.tools.Getteurs import chooseGetteur, getNom, getPin, getUserInfo
+from companion.tools.Getteurs import (chooseGetteur, getAllInfos, getNom,
+                                      getPin, getUserInfo)
 from companion.tools.outils import (connectSQL, dictOptions, getTablePerso,
-                                    listeOptions, tableauMois, voiceAxe)
+                                    listeOptions, listeOptionsJeux,
+                                    tableauMois, voiceAxe)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from plotly.offline import plot
 
+
+def graphFirstJeux(request,option):
+    return graphFirst(request,"OT",option)
+
+def iFrameGraphFirstJeux(request,option):
+    return iFrameGraphFirst(request,"OT",option)
 
 @login_required(login_url="/login")
 @CompanionStats
 def graphFirst(request,guild,option):
     user=request.user
 
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
-    guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
-    infos=getUserInfo(user.id,curseurGet,guild)
-    hexa=hex(infos["Color"])[2:]
-    if len(hexa)==6:
-        hexa="#"+hexa
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        categ="Jeux"
+        connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
+        connexionUser,curseurUser=connectSQL("OT",user.id,"Titres",None,None)
+        infos=getAllInfos(curseurGet,curseurUser,connexionUser,user.id)
     else:
-        hexa="#"+"0"*(6-len(hexa))+hexa
+        categ="Stats"
+        guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
+        infos=getUserInfo(user.id,curseurGet,guild)
     
-    div1,div2=linePlot(guild,option,user,hexa,curseur,curseurGet,True)
+    connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
+    div1,div2=linePlot(guild,option,user,infos["Color"],curseur,curseurGet,curseurGuild,True,categ)
 
     #connexion.close()
-    ctx={"fig":div1,"fig2":div2,"fig3":None,"fig4":None,"fig5":None,"fig6":None,"fig7":None,"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],"pagestats":True,
-    "command":"first","options":listeOptions,"option":option,"plus":"graphs","travel":False,"selector":True,"obj":None,
-    "pin":getPin(user,curseurGet,guild,option,"evol","graphs")}
+    if categ=="Jeux":
+        ctx={"fig":div1,"fig2":div2,"fig3":None,"fig4":None,"fig5":None,"fig6":None,"fig7":None,"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"guildname":"Classements jeux","guildid":"ot/jeux","pagestats":True,"ot":True,
+        "command":"first","options":listeOptionsJeux,"option":option,"plus":"graphs","travel":False,"selector":True,"obj":None,
+        "pin":getPin(user,curseurGet,"ot/jeux",option,"evol","graphs")}
+    else:
+        ctx={"fig":div1,"fig2":div2,"fig3":None,"fig4":None,"fig5":None,"fig6":None,"fig7":None,"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],"pagestats":True,
+        "command":"first","options":listeOptions,"option":option,"plus":"graphs","travel":False,"selector":True,"obj":None,
+        "pin":getPin(user,curseurGet,guild,option,"evol","graphs")}
     return render(request, "companion/Stats/Graphiques.html", ctx)
 
 
@@ -41,15 +57,25 @@ def graphFirst(request,guild,option):
 def iFrameGraphFirst(request,guild,option):
     user=request.user
 
-    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        categ="Jeux"
+        connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
+    else:
+        categ="Stats"
+        connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+
+    connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
 
     stats=[]
     maxi=-inf
     for i in curseur.execute("SELECT * FROM firstM ORDER BY DateID DESC").fetchall():
         i["Rank"]=0
+        if categ=="Jeux":
+            i["W"]=0
+            i["L"]=0
 
-        ligne=chooseGetteur(option,"Stats",i,guild,curseurGet)
+        ligne=chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild)
 
         ligne["Mois"]=i["Mois"]
         ligne["Annee"]=i["Annee"]
@@ -60,7 +86,7 @@ def iFrameGraphFirst(request,guild,option):
     ctx={"rank":stats,"id":user.id,"max":maxi,"option":option,"plus":"graph"}
     return render(request, "companion/Stats/First/iFrameFirstGraph.html", ctx)
 
-def linePlot(guild,option,user,color,curseur,curseurGet,graphnb,annee=None):
+def linePlot(guild,option,user,color,curseur,curseurGet,curseurGuild,graphnb,categ,annee=None):
     if annee==None or annee=="":
         first=curseur.execute("SELECT * FROM firstM ORDER BY DateID ASC").fetchall()
     else:
@@ -73,18 +99,26 @@ def linePlot(guild,option,user,color,curseur,curseurGet,graphnb,annee=None):
     dictColors={}
 
     for i in first:
-        connexionMois,curseurMois=connectSQL(guild,dictOptions[option],"Stats",i["Mois"],i["Annee"])
+        connexionMois,curseurMois=connectSQL(guild,dictOptions[option],categ,i["Mois"],i["Annee"])
         mois=curseurMois.execute("SELECT AVG(Count) AS Moy FROM {0}{1}".format(tableauMois[i["Mois"]],i["Annee"])).fetchone()
         if mois!=None:
             moy.append({"DateID":i["DateID"],"Mois":i["Mois"],"Annee":i["Annee"],"Count":mois["Moy"]})
         if option in ("messages","voice","mots"):
+            hide=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(i["ID"])).fetchone()
+            if hide==None or hide["Hide"]:
+                nom="Membre masqué"
+                hexa="turquoise"
             infos=getUserInfo(i["ID"],curseurGet,guild)
             nom=infos["Nom"]
-            hexa=hex(infos["Color"])[2:]
-            if len(hexa)==6:
-                hexa="#"+hexa
+            hexa=infos["Color"]
+        elif categ=="Jeux":
+            connexionUser,curseurUser=connectSQL("OT",i["ID"],"Titres",None,None)
+            infos=getAllInfos(curseurGet,curseurUser,connexionUser,i["ID"])
+            nom=infos["Full"]
+            if infos["Color"]!=None:
+                hexa=infos["Color"]
             else:
-                hexa="#"+"0"*(6-len(hexa))+hexa
+                hexa="turquoise"
         else:
             nom=getNom(i["ID"],option,curseurGet,False)
             hexa="turquoise"
@@ -110,7 +144,7 @@ def linePlot(guild,option,user,color,curseur,curseurGet,graphnb,annee=None):
         hovertemplate = "%{y}<br>%{text}",
         name="Premiers"))
     
-    if option in ("messages","voice","mots"):
+    if option in ("messages","voice","mots") or categ=="Jeux":
         perso=getTablePerso(guild,dictOptions[option],user.id,False,"M","periodAsc")
         listeCount=list(map(lambda x:x["Count"],perso))
         # FILTER POUR METTRE QUE ANNEE
@@ -170,6 +204,9 @@ def linePlot(guild,option,user,color,curseur,curseurGet,graphnb,annee=None):
         colorsNb=[]
         nomsNb=[]
         for i in idsDist:
+            hide=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(i["ID"])).fetchone()
+            if hide==None or hide["Hide"]:
+                continue
             nbfirst.append({"ID":i["ID"],"Count":curseur.execute("SELECT Count() AS Nombre FROM firstM WHERE ID={0}".format(i["ID"])).fetchone()["Nombre"]})
             nomsNb.append(dictNoms[i["ID"]])
             colorsNb.append(dictColors[i["ID"]])

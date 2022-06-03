@@ -24,17 +24,8 @@ def viewServ(request,guild,option):
     "pin":getPin(user,curseurGet,guild,option,"periods","serv")}
 
     if option in ("emotes","salons","voicechan","reactions","freq","divers"):
-        connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
-        
-        listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC LIMIT 150").fetchall()
-        if option in ("emotes","reactions"):
-            listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
-        elif option in ("salons","voicechan"):
-            listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
-        elif option=="freq":
-            listeObj=list(map(lambda x:getFreq(x),listeObj))
-        elif option=="divers":
-            listeObj=list(map(lambda x:getDivers(x),listeObj))
+        connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
+        listeObj=objSelector(guild,option,"Stats",user,curseurGet,curseurGuild)
 
         if obj==None:
             obj=listeObj[0]["ID"]
@@ -82,6 +73,7 @@ def iFrameServ(request,guild,option):
         categ="Stats"
     
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
 
     rank=curseur.execute("SELECT Rank FROM {0}{1} WHERE ID={2}".format(moisDB.lower(),anneeDB,obj)).fetchone()["Rank"]
 
@@ -95,7 +87,7 @@ def iFrameServ(request,guild,option):
     stats=[]
 
     for i in curseur.execute("SELECT * FROM {0}{1} WHERE (Rank>={2} AND Rank<={3}) OR Rank=1 ORDER BY Rank ASC".format(moisDB.lower(),anneeDB,rankPlus,rankMoins)).fetchall():
-        stats.append(chooseGetteur(option,categ,i,guild,curseurGet)) 
+        stats.append(chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild)) 
         maxi=max(maxi,i["Count"])
     
     connexion.close()

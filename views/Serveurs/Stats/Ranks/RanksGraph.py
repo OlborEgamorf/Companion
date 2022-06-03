@@ -4,10 +4,10 @@ from math import inf
 import plotly.graph_objects as go
 from companion.templatetags.TagsCustom import enteteCount, enteteNom, formatCount
 from companion.tools.Decorator import CompanionStats
-from companion.tools.Getteurs import chooseGetteur, getNom, getPin, getUserInfo
+from companion.tools.Getteurs import chooseGetteur, getAllInfos, getNom, getPin, getUserInfo
 from companion.tools.outils import (connectSQL, dictOptions, getMoisAnnee,
                                     getTablePerso, getTimes, listeOptions,
-                                    tableauMois, voiceAxe)
+                                    tableauMois, voiceAxe,listeOptionsJeux)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from plotly.offline import plot
@@ -16,6 +16,9 @@ from plotly.offline import plot
 def graphRanksJeux(request,option):
     return graphRanks(request,"OT",option)
 
+def iFrameGraphRanksJeux(request,option):
+    return iFrameGraphRanks(request,"OT",option)
+
 @login_required(login_url="/login")
 @CompanionStats
 def graphRanks(request,guild,option):
@@ -23,38 +26,65 @@ def graphRanks(request,guild,option):
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
     user=request.user
 
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
-    guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
-    listeMois,listeAnnee=getTimes(guild,option,"Stats")
-
-    div1=barPlot(guild,option,user,curseur,curseurGet,moisDB,anneeDB,False)
-    div2=barAnim(guild,option,curseur,curseurGet,moisDB,anneeDB)
-
-    if moisDB=="glob":
-        if option in ("messages","voice","mots"):
-            div3=heatmapGlobal(guild,option,curseur)
-        else:
-            div3=None
-        div4,div5,div6=None,None,None
-    elif moisDB=="to":
-        div3=heatmapAnnee(guild,option,annee)
-        div4,div5=pointPlot(guild,option,curseur,curseurGet,moisDB,anneeDB)
-        div6=None
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        categ="Jeux"
+        connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
     else:
-        div3=linePlot(guild,option,user,curseur,curseurGet,mois,annee,moisDB,anneeDB)
-        if option in ("messages","voice","mots"):
-            div4=heatmapMois(guild,option,tableauMois[moisDB],anneeDB)
+        categ="Stats"
+        guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
+
+    connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
+    
+    listeMois,listeAnnee=getTimes(guild,option,categ)
+
+    if categ=="Jeux":
+        div1=barPlot(guild,option,categ,curseur,curseurGet,curseurGuild,moisDB,anneeDB,False)
+        if moisDB!="glob":
+            if moisDB!="to":
+                div2=linePlot(guild,option,user,curseur,curseurGet,curseurGuild,categ,moisDB,anneeDB)
+            else:
+                div2=None
+            div3,div4=pointPlot(guild,option,curseur,curseurGet,curseurGuild,moisDB,anneeDB,categ)
         else:
-            div4=None
-        div5,div6=pointPlot(guild,option,curseur,curseurGet,moisDB,anneeDB)
+            div2,div3,div4=None,None,None
+        div5,div6=None,None
+            
+    else:
+        div1=barPlot(guild,option,user,curseur,curseurGet,curseurGuild,moisDB,anneeDB,False)
+        div2=barAnim(guild,option,curseur,curseurGet,curseurGuild,moisDB,anneeDB)
+
+        if moisDB=="glob":
+            if option in ("messages","voice","mots"):
+                div3=heatmapGlobal(guild,option,curseur)
+            else:
+                div3=None
+            div4,div5,div6=None,None,None
+        elif moisDB=="to":
+            div3=heatmapAnnee(guild,option,annee)
+            div4,div5=pointPlot(guild,option,curseur,curseurGet,curseurGuild,moisDB,anneeDB,categ)
+            div6=None
+        else:
+            div3=linePlot(guild,option,user,curseur,curseurGet,curseurGuild,categ,moisDB,anneeDB)
+            if option in ("messages","voice","mots"):
+                div4=heatmapMois(guild,option,tableauMois[moisDB],anneeDB)
+            else:
+                div4=None
+            div5,div6=pointPlot(guild,option,curseur,curseurGet,curseurGuild,moisDB,anneeDB,categ)
 
     connexion.close()
-    ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":div5,"fig6":div6,"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
-    "command":"ranks","options":listeOptions,"option":option,"plus":"graphs","travel":True,"selector":True,"obj":None,"pagestats":True,
-    "pin":getPin(user,curseurGet,guild,option,"ranks","graphs")}
+    if categ=="Jeux":
+        ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":div5,"fig6":div6,"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"guildname":"Classements jeux","guildid":"ot/jeux","mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+        "command":"ranks","options":listeOptionsJeux,"option":option,"plus":"graphs","travel":True,"selector":True,"obj":None,"pagestats":True,"ot":True,
+        "pin":getPin(user,curseurGet,"ot/jeux",option,"ranks","graphs")}
+    else:
+        ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":div5,"fig6":div6,"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],"mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+        "command":"ranks","options":listeOptions,"option":option,"plus":"graphs","travel":True,"selector":True,"obj":None,"pagestats":True,
+        "pin":getPin(user,curseurGet,guild,option,"ranks","graphs")}
+
     return render(request, "companion/Stats/Graphiques.html", ctx)
 
 @login_required(login_url="/login")
@@ -66,15 +96,20 @@ def iFrameGraphRanks(request,guild,option):
     if obj=="None":
         obj=""
     
-    categ="Stats"
-    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        categ="Jeux"
+        connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
+    else:
+        categ="Stats"
+        connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
 
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
 
     maxi=-inf
     stats=[]
     for i in curseur.execute("SELECT * FROM {0}{1}{2} ORDER BY Rank ASC LIMIT 150".format(moisDB,anneeDB,obj)).fetchall():
-        stats.append(chooseGetteur(option,categ,i,guild,curseurGet))
+        stats.append(chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild))
         maxi=max(maxi,i["Count"])
 
     ctx={"rank":stats,"id":user.id,"max":maxi,"mois":mois,"annee":annee,"option":option,"plus":"graph"}
@@ -82,7 +117,7 @@ def iFrameGraphRanks(request,guild,option):
 
 
 
-def barPlot(guild,option,user,curseur,curseurGet,moisDB,anneeDB,circular):
+def barPlot(guild,option,categ,curseur,curseurGet,curseurGuild,moisDB,anneeDB,circular):
     colors=[]
     counts=[]
     names=[]
@@ -96,15 +131,19 @@ def barPlot(guild,option,user,curseur,curseurGet,moisDB,anneeDB,circular):
         reste=None
 
     for i in table:
-        ligne=chooseGetteur(option,"Stats",i,guild,curseurGet)
+        ligne=chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild)
+        if ligne["Nom"]=="Membre masqué":
+            continue
 
-        if ligne["Nom"]=="Ancien membre" or option not in ("messages","voice","mots"):
+        if categ=="Jeux":
+            if ligne["Color"]!=None:
+                colors.append(ligne["Color"])
+            else:
+                colors.append("turquoise")
+        elif ligne["Nom"]=="Ancien membre" or option not in ("messages","voice","mots"):
             pass
         else:
-            if len(ligne["Color"])<=6:
-                colors.append("#"+"0"*(7-len(ligne["Color"]))+ligne["Color"][1:])
-            else:
-                colors.append(ligne["Color"])
+            colors.append(ligne["Color"])
 
         if len(ligne["Nom"])<15:
             names.append(ligne["Nom"])
@@ -168,22 +207,22 @@ def collapseAnim(table:list) -> list:
     return dates
 
 
-def barAnim(guild,option,curseur,curseurGet,moisDB,anneeDB):
+def barAnim(guild,option,curseur,curseurGet,curseurGuild,moisDB,anneeDB):
     ids=[]
     table=curseur.execute("SELECT * FROM {0}{1} WHERE Rank<150 ORDER BY Rank ASC".format(moisDB,anneeDB)).fetchall()
     for i in table:
-        if curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Rank<30".format(moisDB,anneeDB,i["ID"])).fetchone()!=None:
-            ids.append(i["ID"])
+        if option in ("messages","voice"):
+            hide=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(i["ID"])).fetchone()
+            if curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Rank<30".format(moisDB,anneeDB,i["ID"])).fetchone()!=None and hide!=None and not hide["Hide"]:
+                ids.append(i["ID"])
+        else:
+            if curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Rank<30".format(moisDB,anneeDB,i["ID"])).fetchone()!=None:
+                ids.append(i["ID"])
 
     dictInfos={}
     for i in ids:
         if option in ("messages","voice","mots"):
             infos=getUserInfo(i,curseurGet,guild)
-            hexa=hex(infos["Color"])[2:]
-            if len(hexa)==6:
-                infos["Color"]="#"+hexa
-            else:
-                infos["Color"]="#"+"0"*(6-len(hexa))+hexa
         else:
             nom=getNom(i,option,curseurGet,False)
             infos={"ID":i,"Nom":nom,"Color":None}
@@ -351,7 +390,7 @@ def barAnim(guild,option,curseur,curseurGet,moisDB,anneeDB):
     return plot(fig,output_type='div')
 
 
-def pointPlot(guild,option,curseur,curseurGet,moisDB,anneeDB):
+def pointPlot(guild,option,curseur,curseurGet,curseurGuild,moisDB,anneeDB,categ):
     listeNow,listeMed,listeMax,listeMoy,listeNoms=[],[],[],[],[]
     listeRankNow,listeRankMed,listeRankMax,listeRankMoy=[],[],[],[]
     listeIDs=[]
@@ -359,8 +398,15 @@ def pointPlot(guild,option,curseur,curseurGet,moisDB,anneeDB):
     
     for i in moisPoint:
         if option in ("messages","voice","mots"):
+            hide=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(i["ID"])).fetchone()
+            if hide==None or hide["Hide"]:
+                continue
             infos=getUserInfo(i["ID"],curseurGet,guild)
             listeNoms.append(infos["Nom"])
+        elif categ=="Jeux":
+            connexionUser,curseurUser=connectSQL("OT",i["ID"],"Titres",None,None)
+            infos=getAllInfos(curseurGet,curseurUser,connexionUser,i["ID"])
+            listeNoms.append(infos["Full"])
         else:
             listeNoms.append(getNom(i["ID"],option,curseurGet,False))
 
@@ -563,10 +609,10 @@ def heatmapGlobal(guild,option,curseur):
     return plot(fig,output_type='div')
 
 
-def linePlot(guild,option,user,curseur,curseurGet,mois,annee,moisDB,anneeDB):
+def linePlot(guild,option,user,curseur,curseurGet,curseurGuild,categ,moisDB,anneeDB):
     table=curseur.execute("SELECT ID FROM {0}{1} ORDER BY Rank ASC".format(moisDB,anneeDB)).fetchall()
 
-    connexionGL,curseurGL=connectSQL(guild,dictOptions[option],"Stats","GL","")
+    connexionGL,curseurGL=connectSQL(guild,dictOptions[option],categ,"GL","")
 
     old10=curseurGL.execute("SELECT * FROM firstM WHERE DateID<={0}{1} ORDER BY DateID DESC".format(anneeDB,tableauMois[moisDB],)).fetchall()
     old10=old10[0:10] if len(old10)>10 else old10
@@ -578,14 +624,24 @@ def linePlot(guild,option,user,curseur,curseurGet,mois,annee,moisDB,anneeDB):
 
     stop=3 if len(table)>3 else len(table)
     ids=list(map(lambda x:x["ID"],table))[:stop]
-    if user.id not in ids and option in ("messages","voice","mots"):
+    if user.id not in ids and (option in ("messages","voice","mots") or categ=="Jeux"):
         ids.append(user.id)
         stop+=1
     ids.reverse()
+    
+    
+    if option in ("messages","voice","mots"):
+        checked=[]
+        for i in ids:
+            hide=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(i)).fetchone()
+            if hide!=None and not hide["Hide"]:
+                checked.append(i)
+        ids=checked
+        stop=len(ids)
 
     for i in range(stop-1,-1,-1):
         for j in range(len(old10)-1,-1,-1):
-            connexionMois,curseurMois=connectSQL(guild,dictOptions[option],"Stats",old10[j]["Mois"],old10[j]["Annee"])
+            connexionMois,curseurMois=connectSQL(guild,dictOptions[option],categ,old10[j]["Mois"],old10[j]["Annee"])
             count=curseurMois.execute("SELECT Count,Rank FROM {0}{1} WHERE ID={2}".format(tableauMois[old10[j]["Mois"]],old10[j]["Annee"],ids[i])).fetchone()
             if count!=None:
                 if old10[j]["DateID"] not in listeDates:
@@ -610,12 +666,13 @@ def linePlot(guild,option,user,curseur,curseurGet,mois,annee,moisDB,anneeDB):
             listeY[i][j]=round(listeY[i][j]/div,2)
         if option in ("messages","voice","mots"):
             infos=getUserInfo(ids[i],curseurGet,guild)
-            hexa=hex(infos["Color"])[2:]
-            if len(hexa)==6:
-                color="#"+hexa
-            else:
-                color="#"+"0"*(6-len(hexa))+hexa
+            color=infos["Color"]
             nom=infos["Nom"]
+        elif categ=="Jeux":
+            connexionUser,curseurUser=connectSQL("OT",ids[i],"Titres",None,None)
+            infos=getAllInfos(curseurGet,curseurUser,connexionUser,ids[i])
+            nom=infos["Full"]
+            color=infos["Color"]
         else:
             nom=getNom(ids[i],option,curseurGet,False)
             color=None

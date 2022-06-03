@@ -44,6 +44,7 @@ def viewFirstCompare(request,guild,option):
     stats2=[]
 
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,"TO","GL")
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
 
     for i in curseur.execute("SELECT * FROM firstM WHERE Annee={0} ORDER BY Mois ASC".format(anneeDB1)).fetchall()+curseur.execute("SELECT * FROM firstA WHERE Annee={0}".format(anneeDB1)).fetchall():
 
@@ -52,7 +53,7 @@ def viewFirstCompare(request,guild,option):
             i["W"]=0
             i["L"]=0
 
-        ligne=chooseGetteur(option,categ,i,guild,curseurGet)
+        ligne=chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild)
 
         ligne["Mois"]=i["Mois"]
         ligne["Annee"]=i["Annee"]
@@ -70,7 +71,7 @@ def viewFirstCompare(request,guild,option):
             i["W"]=0
             i["L"]=0
 
-        ligne=chooseGetteur(option,categ,i,guild,curseurGet)
+        ligne=chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild)
 
         ligne["Mois"]=i["Mois"]
         ligne["Annee"]=i["Annee"]

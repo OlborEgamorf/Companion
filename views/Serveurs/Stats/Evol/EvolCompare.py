@@ -17,6 +17,7 @@ def viewEvolCompare(request,guild,option):
     user=request.user
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
     if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
         pin=getPin(user,curseurGet,"jeux",option,"ranks","")
@@ -38,21 +39,7 @@ def viewEvolCompare(request,guild,option):
     mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
     listeMois,listeAnnee=getTimes(guild,option,categ)
 
-    connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
-    listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC LIMIT 150").fetchall()
-    if option in ("emotes","reactions"):
-        listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
-    elif option in ("salons","voicechan"):
-        listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
-    elif option=="freq":
-        listeObj=list(map(lambda x:getFreq(x),listeObj))
-    elif option in ("messages","voice","mots"):
-        listeObj=list(map(lambda x:getUserTable(x,curseurGet,guild),listeObj))
-    elif categ=="Jeux":
-        listeObj=list(map(lambda x:getUserJeux(x,curseurGet,option),listeObj))
-
-    listeObj=list(filter(lambda x:x["ID"]!=user.id,listeObj))
-    listeObj=list(filter(lambda x:x["Nom"]!="Ancien membre",listeObj))
+    listeObj=objSelector(guild,option,categ,user,curseurGet,curseurGuild)
 
     if obj1==None:
         obj1=listeObj[1]["ID"]
@@ -101,7 +88,7 @@ def viewEvolCompare(request,guild,option):
     if option in ("messages","voice","mots"):
         infos1=getUserInfo(obj1,curseurGet,guild)
         if infos1!=None:
-            ctx["user1Color"]="#"+hex(infos1["Color"])[2:]
+            ctx["user1Color"]=infos1["Color"]
             ctx["user1Avatar"]=infos1["Avatar"]
             ctx["user1Nom"]=infos1["Nom"]
         else:
@@ -109,7 +96,7 @@ def viewEvolCompare(request,guild,option):
     
         infos2=getUserInfo(obj2,curseurGet,guild)
         if infos2!=None:
-            ctx["user2Color"]="#"+hex(infos2["Color"])[2:]
+            ctx["user2Color"]=infos2["Color"]
             ctx["user2Avatar"]=infos2["Avatar"]
             ctx["user2Nom"]=infos2["Nom"]
         else:
@@ -118,7 +105,7 @@ def viewEvolCompare(request,guild,option):
         connexionUser,curseurUser=connectSQL("OT",obj1,"Titres",None,None)
         infos1=getAllInfos(curseurGet,curseurUser,connexionUser,obj1)
         if infos1!=None:
-            ctx["user1Color"]=infos1["Couleur"]
+            ctx["user1Color"]=infos1["Color"]
             ctx["user1Emote"]=infos1["Emote"]
             ctx["user1Nom"]=infos1["Full"]
         else:
@@ -127,7 +114,7 @@ def viewEvolCompare(request,guild,option):
         connexionUser,curseurUser=connectSQL("OT",obj2,"Titres",None,None)
         infos2=getAllInfos(curseurGet,curseurUser,connexionUser,obj2)
         if infos2!=None:
-            ctx["user2Color"]=infos2["Couleur"]
+            ctx["user2Color"]=infos2["Color"]
             ctx["user2Emote"]=infos2["Emote"]
             ctx["user2Nom"]=infos2["Full"]
         else:

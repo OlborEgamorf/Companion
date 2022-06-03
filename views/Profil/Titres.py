@@ -129,7 +129,7 @@ def viewProfilTitres(request,user):
 
     ctx={"avatarprofil":user_avatar_profil,"idprofil":user,"nomprofil":user_name_profil,"guildscom":listeCom,"profil":True,
         "avatar":user_avatar,"id":request.user.id,"nom":user_name,"guildname":user_name_profil,
-        "titre":infos["Full"],"color":infos["Couleur"],"emote":infos["Emote"],"custom":infos["Custom"],"coins":coins,"equip":infos["Titre"],
+        "titre":infos["Full"],"color":infos["Color"],"emote":infos["Emote"],"custom":infos["Custom"],"coins":coins,"equip":infos["Titre"],
         "vip":infos["VIP"],"testeur":infos["Testeur"],
         "boutique":boutique,"titresUser":titresUser,"dictRarete":{0:"Spécial",1:"Basique",2:"Rare",3:"Légendaire",4:"Haut-Fait",5:"Unique",6:"Fabuleux"},"dictVente":{0:"♾️",1:150,2:300,3:500,4:"♾️",5:"♾️",6:"♾️"},"dictAchat":{0:"♾️",1:300,2:600,3:1000,4:"♾️",5:2500,6:"♾️"},
         "options":options,"dictOptions":{"home":"Accueil","titres":"Titres","custom":"Personnalisation","stats":"Stats"},"option":"titres",

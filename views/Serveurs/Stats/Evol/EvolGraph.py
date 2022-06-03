@@ -1,15 +1,20 @@
 import plotly.graph_objects as go
 from companion.templatetags.TagsCustom import enteteCount, enteteNom
 from companion.tools.Decorator import CompanionStats
-from companion.tools.Getteurs import (getChannels, getEmoteTable, getFreq,
-                                      getNom, getPin, getUserInfo)
+from companion.tools.Getteurs import (getAllInfos, getChannels, getEmoteTable, getFreq,
+                                      getNom, getPin, getUserInfo, objSelector)
 from companion.tools.outils import (collapseEvol, connectSQL, dictOptions,
                                     getMoisAnnee, getTablePerso, getTimes,
-                                    listeOptions, tableauMois, voiceAxe)
+                                    listeOptions, tableauMois, voiceAxe,listeOptionsJeux)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from plotly.offline import plot
 
+def graphEvolJeux(request,option):
+    return graphEvol(request,"OT",option)
+
+def iFrameGraphEvolJeux(request,option):
+    return iFrameGraphEvol(request,"OT",option)
 
 @login_required(login_url="/login")
 @CompanionStats
@@ -19,42 +24,47 @@ def graphEvol(request,guild,option):
     user=request.user
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
-    guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
-    listeMois,listeAnnee=getTimes(guild,option,"Stats")
-
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
-    listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
-    if option in ("emotes","reactions"):
-        listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
-    elif option in ("salons","voicechan"):
-        listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
-    elif option=="freq":
-        listeObj=list(map(lambda x:getFreq(x),listeObj))
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        categ="Jeux"
+        connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
     else:
-        listeObj=None
+        categ="Stats"
+        guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB],anneeDB)
-    if option not in ("messages","voice","mots"):
+    listeMois,listeAnnee=getTimes(guild,option,categ)
+    connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
+
+    if option not in ("messages","voice","mots") and categ!="Jeux": 
+        listeObj=objSelector(guild,option,categ,user,curseurGet,curseurGuild)
+    
         if obj==None:
             obj=listeObj[0]["ID"]
 
-        if len(listeObj)>150:
-            listeObj=listeObj[:150]
-
-        div1,div2,div3,div4=linePlots(guild,option,curseur,curseurGet,obj,moisDB,anneeDB,False)
+        div1,div2,div3,div4=linePlots(guild,option,curseur,curseurGet,curseurGuild,obj,moisDB,anneeDB,False,categ)
     else:
-        div1,div2,div3,div4=linePlots(guild,option,curseur,curseurGet,user.id,moisDB,anneeDB,False)
+        div1,div2,div3,div4=linePlots(guild,option,curseur,curseurGet,curseurGuild,user.id,moisDB,anneeDB,False,categ)
+        listeObj=None
 
     connexion.close()
-    ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":None,"fig6":None,"fig7":None,
-    "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
-    "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
-    "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
-    "command":"evol","options":listeOptions,"option":option,"plus":"graphs",
-    "travel":True,"selector":True,"obj":obj,"listeObjs":listeObj,"pagestats":True,
-    "pin":getPin(user,curseurGet,guild,option,"evol","graphs")}
+    if categ=="Jeux":
+        ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":None,"fig6":None,"fig7":None,
+        "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
+        "guildname":"Classement jeux","guildid":"ot/jeux",
+        "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+        "command":"evol","options":listeOptionsJeux,"option":option,"plus":"graphs",
+        "travel":True,"selector":True,"obj":obj,"listeObjs":listeObj,"pagestats":True,"ot":True,
+        "pin":getPin(user,curseurGet,"ot/jeux",option,"evol","graphs")}
+    else:
+        ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":None,"fig6":None,"fig7":None,
+        "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
+        "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
+        "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
+        "command":"evol","options":listeOptions,"option":option,"plus":"graphs",
+        "travel":True,"selector":True,"obj":obj,"listeObjs":listeObj,"pagestats":True,
+        "pin":getPin(user,curseurGet,guild,option,"evol","graphs")}
     return render(request, "companion/Stats/Graphiques.html", ctx)
 
 
@@ -67,7 +77,10 @@ def iFrameGraphEvol(request,guild,option):
     if obj=="None":
         obj=user.id
     
-    categ="Stats"
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        categ="Jeux"
+    else:
+        categ="Stats"
 
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
 
@@ -81,14 +94,13 @@ def iFrameGraphEvol(request,guild,option):
     return render(request, "companion/Stats/Ranks/iFrameRanks_evol.html", ctx)
 
 
-def linePlots(guild,option,curseur,curseurGet,user,moisDB,anneeDB,recap):
+def linePlots(guild,option,curseur,curseurGet,curseurGuild,user,moisDB,anneeDB,recap,categ):
     if option in ("messages","voice","mots"):
         infosUser=getUserInfo(user,curseurGet,guild)
-        hexa=hex(infosUser["Color"])[2:]
-        if len(hexa)==6:
-            infosUser["Color"]="#"+hexa
-        else:
-            infosUser["Color"]="#"+"0"*(6-len(hexa))+hexa
+    elif categ=="Jeux":
+        connexionUser,curseurUser=connectSQL("OT",user,"Titres",None,None)
+        infosUser=getAllInfos(curseurGet,curseurUser,connexionUser,user)
+        infosUser["Nom"]=infosUser["Full"]
     else:
         nom=getNom(user,option,curseurGet,False)
         infosUser={"Color":"turquoise","Nom":nom}
@@ -123,21 +135,25 @@ def linePlots(guild,option,curseur,curseurGet,user,moisDB,anneeDB,recap):
     for i in curseur.execute("SELECT * FROM {0}{1} WHERE Rank>={2} AND Rank<={3} AND ID<>{4}".format(moisDB,anneeDB,rank-2,rank+2,user)).fetchall():
         evol=curseur.execute("SELECT * FROM evol{0}{1}{2} ORDER BY DateID ASC".format(moisDB,anneeDB,i["ID"])).fetchall()
         if option in ("messages","voice","mots"):
+            hide=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(i["ID"])).fetchone()
+            if hide==None or hide["Hide"]:
+                continue
             infos=getUserInfo(i["ID"],curseurGet,guild)
-            hexa=hex(infos["Color"])[2:]
-            if len(hexa)==6:
-                hexa="#"+hexa
-            else:
-                hexa="#"+"0"*(6-len(hexa))+hexa
+            color=infos["Color"]
             nom=infos["Nom"]
+        elif categ=="Jeux":
+            connexionUser,curseurUser=connectSQL("OT",i["ID"],"Titres",None,None)
+            infos=getAllInfos(curseurGet,curseurUser,connexionUser,i["ID"])
+            nom=infos["Full"]
+            color=infos["Color"]
         else:
             nom=getNom(i["ID"],option,curseurGet,False)
-            hexa=None
+            color=None
         listeLabels=list(map(lambda x:"20{0}-{1}-{2}".format(x["Annee"],x["Mois"],x["Jour"]),evol))
         listeCount=list(map(lambda x:x["Count"], evol))
         for i in range(len(listeCount)):
             listeCount[i]=round(listeCount[i]/div,2)
-        figAutour.add_trace(go.Scatter(x=listeLabels, y=listeCount, mode='lines', name=nom, line=dict(color=hexa)))
+        figAutour.add_trace(go.Scatter(x=listeLabels, y=listeCount, mode='lines', name=nom, line=dict(color=color)))
 
     figAutour.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Évolution {0} comparée avec les {1}s autour dans le classement".format(enteteCount(option).lower(),enteteNom(option).lower()),xaxis_title="Date",yaxis_title=enteteCount(option)+plus,hovermode="x unified")
     figAutour.update_yaxes(automargin=True)
@@ -155,7 +171,7 @@ def linePlots(guild,option,curseur,curseurGet,user,moisDB,anneeDB,recap):
             i+=1
 
         if i!=0:
-            connexionAvAp,curseurAvAp=connectSQL(guild,dictOptions[option],"Stats",perso[i-1]["Mois"],perso[i-1]["Annee"])
+            connexionAvAp,curseurAvAp=connectSQL(guild,dictOptions[option],categ,perso[i-1]["Mois"],perso[i-1]["Annee"])
             avant=curseurAvAp.execute("SELECT * FROM evol{0}{1}{2} ORDER BY DateID ASC".format(tableauMois[perso[i-1]["Mois"]].lower(),perso[i-1]["Annee"],user)).fetchall()
             if moisDB=="to":
                 listeLabels=list(map(lambda x:"2020-{0}-{1}".format(x["Mois"],x["Jour"]),avant))
@@ -173,7 +189,7 @@ def linePlots(guild,option,curseur,curseurGet,user,moisDB,anneeDB,recap):
         figAvAp.add_trace(go.Scatter(x=listeLabels, y=listeCountBase, mode='lines', name="{0}/{1}<br>Maintenant".format(tableauMois[moisDB],anneeDB), line=dict(color=infosUser["Color"],width=3.5)))
 
         if i!=len(perso)-1:
-            connexionAvAp,curseurAvAp=connectSQL(guild,dictOptions[option],"Stats",perso[i+1]["Mois"],perso[i+1]["Annee"])
+            connexionAvAp,curseurAvAp=connectSQL(guild,dictOptions[option],categ,perso[i+1]["Mois"],perso[i+1]["Annee"])
             apres=curseurAvAp.execute("SELECT * FROM evol{0}{1}{2} ORDER BY DateID ASC".format(tableauMois[perso[i+1]["Mois"]],perso[i+1]["Annee"],user)).fetchall()
             if moisDB=="to":
                 listeLabels=list(map(lambda x:"2020-{0}-{1}".format(x["Mois"],x["Jour"]),apres))

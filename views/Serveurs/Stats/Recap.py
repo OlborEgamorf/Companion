@@ -45,17 +45,18 @@ def viewRecapStats(request,guild,option):
 
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
     connexionGL,curseurGL=connectSQL(guild,dictOptions[option],categ,"GL","")
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
 
     if option in ("messages","voice") or categ=="Jeux":
-        ranks=getRanks(request,guild,option,"",curseur=curseur,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB)
+        ranks=getRanks(request,guild,option,"",curseur=curseur,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB,curseurGuild=curseurGuild)
         evol=getEvol(request,guild,option,curseur=curseur,moisDB=moisDB,anneeDB=anneeDB,user=user.id)
-        div1=barPlot(guild,option,user,curseur,curseurGet,moisDB,anneeDB,False)
-        div2=linePlots(guild,option,curseur,curseurGet,user.id,moisDB,anneeDB,True)
+        div1=barPlot(guild,option,categ,curseur,curseurGet,curseurGuild,moisDB,anneeDB,False)
+        div2=linePlots(guild,option,curseur,curseurGet,curseurGuild,user.id,moisDB,anneeDB,True,categ)
         if moisDB=="glob" or moisDB=="to":
             periods=getPeriods(request,guild,option,moisDB=moisDB,anneeDB=anneeDB)
-            first=getFirst(request,guild,option,curseur=curseurGL,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB)
+            first=getFirst(request,guild,option,curseur=curseurGL,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB,curseurGuild=curseurGuild)
             jours=None
-            div3=linePlot(guild,option,user,color,curseurGL,curseurGet,False,annee=anneeDB)
+            div3=linePlot(guild,option,user,color,curseurGL,curseurGet,curseurGuild,False,categ,annee=anneeDB)
         else:
             if categ!="Jeux":
                 jours=getJours(request,guild,option,curseur=curseurGL,moisDB=moisDB,anneeDB=anneeDB)
@@ -78,13 +79,13 @@ def viewRecapStats(request,guild,option):
             listeObj=[{"ID":0,"Nom":"Serveur"}]+list(map(lambda x:getDivers(x),listeObj))
         
         if obj==None or obj=="0":
-            ranks=getRanks(request,guild,option,"",curseur=curseur,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB)
+            ranks=getRanks(request,guild,option,"",curseur=curseur,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB,curseurGuild=curseurGuild)
             if moisDB=="glob" or moisDB=="to":
-                first=getFirst(request,guild,option,curseur=curseurGL,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB)
+                first=getFirst(request,guild,option,curseur=curseurGL,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB,curseurGuild=curseurGuild)
             else:
                 first=None
             mois,annee,moisDB,anneeDB=getMoisAnneePerso(mois,annee)
-            perso=getPerso(request,guild,option,curseur=curseur,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB,user=user)
+            perso=getPerso(request,guild,option,curseur=curseur,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB,user=user,curseurGuild=curseurGuild)
             
             periods,jours,evol=None,None,None
             obj=0
@@ -95,7 +96,7 @@ def viewRecapStats(request,guild,option):
             evol=getEvol(request,guild,option,curseur=curseur,moisDB=moisDB,anneeDB=anneeDB,user=obj)
             if moisDB=="glob" or moisDB=="to":
                 periods=getPeriods(request,guild,option,moisDB=moisDB,anneeDB=anneeDB)
-                first=getFirst(request,guild,option,curseur=curseurGL,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB)
+                first=getFirst(request,guild,option,curseur=curseurGL,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB,curseurGuild=curseurGuild)
             else:
                 periods,first=None,None
             perso,jours=None,None
@@ -124,7 +125,7 @@ def viewRecapStats(request,guild,option):
         return render(request, "companion/Stats/Recap.html", ctx)
 
 
-def getRanks(request,guild,option,obj,start=0,curseur=None,curseurGet=None,moisDB=None,anneeDB=None):
+def getRanks(request,guild,option,obj,start=0,curseur=None,curseurGet=None,curseurGuild=None,moisDB=None,anneeDB=None):
     if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
         categ="Jeux"
     else:
@@ -139,11 +140,13 @@ def getRanks(request,guild,option,obj,start=0,curseur=None,curseurGet=None,moisD
         mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
     if curseur==None:
         connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
+    if curseurGuild==None:
+        connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
 
     ranks=[]
     for i in curseur.execute("SELECT * FROM {0}{1}{2} ORDER BY Rank ASC LIMIT {3}".format(moisDB,anneeDB,obj,20*(start+1))).fetchall():
         i["ID"]=str(i["ID"])
-        ranks.append(chooseGetteur(option,categ,i,guild,curseurGet))
+        ranks.append(chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild))
 
     if categ=="Jeux":
         for i in ranks:
@@ -164,7 +167,7 @@ def getRanks(request,guild,option,obj,start=0,curseur=None,curseurGet=None,moisD
     return ranks,maxiRanks,end
 
 
-def getFirst(request,guild,option,start=0,curseur=None,curseurGet=None,moisDB=None,anneeDB=None):
+def getFirst(request,guild,option,start=0,curseur=None,curseurGet=None,curseurGuild=None,moisDB=None,anneeDB=None):
     if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
         categ="Jeux"
     else:
@@ -179,6 +182,8 @@ def getFirst(request,guild,option,start=0,curseur=None,curseurGet=None,moisDB=No
         mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
     if curseur==None:
         connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
+    if curseurGuild==None:
+        connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
 
     first=[]
     if moisDB=="to":
@@ -196,7 +201,7 @@ def getFirst(request,guild,option,start=0,curseur=None,curseurGet=None,moisDB=No
             i["W"]=0
             i["L"]=0
         
-        ligne=chooseGetteur(option,categ,i,guild,curseurGet)
+        ligne=chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild)
 
         ligne["Mois"]=i["Mois"]
         ligne["Annee"]=i["Annee"]
@@ -309,7 +314,7 @@ def getJours(request,guild,option,start=0,curseur=None,moisDB=None,anneeDB=None)
 
     return jours,maxiJours,end
 
-def getPerso(request,guild,option,start=0,curseur=None,curseurGet=None,moisDB=None,anneeDB=None,user=None):
+def getPerso(request,guild,option,start=0,curseur=None,curseurGet=None,curseurGuild=None,moisDB=None,anneeDB=None,user=None):
     if curseurGet==None:
         connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     if moisDB==None and anneeDB==None:
@@ -319,11 +324,13 @@ def getPerso(request,guild,option,start=0,curseur=None,curseurGet=None,moisDB=No
         connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",moisDB,anneeDB)
     if user==None:
         user=request.user
+    if curseurGuild==None:
+        connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
 
     perso=[]
     for i in curseur.execute("SELECT * FROM perso{0}{1}{2} ORDER BY Count DESC LIMIT {3}".format(moisDB,anneeDB,user.id,20*(start+1))).fetchall():
         i["ID"]=str(i["ID"])
-        perso.append(chooseGetteur(option,"Stats",i,guild,curseurGet))
+        perso.append(chooseGetteur(option,"Stats",i,guild,curseurGet,curseurGuild))
 
 
     lentable=curseur.execute("SELECT COUNT() AS Len FROM perso{0}{1}{2}".format(moisDB,anneeDB,user.id)).fetchone()["Len"]

@@ -21,6 +21,7 @@ def viewPersoCompare(request,guild,option):
     user=request.user
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
     guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
     color=curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,user.id)).fetchone()["Color"]
@@ -35,13 +36,13 @@ def viewPersoCompare(request,guild,option):
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB1],anneeDB1)
 
     for i in curseur.execute("SELECT * FROM perso{0}{1}{2} ORDER BY Count DESC LIMIT 150".format(moisDB1,anneeDB1,user.id)).fetchall():
-        stats1.append(chooseGetteur(option,"Stats",i,guild,curseurGet))
+        stats1.append(chooseGetteur(option,"Stats",i,guild,curseurGet,curseurGuild))
         maxi=max(maxi,i["Count"])
 
     connexion,curseur=connectSQL(guild,dictOptions[option],"Stats",tableauMois[moisDB2],anneeDB2)
 
     for i in curseur.execute("SELECT * FROM perso{0}{1}{2} ORDER BY Count DESC LIMIT 150".format(moisDB2,anneeDB2,user.id)).fetchall():
-        stats2.append(chooseGetteur(option,"Stats",i,guild,curseurGet))
+        stats2.append(chooseGetteur(option,"Stats",i,guild,curseurGet,curseurGuild))
         maxi=max(maxi,i["Count"])
 
     connexion.close()

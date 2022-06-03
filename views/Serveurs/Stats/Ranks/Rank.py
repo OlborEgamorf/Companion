@@ -37,10 +37,11 @@ def viewRank(request,guild,option):
         categ="Stats"
         guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
 
     for i in curseur.execute("SELECT * FROM {0}{1} ORDER BY Rank ASC LIMIT 150".format(moisDB,anneeDB)).fetchall():
 
-        stats.append(chooseGetteur(option,categ,i,guild,curseurGet))
+        stats.append(chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild))
 
         maxi=max(maxi,i["Count"])
 
@@ -88,17 +89,8 @@ def viewRankObj(request,guild,option):
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
     guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
 
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
-    
-    listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC LIMIT 150").fetchall()
-    if option in ("emotes","reactions"):
-        listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
-    elif option in ("salons","voicechan"):
-        listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
-    elif option=="freq":
-        listeObj=list(map(lambda x:getFreq(x),listeObj))
-    elif option=="divers":
-        listeObj=list(map(lambda x:getDivers(x),listeObj))
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
+    listeObj=objSelector(guild,option,"Stats",user,curseurGet,curseurGuild)
         
     if obj==None:
         obj=str(listeObj[0]["ID"])
@@ -156,7 +148,7 @@ def iFrameRank(request,guild,option):
             connexionUser,curseurUser=connectSQL("OT",obj,"Titres",None,None)
             infos=getAllInfos(curseurGet,curseurUser,connexionUser,obj)
             nom=infos["Full"]
-            color=infos["Couleur"]
+            color=infos["Color"]
         else:
             user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(obj)).fetchone()
             color=getColor(obj,guild,curseurGet)
@@ -173,12 +165,13 @@ def iFrameRank(request,guild,option):
         return render(request,"companion/Stats/Ranks/iFrameRanks_evol.html",ctx)
 
     else:
+        connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
         nom=getNom(obj,option,curseurGet,False)
         try:
             maxi=-inf
             stats=[]
             for i in curseur.execute("SELECT * FROM {0}{1}{2} ORDER BY Rank ASC LIMIT 150".format(moisDB,anneeDB,obj)).fetchall():
-                stats.append(getUserTable(i,curseurGet,guild))
+                stats.append(getUserTable(i,curseurGet,curseurGuild,guild))
                 maxi=max(maxi,i["Count"])
         except:
             pass

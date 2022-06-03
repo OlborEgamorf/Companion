@@ -2,12 +2,15 @@ from companion.tools.outils import connectSQL,dictOptions,dictDivers
 from companion.templatetags.TagsCustom import tempsVoice
 
 
-def getUserTable(i,curseurGet,guild):
+def getUserTable(i,curseurGet,curseurGuild,guild):
+    hide=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(i["ID"])).fetchone()
+    if hide==None or hide["Hide"]:
+        return {"Count":0,"Rank":i["Rank"],"Nom":"Membre masqué","Color":None,"Avatar":None,"ID":0}
     infos=curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,i["ID"])).fetchone()
     if infos==None:
         return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"Ancien membre","Color":None,"Avatar":None,"ID":i["ID"]}
     else:
-        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Nom"],"Color":"#"+hex(infos["Color"])[2:],"Avatar":infos["Avatar"],"ID":i["ID"]}
+        return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Nom"],"Color":formatColor(infos["Color"]),"Avatar":infos["Avatar"],"ID":i["ID"]}
 
 def getEmoteTable(i,curseurGet):
     infos=curseurGet.execute("SELECT * FROM emotes WHERE ID={0}".format(i["ID"])).fetchone()
@@ -40,8 +43,8 @@ def getDivers(i):
 
 def getColor(id,guild,curseurGet):
     infos=curseurGet.execute("SELECT * FROM users_{0} WHERE ID={1}".format(guild,id)).fetchone()
-    if infos!=None:
-        return "#"+hex(infos["Color"])[2:]
+    if infos!=None and infos["Color"]!=None:
+        return formatColor(infos["Color"])
     return None
 
 def getGuildInfo(id,curseurGet):
@@ -50,7 +53,9 @@ def getGuildInfo(id,curseurGet):
 def getUserInfo(id,curseurGet,guild):
     infos=curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,id)).fetchone()
     if infos==None:
-        return {"ID":id,"Nom":"Ancien membre","Color":239100,"Avatar":None}
+        return {"ID":id,"Nom":"Ancien membre","Color":"#239100","Avatar":None}
+    if infos["Color"]!=None:
+        infos["Color"]=formatColor(infos["Color"])
     if len(infos["Nom"])>15:
         infos["Nom"]=infos["Nom"][:15]+"..."
     return infos
@@ -62,7 +67,9 @@ def getUserInfoMix(id,guilds,curseurGet):
         if infoGuild["Nom"]!="Ancien membre":
             infos=infoGuild
     if infos==None:
-        return {"ID":id,"Nom":"Ancien membre","Color":239100,"Avatar":None}
+        return {"ID":id,"Nom":"Ancien membre","Color":"#239100","Avatar":None}
+    if infos["Color"]!=None:
+        infos["Color"]=formatColor(infos["Color"])
     return infos
 
 def getNom(id,option,curseurGet,obj):
@@ -87,7 +94,7 @@ def getUserJeux(i,curseurGet,jeu):
     badgeJeu=curseurUser.execute("SELECT * FROM badges WHERE Type='{0}' ORDER BY Valeur DESC".format(dictOptions[jeu])).fetchone()
     if badgeJeu!=None:
         badgeJeu=badgeJeu["Valeur"]
-    return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Full"],"Color":infos["Couleur"],"Emote":infos["Emote"],"ID":i["ID"],"VIP":infos["VIP"],"Testeur":infos["Testeur"],"BadgeJeu":badgeJeu,"Win":i["W"],"Lose":i["L"]}
+    return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Full"],"Color":infos["Color"],"Emote":infos["Emote"],"ID":i["ID"],"VIP":infos["VIP"],"Testeur":infos["Testeur"],"BadgeJeu":badgeJeu,"Win":i["W"],"Lose":i["L"]}
 
 def createAccount(connexion,curseur):
     curseur.execute("CREATE TABLE IF NOT EXISTS titresUser (ID INT, Nom TEXT, Rareté INT, PRIMARY KEY(ID))")
@@ -105,6 +112,17 @@ def getAllInfos(curseur,curseurUser,connexionUser,user):
     couleur=curseur.execute("SELECT * FROM couleurs WHERE ID={0}".format(user)).fetchone()
     vip,test=False,False
 
+    carte=curseur.execute("SELECT * FROM cartes WHERE ID={0}".format(user)).fetchone()
+    if carte==None:
+        fond="defaut"
+        phrase=""
+    else:
+        fond=carte["Fond"]
+        if carte["Texte"]=="None":
+            phrase=""
+        else:
+            phrase=carte["Texte"]
+
     if titre!=None:
         titre=titre["Nom"]
     else:
@@ -117,22 +135,18 @@ def getAllInfos(curseur,curseurUser,connexionUser,user):
         emote=emote["IDEmote"]
     if couleur!=None:
         couleur=int('%02x%02x%02x' % (couleur["R"], couleur["G"], couleur["B"]),base=16)
-        couleur="#"+hex(couleur)[2:]
+        couleur=formatColor(couleur)
 
     if curseurUser.execute("SELECT * FROM badges WHERE Période='VIP'").fetchone()!=None:
         vip=True
     if curseurUser.execute("SELECT * FROM badges WHERE Période='Testeur'").fetchone()!=None:
         test=True
 
-    return {"Coins":coins,"Titre":titre,"Custom":custom,"Full":full,"Emote":emote,"Couleur":couleur,"VIP":vip,"Testeur":test}
+    return {"Coins":coins,"Titre":titre,"Custom":custom,"Full":full,"Emote":emote,"Color":couleur,"VIP":vip,"Testeur":test,"Fond":fond,"Phrase":phrase}
 
 def formatColor(color):
     hexa=hex(color)[2:]
-    if len(hexa)==6:
-        color="#"+hexa
-    else:
-        color="#"+"0"*(6-len(hexa))+hexa
-    return color
+    return "#"+"0"*(6-len(hexa))+hexa
 
 def addInfos(table,dictInfos,option,guild,curseurGet):
     for i in table:
@@ -140,7 +154,7 @@ def addInfos(table,dictInfos,option,guild,curseurGet):
             if option in ("messages","voice","mots"):
                 i["Nom"]=dictInfos[i["ID"]]["Nom"]
                 i["Avatar"]=dictInfos[i["ID"]]["Avatar"]
-                i["Color"]=formatColor(dictInfos[i["ID"]]["Color"])
+                i["Color"]=dictInfos[i["ID"]]["Color"]
             else:
                 i["Nom"]=dictInfos[i["ID"]]
         else:
@@ -148,7 +162,7 @@ def addInfos(table,dictInfos,option,guild,curseurGet):
                 infos=getUserInfo(i["ID"],curseurGet,guild)
                 i["Nom"]=infos["Nom"]
                 i["Avatar"]=infos["Avatar"]
-                i["Color"]=formatColor(infos["Color"])
+                i["Color"]=infos["Color"]
             else:
                 infos=getNom(i["ID"],option,curseurGet,False)
                 i["Nom"]=infos
@@ -177,9 +191,9 @@ def getPin(user,curseurGet,guild,option,command,plus):
         return False
 
 
-def chooseGetteur(option,categ,ligne,guild,curseurGet):
+def chooseGetteur(option,categ,ligne,guild,curseurGet,curseurGuild):
     if option in ("messages","voice","mots"):
-        return getUserTable(ligne,curseurGet,guild)
+        return getUserTable(ligne,curseurGet,curseurGuild,guild)
 
     elif option in ("emotes","reactions"):
         return getEmoteTable(ligne,curseurGet)
@@ -195,3 +209,26 @@ def chooseGetteur(option,categ,ligne,guild,curseurGet):
     
     elif categ=="Jeux":
         return getUserJeux(ligne,curseurGet,option)
+
+
+def objSelector(guild,option,categ,user,curseurGet,curseurGuild):
+    connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
+    listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC LIMIT 150").fetchall()
+    if option in ("emotes","reactions"):
+        listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
+    elif option in ("salons","voicechan"):
+        listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
+    elif option=="freq":
+        listeObj=list(map(lambda x:getFreq(x),listeObj))
+    elif option in ("messages","voice","mots"):
+        listeObj=list(map(lambda x:getUserTable(x,curseurGet,curseurGuild,guild),listeObj))
+    elif categ=="Jeux":
+        listeObj=list(map(lambda x:getUserJeux(x,curseurGet,option),listeObj))
+    elif option=="divers":
+        listeObj=list(map(lambda x:getDivers(x),listeObj))
+
+    listeObj=list(filter(lambda x:x["ID"]!=user.id,listeObj))
+    listeObj=list(filter(lambda x:x["Nom"]!="Ancien membre",listeObj))
+    listeObj=list(filter(lambda x:x["Nom"]!="Membre masqué",listeObj))
+    listeObj=list(filter(lambda x:x["Nom"]!="Salon masqué",listeObj))
+    return listeObj

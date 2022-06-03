@@ -2,57 +2,70 @@ from math import inf
 
 import plotly.graph_objects as go
 from companion.templatetags.TagsCustom import enteteCount
-from companion.tools.Getteurs import (getChannels, getEmoteTable, getFreq, getPin,
-                                getUserInfo)
+from companion.tools.Decorator import CompanionStats
+from companion.tools.Getteurs import (getAllInfos, getPin, getUserInfo,
+                                      objSelector)
 from companion.tools.outils import (connectSQL, dictOptions, getTablePerso,
-                              listeOptions, voiceAxe)
+                                    listeOptions, listeOptionsJeux, voiceAxe)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from plotly.offline import plot
 
 
+def graphPeriodsJeux(request,option):
+    return graphPeriods(request,"OT",option)
+
+def iFrameGraphPeriodsJeux(request,option):
+    return iFrameGraphPeriods(request,"OT",option)
+
+
 @login_required(login_url="/login")
+@CompanionStats
 def graphPeriods(request,guild,option):
     obj = request.GET.get("obj")
     user=request.user
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
-    guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
-    infos=getUserInfo(user.id,curseurGet,guild)
 
-    connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
-    listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC").fetchall()
-    if option in ("emotes","reactions"):
-        listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
-    elif option in ("salons","voicechan"):
-        listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
-    elif option=="freq":
-        listeObj=list(map(lambda x:getFreq(x),listeObj))
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        categ="Jeux"
+        connexionGet,curseurGet=connectSQL("OT","Titres","Titres",None,None)
+        connexionUser,curseurUser=connectSQL("OT",user.id,"Titres",None,None)
+        infos=getAllInfos(curseurGet,curseurUser,connexionUser,user.id)
     else:
-        listeObj=None
+        categ="Stats"
+        guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
+        infos=getUserInfo(user.id,curseurGet,guild)
 
-    if option not in ("messages","voice","mots"):
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
+    listeObj=objSelector(guild,option,categ,user,curseurGet,curseurGuild)
+
+    if option not in ("messages","voice","mots") and categ!="Jeux":
         if obj==None:
             obj=listeObj[0]["ID"]
-
-        if len(listeObj)>150:
-            listeObj=listeObj[:150]
     
-    if option in ("messages","voice","mots"):
-        div1,div2,div3,div4=linePlot(guild,option,user.id,False,"#"+hex(infos["Color"])[2:],True,"M")
+    if option in ("messages","voice","mots") or categ=="Jeux":
+        div1,div2,div3,div4=linePlot(guild,option,user.id,False,infos["Color"],True,"M")
         div5,div6,div7=linePlot(guild,option,user.id,False,"turquoise",False,"M")
         div8=None
     else:
-        div1,div2,div3,div4=linePlot(guild,option,user.id,obj,"#"+hex(infos["Color"])[2:],True,"M")
+        div1,div2,div3,div4=linePlot(guild,option,user.id,obj,infos["Color"],True,"M")
         div5,div6,div7,div8=linePlot(guild,option,user.id,obj,"turquoise",False,"M")
 
     #connexion.close()
-    ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":div5,"fig6":div6,"fig7":div7,"fig8":div8,"pagestats":True,
-    "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
-    "command":"periods","options":listeOptions,"option":option,"plus":"graphs",
-    "travel":False,"selector":True,"obj":obj,"listeObjs":listeObj,
-    "pin":getPin(user,curseurGet,guild,option,"periods","graphs")}
+    if categ=="Jeux":
+        ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":div5,"fig6":div6,"fig7":div7,"fig8":div8,"pagestats":True,
+        "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"guildname":"Classements jeux","guildid":"ot/jeux",
+        "command":"periods","options":listeOptionsJeux,"option":option,"plus":"graphs",
+        "travel":False,"selector":True,"obj":obj,"listeObjs":listeObj,"ot":True,
+        "pin":getPin(user,curseurGet,"ot/jeux",option,"periods","graphs")}
+    else:
+        ctx={"fig":div1,"fig2":div2,"fig3":div3,"fig4":div4,"fig5":div5,"fig6":div6,"fig7":div7,"fig8":div8,"pagestats":True,
+        "avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
+        "command":"periods","options":listeOptions,"option":option,"plus":"graphs",
+        "travel":False,"selector":True,"obj":obj,"listeObjs":listeObj,
+        "pin":getPin(user,curseurGet,guild,option,"periods","graphs")}
     return render(request, "companion/Stats/Periods/graphPeriods.html", ctx)
 
 
@@ -61,7 +74,12 @@ def iFrameGraphPeriods(request,guild,option):
     obj=request.GET.get("data")
     user=request.user
 
-    if option in ("messages","voice","mots"):
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        categ="Jeux"
+    else:
+        categ="Stats"
+
+    if option in ("messages","voice","mots") or categ=="Jeux":
         tableUser=getTablePerso(guild,dictOptions[option],user.id,False,"M","periodAsc")
         tableServ=getTablePerso(guild,dictOptions[option],guild,False,"M","periodAsc")
     else:

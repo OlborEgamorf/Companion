@@ -46,6 +46,7 @@ def viewFirst(request,guild,option):
         "command":"first","options":listeOptions,"option":option,"plus":"","travel":False,"selector":True,"pin":pin}
 
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
 
     for i in curseur.execute("SELECT * FROM firstM ORDER BY Count DESC").fetchall():
         i["Rank"]=0
@@ -53,7 +54,7 @@ def viewFirst(request,guild,option):
             i["W"]=0
             i["L"]=0
 
-        ligne=chooseGetteur(option,categ,i,guild,curseurGet)
+        ligne=chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild)
 
         ligne["Mois"]=i["Mois"]
         ligne["Annee"]=i["Annee"]
@@ -67,7 +68,7 @@ def viewFirst(request,guild,option):
             i["W"]=0
             i["L"]=0
 
-        ligne=chooseGetteur(option,categ,i,guild,curseurGet)
+        ligne=chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild)
 
         ligne["Mois"]=i["Mois"]
         ligne["Annee"]=i["Annee"]
