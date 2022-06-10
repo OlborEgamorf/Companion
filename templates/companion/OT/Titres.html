@@ -1,15 +1,80 @@
 {% extends "companion/BASE.html" %}
 {% block script %}
-<script type="text/javascript">
+<script>
+    var collec = "{{ collec }}"
+    function filterTitres(obj) {
+        divTables=document.getElementById("all-titres")
+        tables=divTables.children
+        raretes=document.getElementById("raretes")
 
-    function confirm(button) {
-        val=button.value
-        button.value="Confirmer"
-        sleep(100).then(() => {button.type="submit"})
-        sleep(10000).then(() => {
-            button.type="button"
-            button.value=val})
+        var liste = {}
+        for (i=0 ; i<raretes.children.length ; i++) {
+            if (raretes.children[i].localName == "input" && raretes.children[i].checked == true) {
+                liste[raretes.children[i].id]=true
+            }
+        }
+        if (obj.checked == true) {
+            for (i=0 ; i<tables.length ; i++) {
+                if (tables[i].style.display == "none") {
+                    if (tables[i].dataset.collection == obj.id && tables[i].dataset.rarete in liste == true)
+                    {
+                        tables[i].style.display = "inline-table"
+                    }
+                }
+            }
+        } else {
+            for (i=0 ; i<tables.length ; i++) {
+                if (tables[i].style.display == "inline-table") {
+                    if (tables[i].dataset.collection == obj.id)
+                    {
+                        tables[i].style.display = "none"
+                    }
+                }
+            }
+        }
     }
+
+    function filterRarete(obj) {
+        divTables=document.getElementById("all-titres")
+        tables=divTables.children
+        collections=document.getElementById("collections")
+
+        var liste = {}
+        for (i=0 ; i<collections.children.length ; i++) {
+            if (collections.children[i].localName == "input" && collections.children[i].checked == true) {
+                liste[collections.children[i].id]=true
+            }
+        }
+        if (obj.checked == true) {
+            for (i=0 ; i<tables.length ; i++) {
+                if (tables[i].style.display == "none") {
+                    if (tables[i].dataset.rarete == obj.id && tables[i].dataset.collection in liste == true)
+                    {
+                        tables[i].style.display = "inline-table"
+                    }
+                }
+            }
+        } else {
+            for (i=0 ; i<tables.length ; i++) {
+                if (tables[i].style.display == "inline-table") {
+                    if (tables[i].dataset.rarete == obj.id)
+                    {
+                        tables[i].style.display = "none"
+                    }
+                }
+            }
+        }
+    }
+
+    function checkAll(obj) {
+        divTables=document.getElementById("all-titres")
+        
+        if (obj.checked == true) {
+
+        }
+    }
+
+
 </script>
 {% endblock script %}
 
@@ -18,7 +83,6 @@
 
 <div class="guild-stats">Boutique du jour - vous pouvez acheter des titres depuis votre profil</div>
 
-<form action="" method="post"> {% csrf_token %}
 <div class="div-titres">
     
     <table>
@@ -53,9 +117,28 @@
 
 <div class="guild-stats">Tous les titres</div>
 
-<div class="div-profil">
+<div style="display:flex">
+    <div class="filter-titres" id="collections">
+        <h4>Filtrer les collections</h4>
+        {% for i in collec %}
+            <input type="checkbox" id="{{ i }}" name="{{ i }}" value="{{ i }}" checked onchange="filterTitres(this)">
+            <label for="{{ i }}">{{ i }}</label>
+            <br>
+        {% endfor %}
+    </div>
+    <div class="filter-titres" id="raretes">
+        <h4>Filtrer les raretés</h4>
+        {% for i in rarete %}
+            <input type="checkbox" id="{{ i|usedict:dictRarete }}" name="{{ i|usedict:dictRarete }}" value="{{ i|usedict:dictRarete }}" checked onchange="filterRarete(this)">
+            <label for="{{ i|usedict:dictRarete }}">{{ i|usedict:dictRarete }}</label>
+            <br>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="div-profil" id="all-titres">
     {% for i in titresInfos %}
-        <table class="table-jeux">
+        <table class="table-jeux" data-rarete="{{ i.Rareté|usedict:dictRarete }}" data-collection="{{ i.Collection }}" style="display: inline-table;">
             <tr><th colspan="3">{{ i.Nom }}</th></tr>
             <tr>
                 <th>ID</th>
@@ -73,5 +156,4 @@
 </div>
 
 
-</form>
 {% endblock stats %}

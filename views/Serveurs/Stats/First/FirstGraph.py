@@ -108,6 +108,7 @@ def linePlot(guild,option,user,color,curseur,curseurGet,curseurGuild,graphnb,cat
             if hide==None or hide["Hide"]:
                 nom="Membre masqué"
                 hexa="turquoise"
+                i["Count"]=0
             infos=getUserInfo(i["ID"],curseurGet,guild)
             nom=infos["Nom"]
             hexa=infos["Color"]
@@ -120,7 +121,13 @@ def linePlot(guild,option,user,color,curseur,curseurGet,curseurGuild,graphnb,cat
             else:
                 hexa="turquoise"
         else:
-            nom=getNom(i["ID"],option,curseurGet,False)
+            if option in ("salons","voicechan"):
+                hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(i["ID"])).fetchone()
+                if hide!=None or not hide["Hide"]:
+                    nom="Salon masqué"
+                    i["Count"]=0
+            else:
+                nom=getNom(i["ID"],option,curseurGet,False)
             hexa="turquoise"
 
         noms.append(nom)
@@ -204,9 +211,14 @@ def linePlot(guild,option,user,color,curseur,curseurGet,curseurGuild,graphnb,cat
         colorsNb=[]
         nomsNb=[]
         for i in idsDist:
-            hide=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(i["ID"])).fetchone()
-            if hide==None or hide["Hide"]:
-                continue
+            if option in ("messages","voice"):
+                hide=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(i["ID"])).fetchone()
+                if hide==None or hide["Hide"]:
+                    continue
+            elif option in ("salons","voicechan"):
+                hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(i["ID"])).fetchone()
+                if hide==None or hide["Hide"]:
+                    continue
             nbfirst.append({"ID":i["ID"],"Count":curseur.execute("SELECT Count() AS Nombre FROM firstM WHERE ID={0}".format(i["ID"])).fetchone()["Nombre"]})
             nomsNb.append(dictNoms[i["ID"]])
             colorsNb.append(dictColors[i["ID"]])

@@ -19,6 +19,7 @@ def mixRank(request,option):
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
     connexionUser,curseurUser=connectSQL("OT",user,"Titres",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     
     infos=getAllInfos(curseur,curseurUser,connexionUser,user)
     full_guilds=getGuilds(request.user,curseurGet)
@@ -34,7 +35,7 @@ def mixRank(request,option):
                         stats.append(getEmoteTable(i,curseurGet))
 
                     elif option in ("salons","voicechan"):
-                        stats.append(getChannels(i,curseurGet))
+                        stats.append(getChannels(i,curseurGet,curseurGuild))
 
                     elif option=="freq":
                         stats.append(getFreq(i))

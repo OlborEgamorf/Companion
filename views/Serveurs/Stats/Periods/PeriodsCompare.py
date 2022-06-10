@@ -6,6 +6,8 @@ from companion.tools.outils import (connectSQL, dictOptions, getTablePerso,
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
+from companion.views.Serveurs.Stats.Periods.PeriodsGraph import linePlotCompare
+
 def comparePeriodsJeux(request,option):
     return viewPeriodsCompare(request,"OT",option)
 
@@ -30,12 +32,18 @@ def viewPeriodsCompare(request,guild,option):
         obj2 = request.GET.get("obj2")
 
     connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
-    listeObj=objSelector(guild,option,categ,user,curseurGet,curseurGuild)
+    listeObj=objSelector(guild,option,categ,user,curseurGet,curseurGuild,perso=True)
 
     if obj1==None:
         obj1=listeObj[1]["ID"]
+    elif option in ("salons","voicechan"):
+        hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(obj1)).fetchone()
+        assert hide!=None and not hide["Hide"]
     if obj2==None:
         obj2=listeObj[0]["ID"]
+    elif option in ("salons","voicechan"):
+        hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(obj2)).fetchone()
+        assert hide!=None and not hide["Hide"]
 
     if option in ("messages","voice","mots") or categ=="Jeux": 
         rankMois1=getTablePerso(guild,dictOptions[option],user.id,False,"M","countDesc")
@@ -95,6 +103,8 @@ def viewPeriodsCompare(request,guild,option):
             ctx["user2Nom"]=infos2["Nom"]
         else:
             ctx["user2Nom"]="Ancien membre"
+        
+        ctx["graph"]=linePlotCompare(guild,option,obj1,False,obj2,True,"M",infos1["Color"],infos2["Color"],infos1["Nom"],infos2["Nom"])
     elif categ=="Jeux":
         connexionUser,curseurUser=connectSQL("OT",obj1,"Titres",None,None)
         infos1=getAllInfos(curseurGet,curseurUser,connexionUser,obj1)
@@ -113,6 +123,8 @@ def viewPeriodsCompare(request,guild,option):
             ctx["user2Nom"]=infos2["Full"]
         else:
             ctx["user2Nom"]="Inconnu"
+        
+        ctx["graph"]=linePlotCompare(guild,option,obj1,False,obj2,True,"M",infos1["Color"],infos2["Color"],infos1["Full"],infos2["Full"])
     else:
         ctx["user1Nom"]=getNom(obj1,option,curseurGet,False)
         ctx["user2Nom"]=getNom(obj2,option,curseurGet,False)
@@ -120,5 +132,7 @@ def viewPeriodsCompare(request,guild,option):
         ctx["user1Color"]=color
         ctx["user2Color"]=color
         ctx["doubleObj"]=True
+
+        ctx["graph"]=linePlotCompare(guild,option,user.id,obj1,obj2,True,"M","turquoise","gold",ctx["user1Nom"],ctx["user2Nom"])
 
     return render(request, "companion/Stats/Periods/periodsCompare.html", ctx)

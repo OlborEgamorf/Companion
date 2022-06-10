@@ -20,6 +20,7 @@ def viewEvol(request,guild,option):
     user=request.user
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
 
     if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
@@ -59,16 +60,13 @@ def viewEvol(request,guild,option):
         if color!=None:
             ctx["color"]="#"+hex(int('%02x%02x%02x' % (color["R"], color["G"], color["B"]),base=16))[2:]
     else:
-        listeObj=curseur.execute("SELECT * FROM {0}{1} WHERE Rank<150 ORDER BY Rank ASC".format(moisDB,anneeDB)).fetchall()
-        if option in ("emotes","reactions"):
-            listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
-        elif option in ("salons","voicechan"):
-            listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
-        elif option=="freq":
-            listeObj=list(map(lambda x:getFreq(x),listeObj))
+        listeObj=objSelector(guild,option,categ,user,curseurGet,curseurGuild)
 
         if obj==None:
             obj=listeObj[0]["ID"]
+        elif option in ("salons","voicechan"):
+            hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(obj)).fetchone()
+            assert hide!=None and not hide["Hide"]
         
         ctx["obj"]=int(obj)
         ctx["listeObjs"]=listeObj

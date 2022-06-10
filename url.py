@@ -1,6 +1,10 @@
 from django.urls import path
 
 from companion.views.Blank import iFrameBlank
+from companion.views.Serveurs.Stats.First.FirstGlobal import firstGlobalJeux, viewFirstGlobal
+from companion.views.Serveurs.Stats.Ranks.MoreRanks import getEvol, getHistoFirst, getIndics
+from companion.views.Serveurs.Stats.Ranks.PersoGlobal import viewPersoGlobal
+from companion.views.Serveurs.Stats.Ranks.RanksGlobal import ranksGlobalJeux, viewRanksGlobal
 from companion.views.home import home
 from companion.views.Mixes.DelMix import delMix
 from companion.views.Mixes.Periods.MixPeriods import (iFrameMixPeriods,
@@ -79,8 +83,9 @@ urlpatterns = [
     path("<int:guild>/stats/first/<str:option>/",viewFirst,name="stats-first"),
     path("<int:guild>/stats/rapport/<str:option>/",viewRapports,name="stats-rapport"),
     
-    path("<int:guild>/stats/ranks",viewRank,name="stats-ranks"),
-    path("<int:guild>/stats/first",viewRank,name="stats-ranks"),
+    path("<int:guild>/stats/ranks",viewRanksGlobal,name="stats-ranks"),
+    path("<int:guild>/stats/first",viewFirstGlobal,name="stats-ranks"),
+    path("<int:guild>/stats/ranks/perso",viewPersoGlobal,name="stats-ranks"),
     path("<int:guild>/stats/ranks/perso/<str:option>",viewPerso,name="stats-perso"),
     path("<int:guild>/stats/periods/perso/<str:option>",viewPeriods,name="stats-serv"),
 
@@ -137,6 +142,11 @@ urlpatterns = [
 
     path("<int:guild>/<str:option>/recapmore",addMoreRecap,name="stats-ranks"),
     path("ot/jeux/<str:option>/recapmore",addMoreRecapJeux,name="stats-ranks"),
+
+    path("<int:guild>/<str:option>/ranksmore/indics",getIndics,name="stats-ranks"),
+    path("<int:guild>/<str:option>/ranksmore/histofirst",getHistoFirst,name="stats-ranks"),
+    path("<int:guild>/<str:option>/ranksmore/evol",getEvol,name="stats-ranks"),
+
     path("mixes/<int:mix>/del",delMix,name="del-mix"),
     path("pin",ajoutPin),
     path("pin/add",ajoutPin),
@@ -174,6 +184,9 @@ urlpatterns = [
     path("ot/jeux/<str:option>/iframeperiods/graphs",iFrameGraphPeriodsJeux,name="iframe-graphs-ranks"),
     path("ot/jeux/<str:option>/iframeevol/graphs",iFrameGraphEvolJeux,name="iframe-graphs-ranks"),
     path("ot/jeux/<str:option>/iframefirst/graphs",iFrameGraphFirstJeux,name="iframe-graphs-ranks"),
+
+    path("ot/jeux/ranks",ranksGlobalJeux,name="stats-ranks"),
+    path("ot/jeux/first",firstGlobalJeux,name="stats-ranks"),
 
 
     #path("mondial/emotes",emotesMondial,name="emotes-mondial"),

@@ -28,7 +28,7 @@ def viewPeriods(request,guild,option):
         connexion,curseur=connectSQL("OT","Titres","Titres",None,None)
         color=curseur.execute("SELECT * FROM couleurs WHERE ID={0}".format(user.id)).fetchone()
         if color!=None:
-            color=formatColor(hex(int('%02x%02x%02x' % (color["R"], color["G"], color["B"]),base=16)))
+            color=formatColor(int('%02x%02x%02x' % (color["R"], color["G"], color["B"]),base=16))
 
         ctx={"rankMois":None,"rankAnnee":None,"maxM":None,"maxA":None,"pagestats":True,"ot":True,
         "avatar":user_avatar,"id":user.id,"color":color,"nom":user_name,
@@ -39,6 +39,7 @@ def viewPeriods(request,guild,option):
         categ="Stats"
         guild_full=curseurGet.execute("SELECT * FROM guilds WHERE ID={0}".format(guild)).fetchone()
         color=curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,user.id)).fetchone()["Color"]
+        color=formatColor(color)
 
         ctx={"rankMois":None,"rankAnnee":None,"maxM":None,"maxA":None,"pagestats":True,
         "avatar":user_avatar,"id":user.id,"color":color,"nom":user_name,
@@ -57,6 +58,9 @@ def viewPeriods(request,guild,option):
 
         if obj==None:
             obj=listeObj[0]["ID"]
+        elif option in ("salons","voicechan"):
+            hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(obj)).fetchone()
+            assert hide!=None and not hide["Hide"]
     
         ctx["obj"]=int(obj)
         ctx["listeObjs"]=listeObj

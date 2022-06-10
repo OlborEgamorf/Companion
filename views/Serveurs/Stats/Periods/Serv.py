@@ -29,6 +29,9 @@ def viewServ(request,guild,option):
 
         if obj==None:
             obj=listeObj[0]["ID"]
+        elif option in ("salons","voicechan"):
+            hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(obj)).fetchone()
+            assert hide!=None and not hide["Hide"]
         
         ctx["obj"]=int(obj)
         ctx["listeObjs"]=listeObj

@@ -132,7 +132,7 @@ def barPlot(guild,option,categ,curseur,curseurGet,curseurGuild,moisDB,anneeDB,ci
 
     for i in table:
         ligne=chooseGetteur(option,categ,i,guild,curseurGet,curseurGuild)
-        if ligne["Nom"]=="Membre masqué":
+        if ligne["Nom"]=="Membre masqué" or ligne["Nom"]=="Salon masqué":
             continue
 
         if categ=="Jeux":
@@ -213,6 +213,10 @@ def barAnim(guild,option,curseur,curseurGet,curseurGuild,moisDB,anneeDB):
     for i in table:
         if option in ("messages","voice"):
             hide=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(i["ID"])).fetchone()
+            if curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Rank<30".format(moisDB,anneeDB,i["ID"])).fetchone()!=None and hide!=None and not hide["Hide"]:
+                ids.append(i["ID"])
+        elif option in ("salons","voicechan"):
+            hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(i["ID"])).fetchone()
             if curseur.execute("SELECT * FROM evol{0}{1}{2} WHERE Rank<30".format(moisDB,anneeDB,i["ID"])).fetchone()!=None and hide!=None and not hide["Hide"]:
                 ids.append(i["ID"])
         else:
@@ -408,6 +412,10 @@ def pointPlot(guild,option,curseur,curseurGet,curseurGuild,moisDB,anneeDB,categ)
             infos=getAllInfos(curseurGet,curseurUser,connexionUser,i["ID"])
             listeNoms.append(infos["Full"])
         else:
+            if option in ("salons","voicechan"):
+                hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(i["ID"])).fetchone()
+                if hide==None or hide["Hide"]:
+                    continue
             listeNoms.append(getNom(i["ID"],option,curseurGet,False))
 
         if moisDB=="to":
@@ -634,6 +642,14 @@ def linePlot(guild,option,user,curseur,curseurGet,curseurGuild,categ,moisDB,anne
         checked=[]
         for i in ids:
             hide=curseurGuild.execute("SELECT * FROM users WHERE ID={0}".format(i)).fetchone()
+            if hide!=None and not hide["Hide"]:
+                checked.append(i)
+        ids=checked
+        stop=len(ids)
+    elif option in ("salons","voicechan"):
+        checked=[]
+        for i in ids:
+            hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(i)).fetchone()
             if hide!=None and not hide["Hide"]:
                 checked.append(i)
         ids=checked

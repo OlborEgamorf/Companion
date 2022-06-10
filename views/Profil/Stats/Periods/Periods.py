@@ -18,6 +18,7 @@ def mixPeriods(request,mix,option):
     statsAnnee=[]
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
     
     mix_ids,infosMix,listeMixs=getInfoMix(user,mix,curseurGet)
     user_full=curseurGet.execute("SELECT * FROM users WHERE ID={0}".format(user.id)).fetchone()
@@ -47,7 +48,7 @@ def mixPeriods(request,mix,option):
         if option in ("emotes","reactions"):
             listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
         elif option in ("salons","voicechan"):
-            listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
+            listeObj=list(map(lambda x:getChannels(x,curseurGet,curseurGuild),listeObj))
         elif option=="freq":
             listeObj=list(map(lambda x:getFreq(x),listeObj))
         elif option=="divers":

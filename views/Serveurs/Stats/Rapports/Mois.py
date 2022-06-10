@@ -28,13 +28,13 @@ def rapportMois(guild,option,request,user,moisDB,anneeDB,mois,annee):
                 infos=getUserInfo(i["ID"],curseurGet,guild)
                 i["Nom"]=infos["Nom"]
                 i["Avatar"]=infos["Avatar"]
-                i["Color"]=formatColor(infos["Color"])
+                i["Color"]=infos["Color"]
                 dictInfos[i["ID"]]=infos
         for i in top15_1:
             infos=getUserInfo(i["ID"],curseurGet,guild)
             i["Nom"]=infos["Nom"]
             i["Avatar"]=infos["Avatar"]
-            i["Color"]=formatColor(infos["Color"])
+            i["Color"]=infos["Color"]
             dictInfos[i["ID"]]=infos
         
     else:
@@ -87,7 +87,7 @@ def rapportMois(guild,option,request,user,moisDB,anneeDB,mois,annee):
         if i["ID"] in idsTop15:
             infos=dictInfos[i["ID"]]
             if option in ("messages","voice","mots"):
-                dictAvAp={"ID":i["ID"],"CountNow":i["Count"],"RankNow":i["Rank"],"Nom":infos["Nom"],"Avatar":infos["Avatar"],"Color":formatColor(infos["Color"])}
+                dictAvAp={"ID":i["ID"],"CountNow":i["Count"],"RankNow":i["Rank"],"Nom":infos["Nom"],"Avatar":infos["Avatar"],"Color":infos["Color"]}
             else:
                 dictAvAp={"ID":i["ID"],"CountNow":i["Count"],"RankNow":i["Rank"],"Nom":infos}
             avant2=list(filter(lambda x:x["Annee"]==dateM2[1] and x["Mois"]==dateM2[0],perso))

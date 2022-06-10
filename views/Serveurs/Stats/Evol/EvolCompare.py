@@ -8,6 +8,8 @@ from companion.tools.outils import (collapseEvol, connectSQL, dictOptions,
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
+from companion.views.Serveurs.Stats.Evol.EvolGraph import evolGraphCompare
+
 def compareEvolJeux(request,option):
     return viewEvolCompare(request,"OT",option)
 
@@ -43,8 +45,15 @@ def viewEvolCompare(request,guild,option):
 
     if obj1==None:
         obj1=listeObj[1]["ID"]
+    elif option in ("salons","voicechan"):
+        hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(obj1)).fetchone()
+        assert hide!=None and not hide["Hide"]
+        
     if obj2==None:
         obj2=listeObj[0]["ID"]
+    elif option in ("salons","voicechan"):
+        hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(obj2)).fetchone()
+        assert hide!=None and not hide["Hide"]
 
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,tableauMois[moisDB],anneeDB)
     
@@ -127,6 +136,8 @@ def viewEvolCompare(request,guild,option):
         ctx["user2Color"]=color
         ctx["travel"]=False
         ctx["doubleObj"]=True
+
+    ctx["graph"]=evolGraphCompare(option,curseur,obj1,obj2,moisDB,anneeDB,ctx["user1Nom"],ctx["user2Nom"],ctx["user1Color"],ctx["user2Color"])
 
     connexion.close()
     return render(request, "companion/Stats/Evol/evolCompare.html", ctx)

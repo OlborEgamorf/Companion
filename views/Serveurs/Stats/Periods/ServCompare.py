@@ -6,6 +6,8 @@ from companion.tools.outils import (connectSQL, dictOptions, getTablePerso,
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
+from companion.views.Serveurs.Stats.Periods.PeriodsGraph import linePlotCompare
+
 
 @login_required(login_url="/login")
 def viewServCompare(request,guild,option):
@@ -22,8 +24,14 @@ def viewServCompare(request,guild,option):
 
     if obj1==None:
         obj1=listeObj[1]["ID"]
+    elif option in ("salons","voicechan"):
+        hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(obj1)).fetchone()
+        assert hide!=None and not hide["Hide"]
     if obj2==None:
         obj2=listeObj[0]["ID"]
+    elif option in ("salons","voicechan"):
+        hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(obj2)).fetchone()
+        assert hide!=None and not hide["Hide"]
 
     rankMois1=getTablePerso(guild,dictOptions[option],obj1,False,"M","countDesc")
     rankAnnee1=getTablePerso(guild,dictOptions[option],obj1,False,"A","countDesc")
@@ -55,5 +63,6 @@ def viewServCompare(request,guild,option):
     ctx["user1Nom"]=getNom(obj1,option,curseurGet,False)
     ctx["user2Nom"]=getNom(obj2,option,curseurGet,False)
     ctx["doubleObj"]=True
+    ctx["graph"]=linePlotCompare(guild,option,user.id,obj1,obj2,False,"M","turquoise","gold",ctx["user1Nom"],ctx["user2Nom"])
 
     return render(request, "companion/Stats/Periods/periodsCompare.html", ctx)

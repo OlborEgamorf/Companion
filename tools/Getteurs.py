@@ -24,7 +24,10 @@ def getEmoteTable(i,curseurGet):
         return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Nom"],"ID":i["ID"]}
 
 
-def getChannels(i,curseurGet):
+def getChannels(i,curseurGet,curseurGuild):
+    hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(i["ID"])).fetchone()
+    if hide==None or hide["Hide"]:
+        return {"Count":0,"Rank":i["Rank"],"Nom":"Salon masqué","ID":0}
     infos=curseurGet.execute("SELECT * FROM salons WHERE ID={0}".format(i["ID"])).fetchone()
     if infos!=None:
         return {"Count":i["Count"],"Rank":i["Rank"],"Nom":infos["Nom"],"ID":i["ID"]}
@@ -33,7 +36,7 @@ def getChannels(i,curseurGet):
 
 
 def getFreq(i):
-    return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"{0}h-{1}h".format(i["ID"],i["ID"]+1),"ID":i["ID"]}
+    return {"Count":i["Count"],"Rank":i["Rank"],"Nom":"{0}h-{1}h".format(i["ID"],int(i["ID"])+1),"ID":i["ID"]}
 
 def getDivers(i):
     if i["ID"]==11:
@@ -145,7 +148,7 @@ def getAllInfos(curseur,curseurUser,connexionUser,user):
     return {"Coins":coins,"Titre":titre,"Custom":custom,"Full":full,"Emote":emote,"Color":couleur,"VIP":vip,"Testeur":test,"Fond":fond,"Phrase":phrase}
 
 def formatColor(color):
-    hexa=hex(color)[2:]
+    hexa=hex(int(color))[2:]
     return "#"+"0"*(6-len(hexa))+hexa
 
 def addInfos(table,dictInfos,option,guild,curseurGet):
@@ -199,7 +202,7 @@ def chooseGetteur(option,categ,ligne,guild,curseurGet,curseurGuild):
         return getEmoteTable(ligne,curseurGet)
 
     elif option in ("salons","voicechan"):
-        return getChannels(ligne,curseurGet)
+        return getChannels(ligne,curseurGet,curseurGuild)
 
     elif option=="freq":
         return getFreq(ligne)
@@ -211,13 +214,16 @@ def chooseGetteur(option,categ,ligne,guild,curseurGet,curseurGuild):
         return getUserJeux(ligne,curseurGet,option)
 
 
-def objSelector(guild,option,categ,user,curseurGet,curseurGuild):
+def objSelector(guild,option,categ,user,curseurGet,curseurGuild,perso=False):
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")
-    listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC LIMIT 150").fetchall()
+    if option in ("messages","voice","mots") or categ=="Jeux" or not perso:
+        listeObj=curseur.execute("SELECT * FROM glob ORDER BY Count DESC LIMIT 150").fetchall()
+    else:
+        listeObj=curseur.execute("SELECT * FROM persoTOGL{0} ORDER BY Count DESC LIMIT 150".format(user.id)).fetchall()
     if option in ("emotes","reactions"):
         listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
     elif option in ("salons","voicechan"):
-        listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
+        listeObj=list(map(lambda x:getChannels(x,curseurGet,curseurGuild),listeObj))
     elif option=="freq":
         listeObj=list(map(lambda x:getFreq(x),listeObj))
     elif option in ("messages","voice","mots"):

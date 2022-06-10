@@ -1,0 +1,108 @@
+{% extends "companion/BASE.html" %}
+
+
+{% block stats %}
+{% load TagsCustom %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    function addPerso(option) {
+        var httpRequest = new XMLHttpRequest()
+        var table = document.getElementById(option)
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                var data = JSON.parse(httpRequest.response)
+                $(`#${option}plus`).remove()
+                for (i=0 ; i<data[0].length ; i++) {
+                    var tr = $("<tr></tr>")
+                    tr.append(`<td>${data[0][i].Rank}</td>`)
+
+                    if (option == "emotes" || option == "reactions") {
+                        tr.append(`<td><img src="https://cdn.discordapp.com/emojis/${data[0][i].ID}?size=128" style="border-radius: 0%;"></td>`)
+                    }
+
+                    tr.append(`<td style="text-align: start;">${data[0][i].Nom}</td>`)
+                    tr.append(`<td class="barretd"><div class="barre" style="width:calc(100%*${data[0][i].Count}/${table.dataset.max});background-color: ${table.dataset.color}"></div></td>`)
+                    tr.append(`<td>${formatCount(data[0][i].Count,option)}</td>`)
+                    $("#"+option).append(tr)
+
+                }
+                if (data[2]) {
+                    $("#"+option).append(`<tr id="${option}plus"><td colspan="6" onclick="addPerso('${option}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>`)
+                    table.dataset.nb = Number(table.dataset.nb)+1
+                }
+            }    
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/${option}/recapmore?mois={{ mois }}&annee={{ annee }}&start=${table.dataset.nb}&command=perso`,true)
+        httpRequest.send()
+    }
+
+    function tempsVoice(nb) {
+        if (Number(nb)<60) {
+            var count = nb+"s"
+        } else if (Number(nb)<3600) {
+            var count = Math.round(Number(nb)/60)+"m "+Number(nb)%60+"s"
+        } else if (Number(nb)<86400) {
+            var count = Math.round(Number(nb)/3600)+"h "+Math.round(Number(nb)%3600/60)+"m "+Number(nb)%3600%60+"s"
+        } else {
+            var count = Math.round(Number(nb)/86400)+"j "+Math.round(Number(nb)%86400/3600)+"h "+Math.round(Number(nb)%86400%3600/60)+"m "+Number(nb)%86400%3600%60+"s"
+        }
+            
+        return count
+    }
+    
+    function formatCount(count,option) {
+        if (count=="") {
+            return ""
+        } else if (option=="voice" || option=="voicechan") {
+            return tempsVoice(count)
+        } else {
+            return count
+        }
+    }
+
+</script>
+
+<div class="div-profil">
+    {% for option in alloptions %}
+    <table class="table-recap" id="{{ option }}" data-max="{{ ranks|globmax:option }}" data-nb="1" data-color="{{ color }}">
+        {% if option == "emotes" or option == "reactions" %}
+            <tr><th colspan="5">Vos emotes les plus utilisées</th></tr>
+            <tr>
+                <th>Rang sur l'emote</th>
+                <th colspan="2">{{ option|headnom }}</th>
+                <th id="leg-barre">Barre</th>
+                <th>{{ option|headcount }}</th>
+            </tr>
+        {% else %}
+            <tr><th colspan="4">Vos emotes les plus utilisées</th></tr>
+            <tr>
+                <th>Rang</th>
+                <th>{{ option|headnom }}</th>
+                <th id="leg-barre">Barre</th>
+                <th>{{ option|headcount }}</th>
+            </tr>   
+        {% endif %}
+        
+        {% for i in ranks|globtable:option %}
+            <tr>
+                <td>{{ i.Rank }}</td>
+                {% if option == "emotes" or option == "reactions" %}
+                    <td>
+                        <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}?size=128" style="border-radius: 0%;">
+                    </td>
+                {% endif %}
+                <td style="text-align: start;">{{ i.Nom }}</td>
+                <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ ranks|globmax:option }}); background-color: {{ color }}"></div></td>
+                <td>{{ i.Count|tempsvoice:option }}</td>
+            </tr>
+        {% endfor %}
+        {% if ranks|globend:option %}
+            <tr id="{{ option }}plus"><td colspan="6" onclick="addPerso('{{ option }}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>
+        {% endif %}
+    </table>
+    {% endfor %}
+</div>
+    
+
+
+{% endblock stats %}

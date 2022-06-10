@@ -30,7 +30,7 @@ def viewMixPeriodsCompare(request,mix,option):
         if option in ("emotes","reactions"):
             listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
         elif option in ("salons","voicechan"):
-            listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
+            listeObj=list(map(lambda x:getChannels(x,curseurGet,curseurGuild),listeObj))
         elif option=="freq":
             listeObj=list(map(lambda x:getFreq(x),listeObj))
         elif option=="divers":
@@ -48,6 +48,7 @@ def viewMixPeriodsCompare(request,mix,option):
 
     # Stats 1
     for guild in listeMixs:
+        connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
         try:
             connexion,curseur=connectSQL(guild["ID"],dictOptions[option],"Stats",tableauMois[moisDB1],anneeDB1)
             ligne=curseur.execute("SELECT * FROM {0}{1}{2} WHERE ID={3}".format(moisDB1,anneeDB1,obj,user.id)).fetchone()

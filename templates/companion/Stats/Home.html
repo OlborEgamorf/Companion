@@ -10,9 +10,9 @@
     <div class="guild-stats">Résumé serveur</div>
 {% endif %}
 
-<div class="div-profil">
+<div class="grid-threecol">
     {% for i in stats %}
-        <table class="table-jeux">
+        <table>
             <tr><th colspan="2">{{ i.option|statshome:False }}</th></tr>
             {% for j in i|getfirst %}
             <tr>
@@ -86,9 +86,9 @@
 </div>
 
 <div class="guild-stats">Résumé pour vous</div>
-<div class="div-profil">
+<div class="grid-threecol">
     {% for i in perso %}
-        <table class="table-jeux">
+        <table>
             <tr><th colspan="2">{{ i.option|statshome:True }}</th></tr>
             {% if i.option == "messages" or i.option == "mots" or i.option == "voice" or i.option == "tortues" or i.option == "tortuesduo" or i.option == "p4" or i.option == "matrice" or i.option == "morpion" or i.option == "trivialversus" or i.option == "trivialbr" or i.option == "trivialparty" %}
             <tr>

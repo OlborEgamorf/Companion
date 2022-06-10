@@ -22,7 +22,7 @@
                             <img src="https://cdn.discordapp.com/emojis/{{ j.Emote }}"></a>
                         {% else %}
                             <a href="/companion/profil/{{ j.ID }}">
-                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            <img src="{% static 'companion/img/Silouhette2.png' %}"></a>
                         {% endif %}
                     </td>
                     <td style="text-align: start;">{{ j.Titre }}</td>

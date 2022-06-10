@@ -3,73 +3,8 @@
 
 {% block stats %}
 {% load TagsCustom %}
+{% load static %}
 
-<script>
-    function sortTable(n) {
-  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-  table = document.getElementById("tablecompare");
-  switching = true;
-  // Set the sorting direction to ascending:
-  dir = "asc";
-  /* Make a loop that will continue until
-  no switching has been done: */
-  while (switching) {
-    // Start by saying: no switching is done:
-    switching = false;
-    rows = table.rows;
-    /* Loop through all table rows (except the
-    first, which contains table headers): */
-    for (i = 2; i < (rows.length - 1); i++) {
-      // Start by saying there should be no switching:
-      shouldSwitch = false;
-      /* Get the two elements you want to compare,
-      one from current row and one from the next: */
-      x = rows[i].getElementsByTagName("TD")[n];
-      y = rows[i + 1].getElementsByTagName("TD")[n];
-	  if (y == undefined) {
-		  break
-	  }
-      /* Check if the two rows should switch place,
-      based on the direction, asc or desc: */
-	  if (n == 3) {
-		  check_x=x.dataset.date.toLowerCase()
-		  check_y=y.dataset.date.toLowerCase()
-	  } else {
-		  check_x=Number(x.innerHTML)
-		  check_y=Number(y.innerHTML)
-	  }
-      if (dir == "asc") {
-        if (check_x > check_y) {
-          // If so, mark as a switch and break the loop:
-          shouldSwitch = true;
-          break;
-        }
-      } else if (dir == "desc") {
-        if (check_x < check_y) {
-          // If so, mark as a switch and break the loop:
-          shouldSwitch = true;
-          break;
-        }
-      }
-    }
-    if (shouldSwitch) {
-      /* If a switch has been marked, make the switch
-      and mark that a switch has been done: */
-      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-      switching = true;
-      // Each time a switch is done, increase this count by 1:
-      switchcount ++;
-    } else {
-      /* If no switching has been done AND the direction is "asc",
-      set the direction to "desc" and run the while loop again. */
-      if (switchcount == 0 && dir == "asc") {
-        dir = "desc";
-        switching = true;
-      }
-    }
-  }
-}
-</script>
 
 <div class="searchTable">
     <input type="text" id="searchTable" onkeyup="searchName(3)" placeholder="Recherchez une période">
@@ -124,13 +59,13 @@
         {% endif %}
 
         <tr>
-            <th style="width:10%" onclick="sortTable(0)">{{ option|headcount }}</th>
-            <th style="width:31%" id="leg-barre" onclick="sortTable(0)">Barre</th>
-            <th style="width:5%" onclick="sortTable(2)">Rang</th>
-            <th style="width:8%" onclick="sortTable(3)">Date</th>
-            <th style="width:5%" onclick="sortTable(4)">Rang</th>
-            <th style="width:31%" id="leg-barre" onclick="sortTable(6)">Barre</th>
-            <th style="width:10%" onclick="sortTable(6)">{{ option|headcount }}</th>
+            <th style="width:10%" onclick="sortTable(0,3,this)">{{ option|headcount }} <img id="fleche-sort" src="{% static 'companion/img/fleche.png' %}" style="transform:rotate(90deg)"></th>
+            <th style="width:31%" id="leg-barre" onclick="sortTable(0,3,this)">Barre</th>
+            <th style="width:5%" onclick="sortTable(2,3,this)">Rang</th>
+            <th style="width:8%" onclick="sortTable(3,3,this)">Date</th>
+            <th style="width:5%" onclick="sortTable(4,3,this)">Rang</th>
+            <th style="width:31%" id="leg-barre" onclick="sortTable(6,3,this)">Barre</th>
+            <th style="width:10%" onclick="sortTable(6,3,this)">{{ option|headcount }}</th>
         </tr>
 
         {% for i in rankMois %}
@@ -189,5 +124,18 @@
             </tr>
         {% endfor %}
     </table>
+    
 </div>
+
+{% if graph %}
+        <div class="graphs" style="display: flex;
+        justify-content: center;
+        margin: auto;">
+            {% autoescape off %}
+            {{ graph }}
+            {% endautoescape %}
+        </div>
+
+{% endif %}
+
 {% endblock stats %}

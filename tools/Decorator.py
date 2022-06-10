@@ -6,7 +6,7 @@ def CompanionStats(func):
     def wrapper(*args,**kwargs):
         request=args[0]
         if len(args)==1:
-            guild,option=kwargs["guild"],kwargs["option"]
+            guild=kwargs["guild"]
             user=request.user
             try:
                 connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)

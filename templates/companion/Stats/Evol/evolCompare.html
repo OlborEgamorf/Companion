@@ -136,4 +136,16 @@
         {% endfor %}
     </table>
 </div>
+
+{% if graph %}
+        <div class="graphs" style="display: flex;
+        justify-content: center;
+        margin: auto;">
+            {% autoescape off %}
+            {{ graph }}
+            {% endautoescape %}
+        </div>
+
+{% endif %}
+
 {% endblock stats %}

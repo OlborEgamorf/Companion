@@ -13,8 +13,12 @@ def viewOTTitres(request):
     boutique=curseur.execute("SELECT marketplace.ID,marketplace.Stock,titres.Rareté,titres.Nom,marketplace.Known,titres.Description,titres.Collection FROM marketplace JOIN titres ON marketplace.ID=titres.ID ORDER BY Rareté DESC").fetchall()
     titres=curseur.execute("SELECT * FROM titres ORDER BY ID").fetchall()
 
+    categ=list(map(lambda x:x["Collection"],curseur.execute("SELECT DISTINCT Collection FROM titres ORDER BY Collection ASC").fetchall()))
+    raretes=list(map(lambda x:x["Rareté"], curseur.execute("SELECT DISTINCT Rareté FROM titres ORDER BY Rareté ASC").fetchall()))
+
     ctx={"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"ot":True,
         "boutique":boutique,"titresInfos":titres,"dictRarete":{0:"Spécial",1:"Basique",2:"Rare",3:"Légendaire",4:"Haut-Fait",5:"Unique",6:"Fabuleux"},"dictVente":{0:"♾️",1:150,2:300,3:500,4:"♾️",5:"♾️",6:"♾️"},"dictAchat":{0:"♾️",1:300,2:600,3:1000,4:"♾️",5:2500,6:"♾️"},
-        "options":["stats","titres","support"],"dictOptions":{"home":"Accueil","titres":"Titres","support":"Soutenir le projet","stats":"Stats"},"option":"titres"}
+        "options":["stats","titres","support"],"dictOptions":{"home":"Accueil","titres":"Titres","support":"Soutenir le projet","stats":"Stats"},"option":"titres",
+        "collec":categ,"rarete":raretes,"guildname":"Titres"}
 
     return render(request, "companion/OT/Titres.html", ctx)

@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="https://media.discordapp.net/attachments/726034739550486618/908452059496448000/capucheB.png">
     {% load static %}
+    <link rel="shortcut icon" href="{% static 'companion/img/capucheB.png' %}">
     <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
     <title>{{ guildname }} - OT Companion</title>
     <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'companion/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'companion/jquery-ui-1.13.1/jquery-ui.min.js' %}"></script>
     <script src="{% static 'companion/Scripts.js' %}" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="{% static 'companion/jquery-ui-1.13.1/jquery-ui.css' %}">
-    <script src="{% static 'companion/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'companion/jquery-ui-1.13.1/jquery-ui.min.js' %}"></script>
+    
     <script>
         $( function() {
             $.widget( "custom.iconselectmenu", $.ui.selectmenu, {
@@ -59,7 +60,7 @@
                         }
                     {% else %}
                         .ui-icon.o{{ i.ID }} {
-                            background: url("https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png") 0 0 no-repeat;
+                            background: url("{% static 'companion/img/Silouhette2.png' %}") 0 0 no-repeat;
                             background-size: contain;
                             border-radius:100%
                         }
@@ -78,7 +79,7 @@
                         }
                     {% else %}
                         .ui-icon.o{{ i.ID }} {
-                            background: url("https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png") 0 0 no-repeat;
+                            background: url("{% static 'companion/img/Silouhette2.png' %}") 0 0 no-repeat;
                             background-size: contain;
                             border-radius:100%
                         }
@@ -128,21 +129,28 @@
 
 
 <body>
+    <header class="header-ot">
+
+        <span class="user-avatar"><img  src="{% static 'companion/img/capucheB.png' %}">
+        <h1>Companion</h1></span>
+        
+    </header>
+    
     <div class="buttonnav">
         <a onclick="devBarMobile()">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></span>
+            <span class="little-icon-guild" ><img src="{% static 'companion/img/Plus.png' %}"></span>
             <span id="suus" class="text-bar">Olbor Track - Accueil</span>
         </a>
     </div>
     
     <div class="sidenav" id="side">
         <a id="back" class="back" onclick="undevBarMobile()">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/977285454648979476/Moins.png"></span>
+            <span class="little-icon-guild" ><img src="{% static 'companion/img/Moins.png' %}"></span>
             <span id="suus" class="text-bar"></span>
         </a>
 
         <a href="/companion/" class="ot-logo" onmouseenter="showBar('OT')" onmouseleave="hideBar('OT')" onclick="clickServ(this)">
-            <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
+            <span class="little-icon-guild" ><img src="{% static 'companion/img/capucheB.png' %}"></span>
             <span id="OT" class="text-bar">Olbor Track - Accueil</span>
         </a>
         {% if profil %}
@@ -164,15 +172,15 @@
 
         {% if ot %}
             <a href="/companion/ot/jeux/" class="ot-logo" onmouseenter="showBar('Jeux')" onmouseleave="hideBar('Jeux')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/980097681898754088/Diamond.png"></span>
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/Diamond.png' %}"></span>
                 <span id="Jeux" class="text-bar">Classements jeux</span>
             </a>
             <a href="/companion/ot/stats" class="ot-logo" onmouseenter="showBar('Stats')" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png"></span>
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/stats.png' %}"></span>
                 <span id="Stats" class="text-bar">Statistiques mondiales</span>
             </a>
             <a href="/companion/ot/titres" class="ot-logo" onmouseenter="showBar('Titres')" onmouseleave="hideBar('Titres')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/980097681592553552/VIP.png"></span>
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/VIP.png' %}"></span>
                 <span id="Titres" class="text-bar">Titres</span>
             </a>
             <a href="/companion/ot/support" class="ot-logo" onmouseenter="showBar('Support')" onmouseleave="hideBar('Support')" onclick="clickServ(this)">
@@ -187,17 +195,21 @@
                 </a>
             {% endfor %}
             <a href="/companion/{{ guildid }}/del" onmouseenter="showBar('Del')" onmouseleave="hideBar('Del')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/977152614275887124/Trash.png"></span>
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/trash.png' %}"></span>
                 <span id="Del" class="text-bar">Supprimer le mix</span>
             </a>
         {% elif profil %}
             <a href="/companion/profil/{{ id }}/stats" onmouseenter="showBar('Stats')" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png"></span>
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/stats.png' %}"></span>
                 <span id="Stats" class="text-bar">Statistiques</span>
             </a>
             <a href="/companion/profil/{{ id }}/titres" class="ot-logo" onmouseenter="showBar('Titres')" onmouseleave="hideBar('Titres')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/980097681592553552/VIP.png"></span>
-                <span id="Titres" class="text-bar">Titres et personnalisation</span>
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/VIP.png' %}"></span>
+                <span id="Titres" class="text-bar">Titres</span>
+            </a>
+            <a href="/companion/profil/{{ id }}/custom" class="ot-logo" onmouseenter="showBar('Custom')" onmouseleave="hideBar('Custom')" onclick="clickServ(this)">
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/VIP.png' %}"></span>
+                <span id="Custom" class="text-bar">Personnalisation</span>
             </a>
         {% else %}
             <a href="/companion/{{ guildid }}" onmouseenter="showBar('Guild')" onmouseleave="hideBar('Guild')" onclick="clickServ(this)">
@@ -205,34 +217,34 @@
                 <span id="Guild" class="text-bar">{{ guildname }}</span>
             </a>
             <a href="/companion/{{ guildid }}/home" onmouseenter="showBar('Stats')" style="background-color: #696969;" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png"></span>
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/stats.png' %}"></span>
                 <span id="Stats" class="text-bar">Statistiques</span>
             </a>
             <a onmouseenter="showBar('Sondages')" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604052315136050/poll.png"></span>
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/poll.png' %}"></span>
                 <span id="Sondages" class="text-bar">Sondages</span>
             </a>
             <a  onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604056203231252/sv.png"></span>
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/sv.png' %}"></span>
                 <span id="SV" class="text-bar">Savez-Vous ?</span>
             </a>
             <a  onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888141462066303056/anniv.png"></span>
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/anniv.png' %}"></span>
                 <span id="Anniv" class="text-bar">Anniversaires</span>
             </a>
             <a  onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604051069407272/outils.png"></span>
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/outils.png' %}"></span>
                 <span id="Outils" class="text-bar">Outils</span>
             </a>
             <a  onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604058883420170/admin.png"></span>
+                <span class="little-icon-guild" ><img src="{% static 'companion/img/admin.png' %}"></span>
                 <span id="Admin" class="text-bar">Administration</span>
             </a>
         {% endif %}
         
         {% if pagestats %}
             <a onclick="AJAX()" onmouseenter="showBar('pin')" onmouseleave="hideBar('pin')">
-                <span class="little-icon-guild"><img src="https://cdn.discordapp.com/attachments/726034739550486618/976423325205155910/PIN.png"></span>
+                <span class="little-icon-guild"><img src="{% static 'companion/img/PIN.png' %}"></span>
                 {% if pin %}
                 <span id="pin" class="text-bar">Retirer de l'accès rapide</span>
                 {% else %} 
@@ -252,10 +264,10 @@
                         <div class="texte-gros">
                             {{ nomprofil }}
                             {% if vip == True %}
-                                <img class="profil-badges" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515315048448/VipmotifCrop400.png" alt="Badge VIP">
+                                <img class="profil-badges" src="{% static 'companion/img/VipmotifCrop400.png' %}" alt="Badge VIP">
                             {% endif %}
                             {% if testeur == True %}
-                                <img class="profil-badges" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515080183859/TesteursmotifCrop400.png" alt="Badge Testeur">
+                                <img class="profil-badges" src="{% static 'companion/img/TesteursmotifCrop400.png' %}" alt="Badge Testeur">
                             {% endif %}</div>
                         <div class="texte-titre">
                             {% if emote != None %}
@@ -268,23 +280,23 @@
                     {% if emote != None %}
                         <img class="profil-avatar" src="https://cdn.discordapp.com/emojis/{{ emote }}" alt="Emote de {{ nom }}">
                     {% else %}
-                        <img class="profil-avatar" src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png">
+                        <img class="profil-avatar" src="{% static 'companion/img/Silouhette2.png' %}">
                     {% endif %}
                     <div class="profil-texte">
                         <div class="texte-gros">
                             {{ titre }}
                             {% if vip == True %}
-                                <img class="profil-badges" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515315048448/VipmotifCrop400.png" alt="Badge VIP">
+                                <img class="profil-badges" src="{% static 'companion/img/VipmotifCrop400.png' %}" alt="Badge VIP">
                             {% endif %}
                             {% if testeur == True %}
-                                <img class="profil-badges" src="https://cdn.discordapp.com/attachments/726034739550486618/956648515080183859/TesteursmotifCrop400.png" alt="Badge Testeur">
+                                <img class="profil-badges" src="{% static 'companion/img/TesteursmotifCrop400.png' %}" alt="Badge Testeur">
                             {% endif %}</div>
                     </div>
                 {% endif %}
             </div>
         {% elif ot %}
             <div>
-                <img class="profil-avatar" src="https://cdn.discordapp.com/attachments/726034739550486618/977557244969353216/FULL.png">
+                <img class="profil-avatar" src="{% static 'companion/img/FULL.png' %}">
                 <div class="profil-texte">
                     <div class="texte-gros">
                         Olbor Track
@@ -325,11 +337,11 @@
             <ul class="mega-menu-main">
                 
                 {% if guildid == "ot/jeux" %}
-                    <li class="lvl-0">
+                    <li id="home" class="lvl-0">
                         <a href="/companion/ot/jeux/">Accueil</a>
                     </li>
 
-                    <li class="lvl-0">
+                    <li id="recap" class="lvl-0">
                         <a>Récap</a>
                         <ul class="mega-menu-tab">
                             <li class="lvl-1">
@@ -345,11 +357,11 @@
                         </ul>
                     </li>
                 {% elif not mix %}
-                    <li class="lvl-0">
+                    <li id="nav-home" class="lvl-0">
                         <a href="/companion/{{ guildid }}/stats">Accueil</a>
                     </li>
 
-                    <li class="lvl-0">
+                    <li id="nav-recap" class="lvl-0">
                         <a>Récap</a>
                         <ul class="mega-menu-tab">
                             <li class="lvl-1">
@@ -366,13 +378,18 @@
                     </li>
                 {% endif %}
         
-                <li class="lvl-0">
+                <li id="nav-ranks" class="lvl-0">
                     <a>Classements</a>
                     <ul class="mega-menu-tab">
                         <li class="lvl-1">
                             <h2>Global</h2>
                             <ul class="lvl-2">
-                                <li><a href="/companion/{{ guildid }}/ranks">Global</a></li>
+                                {% if guildid == "ot/jeux" %}
+                                    <li><a href="/companion/{{ guildid }}/ranks">Global</a></li>
+                                {% else %} 
+                                    <li><a href="/companion/{{ guildid }}/stats/ranks">Global</a></li>
+                                    <li><a href="/companion/{{ guildid }}/stats/ranks/perso">Perso</a></li>
+                                {% endif %}
                             </ul>
                         </li>
                         {% for o in options %}
@@ -409,7 +426,7 @@
                     </ul>
                 </li>
         
-                <li class="lvl-0">
+                <li id="nav-periods" class="lvl-0">
                     <a>Périodes</a>
                     <ul class="mega-menu-tab">
                         {% for o in options %}
@@ -446,7 +463,7 @@
                 </li>
                 
                 {% if not mix %}
-                <li class="lvl-0">
+                <li id="nav-evol" class="lvl-0">
                     <a>Évolutions</a>
                     <ul class="mega-menu-tab">
                         {% for o in options %}
@@ -472,13 +489,17 @@
                 {% endif %}
                 
                 {% if not mix %}
-                <li class="lvl-0">
+                <li id="nav-first" class="lvl-0">
                     <a>Premiers</a>
                     <ul class="mega-menu-tab">
                         <li class="lvl-1">
                             <h2>Global</h2>
                             <ul class="lvl-2">
-                                <li><a href="#">Global</a></li>
+                                {% if guildid == "ot/jeux" %}
+                                    <li><a href="/companion/{{ guildid }}/first">Global</a></li>
+                                {% else %} 
+                                    <li><a href="/companion/{{ guildid }}/stats/first">Global</a></li>
+                                {% endif %}
                             </ul>
                         </li>
                         {% for o in options %}
@@ -504,7 +525,7 @@
                 {% endif %}
                 
                 {% if pagestats and ot %}
-                    <li class="lvl-0">
+                    <li id="nav-badges" class="lvl-0">
                         <a>Badges</a>
                         <ul class="mega-menu-tab">
                             <li class="lvl-1">
@@ -518,7 +539,7 @@
                         </ul>
                     </li>
                 {% elif not mix %}
-                    <li class="lvl-0">
+                    <li id="nav-rapport" class="lvl-0">
                         <a>Rapports</a>
                         <ul class="mega-menu-tab">
                             <li class="lvl-1">
@@ -534,9 +555,26 @@
                         </ul>
                     </li>
                 {% endif %}
-        
+                <li id="nav-lexique" class="lvl-0">
+                    <a>Lexique</a>
+                    <ul class="mega-menu-tab">
+                        <li class="lvl-1">
+                            <ul class="lvl-2">
+                                <li><a>{{ option|lexiqueOption }}</a></li>
+                                <li><a>{{ command|lexiqueCommande }}</a></li>
+                                <li><a>{{ plus|lexiquePlus }}</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </nav>
+
+        <script>
+            var command=document.getElementById("nav-{{ command }}")
+            command.children[0].style.backgroundColor="#36F"
+        </script>
+
     {% endif %}
 
     {% if travel or obj != None %}
@@ -618,10 +656,10 @@
 
     <div class="footer-ot" style="margin-bottom: 0;">
         <span class="footer-links">
-            <a href="/companion"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png"></a>
-            <a href="https://twitter.com/OlborTrack"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575596027768943/580b57fcd9996e24bc43c53e.png"></a>
-            <a href="https://instagram.com/OlborTrack"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575617326424095/zerdsfsf.png"></a>
-            <a href="https://github.com/OlborEgamorf/OlborTrack-Bot"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575617653583922/25231.png"></a>
+            <a href="/companion"><img class="image-small" src="{% static 'companion/img/capucheB.png' %}"></a>
+            <a href="https://twitter.com/OlborTrack"><img class="image-small" src="{% static 'companion/img/twitter.png' %}"></a>
+            <a href="https://instagram.com/OlborTrack"><img class="image-small" src="{% static 'companion/img/insta.png' %}"></a>
+            <a href="https://github.com/OlborEgamorf/OlborTrack-Bot"><img class="image-small" src="{% static 'companion/img/github.png' %}"></a>
         </span>
     </div>
 

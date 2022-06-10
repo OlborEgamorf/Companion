@@ -25,13 +25,13 @@ def rapportGlobal(guild,option,request,user,moisDB,anneeDB,mois,annee):
                 infos=getUserInfo(i["ID"],curseurGet,guild)
                 i["Nom"]=infos["Nom"]
                 i["Avatar"]=infos["Avatar"]
-                i["Color"]=formatColor(infos["Color"])
+                i["Color"]=infos["Color"]
                 dictInfos[i["ID"]]=infos
         for i in top15_1:
             infos=getUserInfo(i["ID"],curseurGet,guild)
             i["Nom"]=infos["Nom"]
             i["Avatar"]=infos["Avatar"]
-            i["Color"]=formatColor(infos["Color"])
+            i["Color"]=infos["Color"]
             dictInfos[i["ID"]]=infos
         
     else:

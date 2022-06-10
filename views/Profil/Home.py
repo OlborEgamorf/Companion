@@ -74,6 +74,7 @@ def viewProfilHome(request,user):
     if user==request.user.id:
         for i in full_guilds:
             guild=getGuildInfo(i["ID"],curseurGet)
+            connexionGuild,curseurGuild=connectSQL(i["ID"],"Guild","Guild",None,None)
             try:
                 connexion,curseur=connectSQL(i["ID"],"Messages","Stats","GL","")
                 mess=curseur.execute("SELECT Rank,Count FROM glob WHERE ID={0}".format(user)).fetchone()
@@ -107,7 +108,7 @@ def viewProfilHome(request,user):
                 if chan!=[]:
                     if guild!=None:
                         for j in chan:
-                            info=getChannels(j,curseurGet)
+                            info=getChannels(j,curseurGet,curseurGuild)
                             info["RankIntern"]=j["Rank"]
                             info["Icon"]=guild["Icon"]
                             info["IDGuild"]=guild["ID"]

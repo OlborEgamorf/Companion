@@ -1,0 +1,95 @@
+{% extends "companion/BASE.html" %}
+
+
+{% block stats %}
+{% load TagsCustom %}
+
+<div class="guild-stats">Premiers sur chaque année</div>
+<div class="div-profil">
+    {% for i in annees %}
+        <table class="table-jeux">
+            <tr><th colspan="3">{{ i|periodfirst }}</th></tr>
+            <tr><th>Statistique</th><th>Premier</th><th>Compteur</th></tr>
+            {% for j in i|usedict:rankAnnee %}
+            <tr>
+                <td style="text-align:left">{{ j.option|getOption }}</td>
+                <td style="text-align:left">
+                    {% if j.option == "messages" or j.option == "mots" or j.option == "voice" %}
+                        {% if j.Avatar %}
+                            <a href="/companion/profil/{{ j.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ j.ID }}/{{ j.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ j.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                    {% elif j.option == "emotes" or j.option == "reactions" %}
+                        <img src="https://cdn.discordapp.com/emojis/{{ j.ID }}?size=128" style="border-radius: 0%;">
+                    {% elif j.option == "salons" or j.option == "voicechan" %} 
+                        <img src="https://cdn.discordapp.com/attachments/726034739550486618/980058693611696178/Salon.png" style="border-radius: 0%;">    
+                      
+                    {% elif j.option == "tortues" or j.option == "tortuesduo" or j.option == "p4" or j.option == "matrice" or j.option == "morpion" or j.option == "trivialversus" or j.option == "trivialbr" or j.option == "trivialparty" %}
+                        {% if j.Emote != None %}
+                            <a href="/companion/profil/{{ j.ID }}">
+                            <img src="https://cdn.discordapp.com/emojis/{{ j.Emote }}"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ j.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                    {% endif %}
+                    {{ j.Nom }}
+                </td>
+                <td>
+                    {{ j.Count|tempsvoice:j.option }}
+                </td>
+            </tr>            
+            {% endfor %}
+        </table>
+    {% endfor %}
+</div>
+
+<div class="guild-stats">Premiers sur chaque mois</div>
+<div class="div-profil">
+    {% for i in dates %}
+        <table class="table-jeux">
+            <tr><th colspan="3">{{ i|periodfirst }}</th></tr>
+            <tr><th>Statistique</th><th>Premier</th><th>Compteur</th></tr>
+            {% for j in i|usedict:rankMois %}
+            <tr>
+                <td style="text-align:left">{{ j.option|getOption }}</td>
+                <td style="text-align:left">
+                    {% if j.option == "messages" or j.option == "mots" or j.option == "voice" %}
+                        {% if j.Avatar %}
+                            <a href="/companion/profil/{{ j.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ j.ID }}/{{ j.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ j.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                    {% elif j.option == "emotes" or j.option == "reactions" %}
+                        <img src="https://cdn.discordapp.com/emojis/{{ j.ID }}?size=128" style="border-radius: 0%;">
+                    {% elif j.option == "salons" or j.option == "voicechan" %} 
+                        <img src="https://cdn.discordapp.com/attachments/726034739550486618/980058693611696178/Salon.png" style="border-radius: 0%;">    
+                      
+                    {% elif j.option == "tortues" or j.option == "tortuesduo" or j.option == "p4" or j.option == "matrice" or j.option == "morpion" or j.option == "trivialversus" or j.option == "trivialbr" or j.option == "trivialparty" %}
+                        {% if j.Emote != None %}
+                            <a href="/companion/profil/{{ j.ID }}">
+                            <img src="https://cdn.discordapp.com/emojis/{{ j.Emote }}"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ j.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                    {% endif %}
+                    {{ j.Nom }}
+                </td>
+                <td>
+                    {{ j.Count|tempsvoice:j.option }}
+                </td>
+            </tr>            
+            {% endfor %}
+        </table>
+    {% endfor %}
+
+    
+</div>
+
+{% endblock stats %}

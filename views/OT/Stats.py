@@ -38,7 +38,7 @@ def viewOTStats(request):
     for i in stats:
         realStats.append(getDivers(i))
             
-    ctx={"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"rank":realStats,"ot":True,
+    ctx={"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],"rank":realStats,"ot":True,"guildname":"Statistiques mondiales",
         "options":["stats","titres","support"],"dictOptions":{"home":"Accueil","titres":"Titres","support":"Soutenir le projet","stats":"Stats"},"option":"stats"}
 
     return render(request, "companion/OT/Stats.html", ctx)

@@ -1,5 +1,5 @@
 from django import template
-from companion.tools.outils import dictRefCommands, dictRefOptions, dictRefPlus,dictOptions
+from companion.tools.outils import dictRefCommands, dictRefOptions, dictRefPlus,dictOptions,tableauMois
 
 register = template.Library()
 
@@ -162,12 +162,26 @@ def nomsearch(option):
 def getI(liste,i):
     return liste[i]
 
+def getTable(ranks,option):
+    return ranks[option][0]
+def getMax(ranks,option):
+    return ranks[option][1]
+def getEnd(ranks,option):
+    return ranks[option][2]
+
 def getCommand(command):
     return dictRefCommands[command]
 def getOption(option):
     return dictRefOptions[option]
 def getPlus(plus):
     return dictRefPlus[plus]
+
+def firstGlobal(periode):
+    if periode[2:]=="GL":
+        return "Global"
+    if periode[:2]=="TO":
+        return "Total 20{0}".format(periode[2:])
+    return "{0} 20{1}".format(tableauMois[periode[2:]],periode[:2])
 
 
 register.filter("usedict", useDict)
@@ -196,3 +210,9 @@ register.filter("getI",getI)
 register.filter("getCommand",getCommand)
 register.filter("getOption",getOption)
 register.filter("getPlus",getPlus)
+
+register.filter("periodfirst",firstGlobal)
+
+register.filter("globtable",getTable)
+register.filter("globmax",getMax)
+register.filter("globend",getEnd)

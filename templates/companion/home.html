@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="OT Companion Bêta">
-    <link rel="shortcut icon" href="https://media.discordapp.net/attachments/726034739550486618/908452059496448000/capucheB.png">
-    {% load static %}
+    <link rel="shortcut icon" href="{% static 'companion/img/capucheB.png' %}">
     <link rel="stylesheet" href="{% static 'companion/NewCSS.css' %}">
     <title>Olbor Track Companion</title>
 </head>
 <header class="header-ot">
 
-    <span class="user-avatar"><img  src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
-    <h1>Olbor Track Companion</h1></span>
+    <span class="user-avatar"><img  src="{% static 'companion/img/capucheB.png' %}">
+    <h1>Companion</h1></span>
     
 </header>
 
@@ -78,7 +78,7 @@
             <a href="https://discord.com/oauth2/authorize?client_id=699728606493933650&permissions=120259472576&scope=bot">
                 <div class="card-guild">
                     <span class="icon-guild">
-                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png">
+                        <img class="img-guild" src="{% static 'companion/img/Plus.png' %}">
                     </span>
                     <span class="guild-name">Ajoutez un serveur</span>
                 </div>
@@ -103,7 +103,7 @@
         <a href="/companion/profil/{{ id }}/stats">
             <div class="card-guild">
                 <span class="icon-guild">
-                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png">
+                    <img class="img-guild" src="{% static 'companion/img/stats.png' %}">
                 </span>
                 <span class="guild-name">Statistiques</span>
             </div>
@@ -111,9 +111,17 @@
         <a href="/companion/profil/{{ id }}/titres">
             <div class="card-guild">
                 <span class="icon-guild">
-                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/980097681592553552/VIP.png">
+                    <img class="img-guild" src="{% static 'companion/img/VIP.png' %}">
                 </span>
-                <span class="guild-name">Titres et personnalisation</span>
+                <span class="guild-name">Titres</span>
+            </div>
+        </a>
+        <a href="/companion/profil/{{ id }}/custom">
+            <div class="card-guild">
+                <span class="icon-guild">
+                    <img class="img-guild" src="{% static 'companion/img/VIP.png' %}">
+                </span>
+                <span class="guild-name">Personnalisation</span>
             </div>
         </a>
     </div>
@@ -123,7 +131,7 @@
         <a href="/companion/ot/jeux/">
             <div class="card-guild">
                 <span class="icon-guild">
-                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/980097681898754088/Diamond.png">
+                    <img class="img-guild" src="{% static 'companion/img/Diamond.png' %}">
                 </span>
                 <span class="guild-name">Classements jeux</span>
             </div>
@@ -131,7 +139,7 @@
         <a href="/companion/ot/stats">
             <div class="card-guild">
                 <span class="icon-guild">
-                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png">
+                    <img class="img-guild" src="{% static 'companion/img/stats.png' %}">
                 </span>
                 <span class="guild-name">Stats mondiales</span>
             </div>
@@ -147,7 +155,7 @@
         <a href="/companion/ot/titres">
             <div class="card-guild">
                 <span class="icon-guild">
-                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/980097681592553552/VIP.png">
+                    <img class="img-guild" src="{% static 'companion/img/VIP.png' %}">
                 </span>
                 <span class="guild-name">Titres</span>
             </div>
@@ -179,7 +187,7 @@
         <a onclick="checkBoxes()">
             <div class="card-guild">
                 <span class="icon-guild">
-                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png">
+                    <img class="img-guild" src="{% static 'companion/img/Plus.png' %}">
                 </span>
                 <span id="create-mix" class="guild-name">Créez un mix</span>
             </div>
@@ -199,7 +207,7 @@
                         <a href="/companion/{{ i.Guild }}/{{ i.Command }}/{{ i.Plus }}/{{ i.Option }}">
                     {% endif %}
                     <div class="card-pin">
-                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/888859878926471198/DiamantGlobalRect400.png">
+                    <img class="img-guild" src="{% static 'companion/img/DiamantGlobalReact400.png' %}">
                 {% elif i.Mix %} 
                     {% if i.Option == "home" %} 
                         <a href="/companion/{{ i.Guild }}/">
@@ -209,7 +217,7 @@
                         <a href="/companion/{{ i.Guild }}/{{ i.Command }}/{{ i.Plus }}/{{ i.Option }}">
                     {% endif %}
                     <div class="card-pin">
-                    <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
+                    <img class="img-guild" src="{% static 'companion/img/capucheB.png' %}">
                 {% else %} 
                     {% if i.Option == "home" %} 
                         <a href="/companion/{{ i.Guild }}/stats">
@@ -232,10 +240,10 @@
 
     <div class="footer-ot" style="margin-bottom: 0;">
         <span class="footer-links">
-            <a href="/companion"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png"></a>
-            <a href="https://twitter.com/OlborTrack"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575596027768943/580b57fcd9996e24bc43c53e.png"></a>
-            <a href="https://instagram.com/OlborTrack"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575617326424095/zerdsfsf.png"></a>
-            <a href="https://github.com/OlborEgamorf/OlborTrack-Bot"><img class="image-small" src="https://cdn.discordapp.com/attachments/726034739550486618/935575617653583922/25231.png"></a>
+            <a href="/companion"><img class="image-small" src="{% static 'companion/img/capucheB.png' %}"></a>
+            <a href="https://twitter.com/OlborTrack"><img class="image-small" src="{% static 'companion/img/twitter.png' %}"></a>
+            <a href="https://instagram.com/OlborTrack"><img class="image-small" src="{% static 'companion/img/insta.png' %}"></a>
+            <a href="https://github.com/OlborEgamorf/OlborTrack-Bot"><img class="image-small" src="{% static 'companion/img/github.png' %}"></a>
         </span>
     </div>
 

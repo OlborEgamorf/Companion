@@ -1,14 +1,16 @@
 import plotly.graph_objects as go
 from companion.templatetags.TagsCustom import enteteCount, enteteNom
 from companion.tools.Decorator import CompanionStats
-from companion.tools.Getteurs import (getAllInfos, getChannels, getEmoteTable, getFreq,
-                                      getNom, getPin, getUserInfo, objSelector)
+from companion.tools.Getteurs import (getAllInfos, getNom, getPin, getUserInfo,
+                                      objSelector)
 from companion.tools.outils import (collapseEvol, connectSQL, dictOptions,
                                     getMoisAnnee, getTablePerso, getTimes,
-                                    listeOptions, tableauMois, voiceAxe,listeOptionsJeux)
+                                    listeOptions, listeOptionsJeux,
+                                    tableauMois, voiceAxe)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from plotly.offline import plot
+
 
 def graphEvolJeux(request,option):
     return graphEvol(request,"OT",option)
@@ -42,6 +44,9 @@ def graphEvol(request,guild,option):
     
         if obj==None:
             obj=listeObj[0]["ID"]
+        elif option in ("salons","voicechan"):
+            hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(obj)).fetchone()
+            assert hide!=None and not hide["Hide"]
 
         div1,div2,div3,div4=linePlots(guild,option,curseur,curseurGet,curseurGuild,obj,moisDB,anneeDB,False,categ)
     else:
@@ -120,6 +125,8 @@ def linePlots(guild,option,curseur,curseurGet,curseurGuild,user,moisDB,anneeDB,r
     xaxeEvol(moisDB,fig)
 
     if recap:
+        fig.update_layout(height=None)
+        fig.update_xaxes(rangeslider_visible=False)
         return plot(fig,output_type='div')
 
 
@@ -147,6 +154,10 @@ def linePlots(guild,option,curseur,curseurGet,curseurGuild,user,moisDB,anneeDB,r
             nom=infos["Full"]
             color=infos["Color"]
         else:
+            if option in ("salons","voicechan"):
+                hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(i["ID"])).fetchone()
+                if hide==None or hide["Hide"]:
+                    continue
             nom=getNom(i["ID"],option,curseurGet,False)
             color=None
         listeLabels=list(map(lambda x:"20{0}-{1}-{2}".format(x["Annee"],x["Mois"],x["Jour"]),evol))
@@ -237,3 +248,30 @@ def xaxeEvol(moisDB,fig):
             dict(count=15,label="15 jours",step="day",stepmode="backward"),
             dict(count=20,label="20 jours",step="day",stepmode="backward"),
             dict(label="Tout",step="all")])))
+
+
+
+def evolGraphCompare(option,curseur,user,compare,moisDB,anneeDB,nom1,nom2,color1,color2):
+    
+    table=curseur.execute("SELECT * FROM evol{0}{1}{2} ORDER BY DateID ASC".format(moisDB,anneeDB,user)).fetchall()
+    tableCompare=curseur.execute("SELECT * FROM evol{0}{1}{2} ORDER BY DateID ASC".format(moisDB,anneeDB,compare)).fetchall()
+
+    listeLabels=list(map(lambda x:"20{0}-{1}-{2}".format(x["Annee"],x["Mois"],x["Jour"]),table))
+    listeCountBase=list(map(lambda x:x["Count"], table))
+    plus,div=voiceAxe(option,listeCountBase)
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=listeLabels, y=listeCountBase, mode='lines', name=nom1, line=dict(color=color1,width=3.5)))
+
+    listeLabels=list(map(lambda x:"20{0}-{1}-{2}".format(x["Annee"],x["Mois"],x["Jour"]),tableCompare))
+    listeCountBase=list(map(lambda x:x["Count"], tableCompare))
+    for i in range(len(listeCountBase)):
+        listeCountBase[i]=round(listeCountBase[i]/div,2)
+    fig.add_trace(go.Scatter(x=listeLabels, y=listeCountBase, mode='lines', name=nom2, line=dict(color=color2,width=3.5)))
+
+    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",title="Évolution {0} comparée".format(enteteCount(option).lower(),enteteNom(option).lower()),xaxis_title="Date",yaxis_title=enteteCount(option)+plus,hovermode="x unified")
+    fig.update_yaxes(automargin=True)
+    xaxeEvol(moisDB,fig)
+    fig.update_xaxes(rangeslider_visible=False)
+
+    return plot(fig,output_type='div')

@@ -3,7 +3,7 @@ from math import inf
 import plotly.graph_objects as go
 from companion.templatetags.TagsCustom import enteteCount
 from companion.tools.Decorator import CompanionStats
-from companion.tools.Getteurs import (getAllInfos, getPin, getUserInfo,
+from companion.tools.Getteurs import (getAllInfos, getNom, getPin, getUserInfo,
                                       objSelector)
 from companion.tools.outils import (connectSQL, dictOptions, getTablePerso,
                                     listeOptions, listeOptionsJeux, voiceAxe)
@@ -44,6 +44,9 @@ def graphPeriods(request,guild,option):
     if option not in ("messages","voice","mots") and categ!="Jeux":
         if obj==None:
             obj=listeObj[0]["ID"]
+        elif option in ("salons","voicechan"):
+            hide=curseurGuild.execute("SELECT * FROM chans WHERE ID={0}".format(obj)).fetchone()
+            assert hide!=None and not hide["Hide"]
     
     if option in ("messages","voice","mots") or categ=="Jeux":
         div1,div2,div3,div4=linePlot(guild,option,user.id,False,infos["Color"],True,"M")
@@ -219,3 +222,59 @@ def linePlot(guild,option,user,obj,color,perso,period):
         return plot(fig,output_type='div'), plot(figRanks,output_type='div'),  plot(figAn,output_type='div'), plot(figBox,output_type='div')
     else:
         return plot(fig,output_type='div'), plot(figAn,output_type='div'), plot(figBox,output_type='div')
+
+
+
+
+def linePlotCompare(guild,option,user,obj,compare,perso,period,color1,color2,nom1,nom2):
+    if perso:
+        if obj!=False:
+            table=getTablePerso(guild,dictOptions[option],user,obj,period,"periodAsc")
+            tableCompare=getTablePerso(guild,dictOptions[option],user,compare,period,"periodAsc")
+        else:
+            table=getTablePerso(guild,dictOptions[option],user,False,period,"periodAsc")
+            tableCompare=getTablePerso(guild,dictOptions[option],compare,False,period,"periodAsc")
+        
+    else:
+        table=getTablePerso(guild,dictOptions[option],obj,False,period,"periodAsc")
+        tableCompare=getTablePerso(guild,dictOptions[option],compare,False,period,"periodAsc")
+
+    listeLabels=list(map(lambda x:"20{1}-{0}".format(x["Mois"],x["Annee"]),table))
+    listeCount=list(map(lambda x:x["Count"], table))
+    plus,div=voiceAxe(option,listeCount)
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=listeLabels, y=listeCount, mode='lines+markers', marker=dict(color=color1, size=12), line=dict(color=color1), textposition="top center",hovertemplate = "%{y}",name=nom1))
+
+    listeLabels=list(map(lambda x:"20{1}-{0}".format(x["Mois"],x["Annee"]),tableCompare))
+    listeCount=list(map(lambda x:x["Count"], tableCompare))
+    for i in range(len(listeCount)):
+        listeCount[i]=round(listeCount[i]/div,2)
+
+    fig.add_trace(go.Scatter(x=listeLabels, y=listeCount, mode='lines+markers', marker=dict(color=color2, size=12), line=dict(color=color2), textposition="top center",hovertemplate = "%{y}",name=nom2))
+
+    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Périodes d'activité - évolution {0}".format(enteteCount(option).lower()),xaxis_title="Dates",yaxis_title=enteteCount(option)+plus,hovermode="x")
+    fig.update_yaxes(automargin=True)
+    fig.update_xaxes(showgrid=False, zeroline=False,rangeslider_visible=True,type="date",rangeselector=dict(font_color="#111",
+            buttons=list([
+                dict(count=3,
+                     label="3 mois",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=6,
+                     label="6 mois",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=1,
+                     label="1 an",
+                     step="year",
+                     stepmode="backward"),
+                dict(count=2,
+                     label="2 ans",
+                     step="year",
+                     stepmode="backward"),
+                dict(label="Tout",step="all")
+            ])
+        ),)
+
+    return plot(fig,output_type='div')

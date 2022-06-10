@@ -72,24 +72,29 @@ def viewRecapStats(request,guild,option):
         if option in ("emotes","reactions"):
             listeObj=[{"ID":0,"Nom":"Serveur"}]+list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
         elif option in ("salons","voicechan"):
-            listeObj=[{"ID":0,"Nom":"Serveur"}]+list(map(lambda x:getChannels(x,curseurGet),listeObj))
+            listeObj=[{"ID":0,"Nom":"Serveur"}]+list(map(lambda x:getChannels(x,curseurGet,curseurGuild),listeObj))
         elif option=="freq":
             listeObj=[{"ID":0,"Nom":"Serveur"}]+list(map(lambda x:getFreq(x),listeObj))
         elif option=="divers":
             listeObj=[{"ID":0,"Nom":"Serveur"}]+list(map(lambda x:getDivers(x),listeObj))
         
         if obj==None or obj=="0":
+            div1=barPlot(guild,option,categ,curseur,curseurGet,curseurGuild,moisDB,anneeDB,False)
             ranks=getRanks(request,guild,option,"",curseur=curseur,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB,curseurGuild=curseurGuild)
             if moisDB=="glob" or moisDB=="to":
                 first=getFirst(request,guild,option,curseur=curseurGL,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB,curseurGuild=curseurGuild)
+                div2=linePlot(guild,option,user,color,curseurGL,curseurGet,curseurGuild,False,categ,annee=anneeDB)
             else:
                 first=None
+                div2=None
             mois,annee,moisDB,anneeDB=getMoisAnneePerso(mois,annee)
             perso=getPerso(request,guild,option,curseur=curseur,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB,user=user,curseurGuild=curseurGuild)
             
             periods,jours,evol=None,None,None
             obj=0
+            div3=None
         else:
+            div1=linePlots(guild,option,curseur,curseurGet,curseurGuild,obj,moisDB,anneeDB,True,categ)
             obj=int(obj)
             color=None
             ranks=getRanks(request,guild,option,obj,curseur=curseur,curseurGet=curseurGet,moisDB=moisDB,anneeDB=anneeDB)
@@ -100,6 +105,7 @@ def viewRecapStats(request,guild,option):
             else:
                 periods,first=None,None
             perso,jours=None,None
+            div2,div3=None,None
     
     if categ=="Jeux":
         listeMois,listeAnnee=getTimes(guild,option,"Jeux")
@@ -107,7 +113,7 @@ def viewRecapStats(request,guild,option):
         "avatar":user_full["Avatar"],"id":str(user.id),"nom":user_full["Nom"],"color":color,
         "guildname":"Olbor Track - Mondial","guildid":"ot/jeux",
         "mois":mois,"annee":annee,"listeMois":listeMois,"listeAnnee":listeAnnee,
-        "command":"ranks","options":listeOptionsJeux,"option":option,"plus":"",
+        "command":"recap","options":listeOptionsJeux,"option":option,"plus":"",
         "travel":True,"selector":True,"obj":obj,"ot":True,"pagestats":True,
         "pin":pin,"fig":div1,"fig2":div2,"fig3":div3}
         return render(request, "companion/Stats/Recap.html", ctx)

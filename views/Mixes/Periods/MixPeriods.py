@@ -25,6 +25,7 @@ def mixPeriods(request,mix,option):
     if option not in ("messages","voice","mots"):
         listeObj=[]
         for guild in mix_ids:
+            connexionGuild,curseurGuild=connectSQL(guild,"Guild","Guild",None,None)
             try:
                 connexion,curseur=connectSQL(guild,dictOptions[option],"Stats","GL","")
                 for i in curseur.execute("SELECT * FROM glob ORDER BY Rank ASC LIMIT 300").fetchall():
@@ -43,7 +44,7 @@ def mixPeriods(request,mix,option):
         if option in ("emotes","reactions"):
             listeObj=list(map(lambda x:getEmoteTable(x,curseurGet),listeObj))
         elif option in ("salons","voicechan"):
-            listeObj=list(map(lambda x:getChannels(x,curseurGet),listeObj))
+            listeObj=list(map(lambda x:getChannels(x,curseurGet,curseurGuild),listeObj))
         elif option=="freq":
             listeObj=list(map(lambda x:getFreq(x),listeObj))
         elif option=="divers":
