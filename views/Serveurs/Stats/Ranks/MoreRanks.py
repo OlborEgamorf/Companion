@@ -1,5 +1,5 @@
 from companion.tools.Getteurs import formatColor, getNom, getUserInfo
-from companion.tools.outils import (connectSQL, dictOptions, getMoisAnnee,
+from companion.tools.outils import (connectSQL, dictOptions, getMoisAnnee, getMoisAnneePerso,
                                     getTablePerso, tableauMois)
 from django.http import JsonResponse
 
@@ -8,7 +8,12 @@ from companion.views.Serveurs.Stats.Evol.EvolGraph import evolGraphCompare, line
 
 def getIndics(request,guild,option):
     mois,annee = request.GET.get("mois"),request.GET.get("annee")
-    mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
+    if request.GET.get("perso")!=None:
+        annee="20"+annee
+        mois,annee,moisDB,anneeDB=getMoisAnneePerso(mois,annee)
+        moisDB=moisDB.lower()
+    else:
+        mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
     user=request.user
 
     if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
@@ -173,3 +178,79 @@ def getEvol(request,guild,option):
         infos2=getUserInfo(obj,curseurGet,guild)
         graph=evolGraphCompare(option,curseur,user.id,obj,moisDB,anneeDB,infos1["Nom"],infos2["Nom"],infos1["Color"],infos2["Color"])
     return JsonResponse(data={"graph":graph},safe=False)
+
+
+def getAvAp(request,guild,option):
+    mois,annee,obj = request.GET.get("mois"),request.GET.get("annee"),request.GET.get("obj")
+    mois,annee,moisDB,anneeDB=getMoisAnnee(mois,annee)
+    user=request.user
+
+    if option in ("tortues","tortuesduo","p4","matrice","morpion","trivialversus","trivialbr","trivialparty"):
+        categ="Jeux"
+    else:
+        categ="Stats"
+
+    table=[]
+    if moisDB=="to":
+        allAnnee=getTablePerso(guild,dictOptions[option],guild,False,"A","periodAsc")
+        for i in allAnnee:
+            table.append(avApIndics(guild,option,categ,"TO",i["Annee"],user))
+    else:
+        allMois=getTablePerso(guild,dictOptions[option],guild,False,"M","countDesc")
+        bestMois=allMois[0]
+        moisPrec,anneePrec=datePrec(tableauMois[moisDB],anneeDB)
+        moisSuiv,anneeSuiv=dateSuiv(tableauMois[moisDB],anneeDB)
+
+        try:
+            table.append(avApIndics(guild,option,categ,moisPrec,anneePrec,user))
+        except:
+            pass
+        table.append(avApIndics(guild,option,categ,tableauMois[moisDB],anneeDB,user))
+        try:
+            table.append(avApIndics(guild,option,categ,moisSuiv,anneeSuiv,user))
+        except:
+            pass
+
+        if bestMois["Annee"] not in (anneePrec,anneeSuiv,anneeDB) and tableauMois[bestMois["Mois"]] not in (moisPrec,moisSuiv,moisDB):
+            table.append(avApIndics(guild,option,categ,bestMois["Mois"],bestMois["Annee"],user))
+    
+    connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
+    color=curseurGet.execute("SELECT * FROM users JOIN users_{0} ON users.ID = users_{0}.ID WHERE users.ID={1}".format(guild,user.id)).fetchone()["Color"]
+    color=formatColor(color)
+
+    return JsonResponse(data={"table":table,"maxSum":max(table, key=lambda x:x["sum"])["sum"],"maxVal":max(table, key=lambda x:x["max"])["max"],"color":color},safe=False)
+
+
+def avApIndics(guild,option,categ,mois,anneeDB,user):
+    connexion,curseur=connectSQL(guild,dictOptions[option],categ,mois,anneeDB)
+    maxi=curseur.execute("SELECT MAX(Count) AS Max FROM {0}{1}".format(tableauMois[mois],anneeDB)).fetchone()["Max"]
+    moy=int(curseur.execute("SELECT AVG(Count) AS Moy FROM {0}{1}".format(tableauMois[mois],anneeDB)).fetchone()["Moy"])
+    som=curseur.execute("SELECT SUM(Count) AS Somme FROM {0}{1}".format(tableauMois[mois],anneeDB)).fetchone()["Somme"]
+    you=curseur.execute("SELECT Count FROM {0}{1} WHERE ID={2}".format(tableauMois[mois],anneeDB,user.id)).fetchone()
+    if you!=None:
+        you=you["Count"]
+    return {"max":maxi,"moy":moy,"sum":som,"you":you,"mois":mois,"annee":anneeDB}
+
+def datePrec(mois,annee):
+    if mois=="01":
+        annee=str(int(annee)-1)
+        mois="12"
+    else:
+        mois=int(mois)-1
+        if mois<10:
+            mois="0"+str(mois)
+        else:
+            mois=str(mois)
+    return mois,annee
+
+def dateSuiv(mois,annee):
+    if mois=="12":
+        annee=str(int(annee)+1)
+        mois="01"
+    else:
+        mois=int(mois)+1
+        if mois<10:
+            mois="0"+str(mois)
+        else:
+            mois=str(mois)
+    return mois,annee

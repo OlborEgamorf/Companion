@@ -278,3 +278,48 @@ def linePlotCompare(guild,option,user,obj,compare,perso,period,color1,color2,nom
         ),)
 
     return plot(fig,output_type='div')
+
+
+def linePlotQuick(guild,option,user,obj,color,perso,period):
+    if perso:
+        if obj!=False:
+            table=getTablePerso(guild,dictOptions[option],user,obj,period,"periodAsc")
+        else:
+            table=getTablePerso(guild,dictOptions[option],user,False,period,"periodAsc")
+    else:
+        if obj!=False:
+            table=getTablePerso(guild,dictOptions[option],obj,False,period,"periodAsc")
+        else:
+            table=getTablePerso(guild,dictOptions[option],guild,False,period,"periodAsc")
+
+    listeLabels=list(map(lambda x:"20{1}-{0}".format(x["Mois"],x["Annee"]),table))
+    listeCount=list(map(lambda x:x["Count"], table))
+    plus,div=voiceAxe(option,listeCount)
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=listeLabels, y=listeCount, mode='lines+markers', marker=dict(color=color, size=8), line=dict(color=color), textposition="top center",hovertemplate = "%{y}",name="Courbe"))
+
+    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",title="Périodes d'activité - évolution {0}".format(enteteCount(option).lower()),xaxis_title="Dates",yaxis_title=enteteCount(option)+plus,hovermode="x")
+    fig.update_yaxes(automargin=True)
+    fig.update_xaxes(showgrid=False, zeroline=False,type="date",rangeselector=dict(font_color="#111",
+            buttons=list([
+                dict(count=3,
+                     label="3 mois",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=6,
+                     label="6 mois",
+                     step="month",
+                     stepmode="backward"),
+                dict(count=1,
+                     label="1 an",
+                     step="year",
+                     stepmode="backward"),
+                dict(count=2,
+                     label="2 ans",
+                     step="year",
+                     stepmode="backward"),
+                dict(label="Tout",step="all")
+            ])
+        ),)
+    return plot(fig,output_type='div')

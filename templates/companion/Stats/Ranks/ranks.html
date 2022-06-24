@@ -4,15 +4,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script type="text/javascript">
 
-    function loadHeight() {
-        var grid = document.getElementById("main-grid")
-        var text = ""
-        for (i=1;i<grid.children.length;i++) {
-            text+=grid.children[i].clientHeight+"px "
-        }
-        grid.style.gridTemplateRows=text
-    }
-
     function addIndics(option) {
         var httpRequest = new XMLHttpRequest()
         httpRequest.onreadystatechange = function () {
@@ -41,7 +32,7 @@
                 if (data["bestJour"] != undefined) {
                     $(table).append(`<tr><td>Meilleur jour</td><td>${data["bestJour"]["Jour"]}/${data["bestJour"]["Mois"]}/20${data["bestJour"]["Annee"]}</td></tr>`)
                 }
-                $(".grid-stats-2").append(table)
+                $("#grid-indics").append(table)
                 loadHeight()
             }
         }
@@ -71,7 +62,7 @@
                     tr.append(`<td>${data[i].Jours}</td>`)
                     $(table).append(tr)
                 }
-                $(".grid-stats-4").append(table)
+                $("#grid-first").append(table)
                 loadHeight()
             }
         }
@@ -88,11 +79,35 @@
                 console.log(data)
                 var div = $("<div id='graph-evol'></div>")
                 div.append(data["graph"])
-                $(".grid-stats-3").append(div)
+                $("#grid-evol").append(div)
                 loadHeight()
             }
         }
         httpRequest.open("GET",`/companion/{{ guildid }}/{{ option }}/ranksmore/evol?mois={{ mois }}&annee={{ annee }}&obj=${compare}`,true)
+        httpRequest.send()
+    }
+
+
+    function addAvAp(option) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                var data = JSON.parse(httpRequest.response)
+                var table = $("<table><tr><th>Période</th><th>Total</th><th>Moyenne</th><th>Valeur max</th><th>Vous</th></table>")
+                for (i=0 ; i<data["table"].length ; i++) {
+                    var tr = $("<tr></tr>")         
+                    tr.append(`<td style="text-align: start;">${data["table"][i]["mois"]}/20${data["table"][i]["annee"]}</td>`)
+                    tr.append(`<td class="barretd" style="width:20%">${formatCount(data["table"][i]["sum"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["table"][i]["sum"]}/${data["maxSum"]})"></div></div></td>`)
+                    tr.append(`<td class="barretd" style="width:20%">${formatCount(data["table"][i]["moy"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["table"][i]["moy"]}/${data["maxVal"]})"></div></div></td>`)
+                    tr.append(`<td class="barretd" style="width:20%">${formatCount(data["table"][i]["max"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["table"][i]["max"]}/${data["maxVal"]}")></div></div></td>`)
+                    tr.append(`<td class="barretd" style="width:20%">${formatCount(data["table"][i]["you"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["table"][i]["you"]}/${data["maxVal"]});background-color:${data["color"]}"></div></div></td>`)
+                    $(table).append(tr)
+                }
+                $("#grid-avap").append(table)
+                loadHeight()
+            }
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/{{ option }}/ranksmore/avap?mois={{ mois }}&annee={{ annee }}&obj={{ obj }}`,true)
         httpRequest.send()
     }
 
@@ -114,7 +129,7 @@
 
 <div class="grid-stats" id="main-grid">
     <div class="grid-stats-1">
-        <table id="tableot">
+        <table>
             {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" or obj != None %}
                 <tr><th colspan="5">Classement {{ mois }} {{ annee }}</th></tr>
                 <tr>
@@ -196,33 +211,32 @@
             {% endfor %}
         </table>
     </div>
-    <div class="grid-stats-2">
+    <div class="grid-stats-2" id="grid-indics">
         <div style="text-align: justify;margin: 0; "class="guild-stats">Indicateurs</div>
         <script>addIndics("{{ option }}")</script>
     </div>
     {% if annee != "Global" %}
-        <div class="grid-stats-3">
+        <div class="grid-stats-2" id="grid-evol">
             <div style="text-align: justify;margin: 0; "class="guild-stats">Votre évolution</div>
             <div id="graph-evol"></div>
             <script>addEvol("{{ option }}","{{ id }}")</script>
         </div>
-        <div class="grid-stats-4">
+        <div class="grid-stats-2" id="grid-first">
             <div style="text-align: justify;margin: 0; "class="guild-stats">Historique des premiers</div>
             <script>addHistoFirst("{{ option }}")</script>
         </div>
-        <div class="grid-stats-5">
-            <div style="text-align: justify;margin: 0; "class="guild-stats">Avant/Après</div>
+        <div class="grid-stats-2" id="grid-avap">
+            <div style="text-align: justify;margin: 0; "class="guild-stats">Comparé à d'autres périodes</div>
+            <script>addAvAp("{{ option }}")</script>
         </div>
-        <div class="grid-stats-6">
-            <div style="text-align: justify;margin: 0; "class="guild-stats">Comparé à la meilleure période</div>
-        </div>
+
     {% else %}
-        <div class="grid-stats-3">
+        <div class="grid-stats-2" id="grid-evol">
             <div style="text-align: justify;margin: 0; "class="guild-stats">Votre évolution</div>
             <div id="graph-evol"></div>
             <script>addEvol("{{ option }}","{{ id }}")</script>
         </div>
-        <div class="grid-stats-4">
+        <div class="grid-stats-2" id="grid-first">
             <div style="text-align: justify;margin: 0; "class="guild-stats">Historique des premiers</div>
             <script>addHistoFirst("{{ option }}")</script>
         </div>

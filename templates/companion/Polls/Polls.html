@@ -1,0 +1,159 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+{% load static %}
+
+<script>
+    function addProp() {
+        form = document.getElementById("form")
+        nb = Number(form.dataset.nb)
+        if (nb <= 9) {
+            form.dataset.nb = nb+1
+            $("#propplus").before(`<tr id="trprop${nb+1}"><td>Proposition ${nb+1}</td><td colspan="2"><input name="prop${nb+1}" type="text" style="width:-moz-available;text-align:left"></td></tr>`)
+        }
+    }
+
+    function delProp() {
+        form = document.getElementById("form")
+        nb = Number(form.dataset.nb)
+        if (nb > 2) {
+            form.dataset.nb = nb-1
+            $(`#trprop${nb}`).remove()
+        }
+    }
+
+    function confirm(button) {
+        val=button.value
+        button.value="Confirmer"
+        sleep(100).then(() => {button.type="submit"})
+        sleep(10000).then(() => {
+            button.type="button"
+            button.value=val})
+    }
+
+</script>
+
+<div class="grid-threecenter" style="margin-top: 30px;">
+    <div style="grid-column: 2 / span 1;">
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Créer un sondage</div>
+        <div>
+            <form action="/companion/{{ guildid }}/polls/create" method="post"> {% csrf_token %}
+                <table style="margin-top: 30px;" data-nb="2" id="form">
+                    <tr><th colspan="3">Nouveau sondage</th></tr>
+                    <tr>
+                        <td>Question</td>
+                        <td colspan="2"><input name="question" type="text" style="width:-moz-available;text-align:left"></td>
+                    </tr>
+                    <tr>
+                        <td>Proposition 1</td>
+                        <td colspan="2"><input name="prop1" type="text" style="width:-moz-available;text-align:left"></td>
+                    </tr>
+                    <tr>
+                        <td>Proposition 2</td>
+                        <td colspan="2"><input name="prop2" type="text" style="width:-moz-available;text-align:left"></td>
+                    </tr>
+                    <tr id="propplus">
+                        <td colspan="3"><img onclick="addProp()" src="{% static 'companion/img/Plus.png' %}"><img onclick="delProp()" src="{% static 'companion/img/Moins.png' %}"></td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Fin du sondage</td>
+                        <td colspan="2">
+                            <input style="background-color: #111; "type="datetime-local" id="time" name="time" value="{{ time }}" min="{{ min }}" max="{{ max }}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Salon du sondage</td>
+                        <td colspan="2">
+                            <select name="channel" id="channel">
+                                {% for i in allchans %}
+                                    <option value="{{ i.id }}">{{ i.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Mode classique <input value="polltime" type="radio" name="option"></td>
+                        <td>Mode vote <input value="vote" type="radio" name="option"></td>
+                        <td>Mode élection <input value="election" type="radio" name="option"></td>
+                    </tr>
+                    <tr><td colspan="3"><input type="submit" value="Lancer le sondage"></td></tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="grid-twocol" style="margin-top: 30px;">
+    <div>
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Sondages actifs</div>
+        <div>
+            {% for i in active %} 
+                {% if not i.Hide %}
+                    <form action="/companion/{{ guildid }}/polls/vote/{{ i.ID }}" method="post"> {% csrf_token %}
+                        <table class="table-recap" style="margin-top: 30px;">
+                            <tr><th colspan="3">{{ i.Question }}</th></tr>
+                            {% if i.Type == "polltime" %} 
+
+                                <tr><td colspan="2">Sondage classique, vous devez voter sur le serveur et les résultats s'afficheront à la fin.</td><td><a href="https://discord.com/channels/{{ guildid }}/{{ i.Channel }}/{{ i.ID }}">Lien vers le vote</a></td></tr>
+                                <tr><th colspan="3">Propositions</th>
+                                {% for j in i.Props|propspolls:i.Results %}
+                                    <tr><td colspan="3">{{ j.Prop }}</td></tr>
+                                {% endfor %}
+
+                            {% else %}
+
+                                <tr><td colspan="2">Vous pouvez voter ici. Les résultats sont partiels.</td><td><a href="https://discord.com/channels/{{ guildid }}/{{ i.Channel }}/{{ i.ID }}">Lien vers le vote</a></td></tr>
+                                <tr><th>Propositions</th><th>Votes</th><th>Voter</th>
+                                {% for j in i.Props|propspolls:i.Results %}
+                                    <tr><td>{{ j.Prop }}</td>
+                                    <td class="barretd">{{ j.Count|calcpercent:i.Total }}% ({{ j.Count }})
+                                        <div class="contour-barre">
+                                        <div class="barre" style="width:calc(100%*{{ j.Count }}/{{ i.Total }})"></div></div>
+                                    </td>
+                                    {% if i.User == j.Nb %}
+                                        <td><img src="https://cdn.discordapp.com/avatars/{{ id }}/{{ avatar }}"></td>
+                                    {% elif not i.User %}
+                                        <td><input type="button" name="vote{{ i.ID }}_{{ j.Nb }}" class="bouton-achat" value="Choisir" onclick="confirm(this)"></td></td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+
+                            {% endif %}
+                            <tr><th>Début</th><th>Fin</th><th>Auteur</th></tr>
+                            <tr><td>{{ i.Debut|epochtodate }}</td><td>{{ i.Fin|epochtodate }}</td><td>Olbor</td></tr>
+                        </table>
+                    </form>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <div>
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Sondages passés</div>
+        <div>
+            {% for i in allpolls %} 
+                {% if not i.Hide %}
+                    <table class="table-recap" style="margin-top: 30px;">
+                        <tr><th colspan="3">{{ i.Question }}</th></tr>
+                        <tr><th>Propositions</th><th colspan="2">Votes</th></tr>
+                        {% for j in i.Props|propspolls:i.Results %}
+                            <tr>
+                                <td>{{ j.Prop }}</td>
+                                <td class="barretd" colspan="2">{{ j.Count|calcpercent:i.Total }}% ({{ j.Count }})
+                                    <div class="contour-barre">
+                                    <div class="barre" style="width:calc(100%*{{ j.Count }}/{{ i.Total }})"></div></div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        <tr><th>Début</th><th>Fin</th><th>Auteur</th></tr>
+                        <tr><td>{{ i.Debut|epochtodate }}</td><td>{{ i.Fin|epochtodate }}</td><td>Olbor</td></tr>
+                    </table>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock stats %}

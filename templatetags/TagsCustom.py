@@ -1,3 +1,4 @@
+import datetime
 from django import template
 from companion.tools.outils import dictRefCommands, dictRefOptions, dictRefPlus,dictOptions,tableauMois
 
@@ -183,6 +184,23 @@ def firstGlobal(periode):
         return "Total 20{0}".format(periode[2:])
     return "{0} 20{1}".format(tableauMois[periode[2:]],periode[:2])
 
+def getPropsPolls(props,counts):
+    props=props.split(";")
+    if counts=="0":
+        counts=props.copy()
+    else:
+        counts=counts.split(";")
+    dictFull=[]
+    for i,el in enumerate(props):
+        dictFull.append({"Count":counts[i],"Prop":el,"Nb":i+1})
+    return dictFull
+
+def epochtodate(epoch):
+    return datetime.datetime.fromtimestamp(epoch).strftime('%d/%m/%Y - %H:%M:%S')
+
+def calcpercent(count,total):
+    return round(100*int(count)/total,2)
+
 
 register.filter("usedict", useDict)
 register.filter("tempsvoice",formatCount)
@@ -216,3 +234,7 @@ register.filter("periodfirst",firstGlobal)
 register.filter("globtable",getTable)
 register.filter("globmax",getMax)
 register.filter("globend",getEnd)
+
+register.filter("propspolls",getPropsPolls)
+register.filter("epochtodate",epochtodate)
+register.filter("calcpercent",calcpercent)

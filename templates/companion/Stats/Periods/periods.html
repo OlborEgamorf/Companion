@@ -1,19 +1,98 @@
 {% extends "companion/BASE.html" %}
 
 {% block script %}
+{% load static %}
 <script type="text/javascript">
     
-    function newSite(mois,annee,obj) {
-        if ('{{ mix }}' == "True" && '{{ plus }}' == "serv") {
-          var site = "/companion/{{ guildid }}/{{ option }}/iframeserv?data="+mois+"?"+annee+"?{{ obj }}"
-        } else {
-          var site = "/companion/{{ guildid }}/{{ option }}/iframe{{ command }}?data="+mois+"?"+annee+"?{{ obj }}"
+    function addIndics(option) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                var data = JSON.parse(httpRequest.response)
+                var table = $(`<table>
+                                <tr><th colspan='2'>Global</th></tr>
+                                <tr><td>Total</td><td class="barretd">${formatCount(data["mois"]["sum"],option)}<div class="contour-barre"><div class="barre" style="width:100%; background-color:${data["color"]}"></div></div></td>
+                                <tr><th colspan='2'>Indicateurs sur les mois</th></tr>
+                                <tr><td>Valeur Maximale</td><td class="barretd">${formatCount(data["mois"]["max"],option)}<div class="contour-barre"><div class="barre" style="width:100%; background-color:${data["color"]}"></div></div></td></tr>
+                                <tr><td>Moyenne</td><td class="barretd">${formatCount(data["mois"]["moy"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["mois"]["moy"]}/${data["mois"]["max"]}); background-color:${data["color"]}"></div></div></td>
+                                <tr><td>Médiane</td><td class="barretd">${formatCount(data["mois"]["med"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["mois"]["med"]}/${data["mois"]["max"]}); background-color:${data["color"]}"></div></div></td>
+                                <tr><td>Valeur minimale</td><td class="barretd">${formatCount(data["mois"]["min"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["mois"]["min"]}/${data["mois"]["max"]}); background-color:${data["color"]}"></div></div></td>
+                                <tr><td>Entrées</td><td class="barretd">${data["mois"]["entrees"]}<div class="contour-barre"><div class="barre" style="width:100%; background-color:${data["color"]}"></div></div></td>
+                            
+                                <tr><th colspan="2">Indicateurs sur les années</th></tr>
+                                <tr><td>Valeur Maximale</td><td class="barretd">${formatCount(data["annee"]["max"],option)}<div class="contour-barre"><div class="barre" style="width:100%; background-color:${data["color"]}"></div></div></td></tr>
+                                <tr><td>Moyenne</td><td class="barretd">${formatCount(data["annee"]["moy"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["annee"]["moy"]}/${data["annee"]["max"]}); background-color:${data["color"]}"></div></div></td>
+                                <tr><td>Médiane</td><td class="barretd">${formatCount(data["annee"]["med"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["annee"]["med"]}/${data["annee"]["max"]}); background-color:${data["color"]}"></div></div></td>
+                                <tr><td>Valeur minimale</td><td class="barretd">${formatCount(data["annee"]["min"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["annee"]["min"]}/${data["annee"]["max"]}); background-color:${data["color"]}"></div></div></td>
+                                <tr><td>Entrées</td><td class="barretd">${data["annee"]["entrees"]}<div class="contour-barre"><div class="barre" style="width:100%; background-color:${data["color"]}"></div></div></td>
+                               
+                                <tr><th colspan="2">Dates clés</th></tr>
+                                <tr><td>Meilleur mois</td><td>${data["mois"]["best"]["Mois"]}/20${data["mois"]["best"]["Annee"]}</td></tr>
+                                <tr><td>Meilleure année</td><td>20${data["annee"]["best"]["Annee"]}</td></tr>
+                                <tr><td>Actif depuis le</td><td>${data["mois"]["since"]["Mois"]}/20${data["mois"]["since"]["Annee"]}</td></tr>
+                                <tr><td>Dernière activité remarquée</td><td>${data["last"]["Jour"]}/${data["last"]["Mois"]}/20${data["last"]["Annee"]}</td></tr>
+                                </table>`)
+                
+                $("#grid-indics").append(table)
+                loadHeight()
+            }
         }
-        document.getElementById('iframeevol').src = site;
-        try {document.getElementById("elselect").id = NaN}
-        catch {}
-        obj.id = "elselect"
-    }    
+        httpRequest.open("GET",`/companion/{{ guildid }}/{{ option }}/periodsmore/indics?mois={{ mois }}&annee={{ annee }}&plus={{ plus }}`,true)
+        httpRequest.send()
+    }
+
+    function addIndicsPeriod(option,mois,annee) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                $("#indics-period").remove()
+                var data = JSON.parse(httpRequest.response)
+                var table = $(`<table id="indics-period">
+                                <tr><th colspan='2'>${mois}/${annee}</th></tr>
+                                <tr><th colspan='2'>Indicateurs statistiques</th></tr>
+
+                                <tr><td>Valeur Maximale</td><td class="barretd">${formatCount(data["max"],option)}<div class="contour-barre"><div class="barre" style="width:100%"></div></div></td></tr>
+                                <tr><td>Moyenne</td><td class="barretd">${formatCount(data["moy"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["moy"]}/${data["max"]})"></div></div></td>
+                                <tr><td>Médiane</td><td class="barretd">${formatCount(data["med"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["med"]}/${data["max"]})"></div></div></td>
+                                <tr><td>Valeur minimale</td><td class="barretd">${formatCount(data["min"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["min"]}/${data["max"]})"></div></div></td>
+                            
+                                <tr><th colspan="2">Autres</th></tr>
+                                <tr><td>Vous</td><td class="barretd">${formatCount(data["you"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["you"]}/${data["max"]});background-color:${data["color"]}"></div></div></td>
+                                <tr><td>Total</td><td class="barretd">${formatCount(data["sum"],option)}<div class="contour-barre"><div class="barre" style="width:100%"></div></div></td>
+                                <tr><td>Entrées</td><td class="barretd">${data["entrees"]}<div class="contour-barre"><div class="barre" style="width:100%"></div></div></td>
+
+                                <tr><th colspan="2">Dates clés</th></tr></table>`)
+                if (data["bestAnnee"] != undefined) {
+                    $(table).append(`<tr><td>Meilleure année</td><td>20${data["bestAnnee"]["Annee"]}</td></tr>`)
+                }
+                if (data["bestMois"] != undefined) {
+                    $(table).append(`<tr><td>Meilleur mois</td><td>${data["bestMois"]["Mois"]}/${data["bestMois"]["Annee"]}</td></tr>`)
+                }
+                if (data["bestJour"] != undefined) {
+                    $(table).append(`<tr><td>Meilleur jour</td><td>${data["bestJour"]["Jour"]}/${data["bestJour"]["Mois"]}/20${data["bestJour"]["Annee"]}</td></tr>`)
+                }
+                $("#grid-indics-period").append(table)
+                loadHeight()
+            }
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/{{ option }}/ranksmore/indics?mois=${mois}&annee=${annee}&obj={{ obj }}&perso=True`,true)
+        httpRequest.send()
+    }
+
+    function addGraph(option,compare) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                var data = JSON.parse(httpRequest.response)
+                console.log(data)
+                $("#grid-graph").append(data["graph"])
+                loadHeight()
+            }
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/{{ option }}/periodsmore/graph?plus=&{{ plus }}&obj=${compare}`,true)
+        httpRequest.send()
+    }
+
 
 </script>
 {% endblock script %}
@@ -25,63 +104,88 @@
     <input type="text" id="searchTable" onkeyup="searchName(1)" placeholder="Recherchez une période">
 </div>
 
-<div class="stats">
-    <table id="tableot">
+<div class="grid-stats" id="main-grid">
+    <table class="grid-stats-1" id="tableot">
         {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
-            <tr><th colspan="5">Périodes mensuelles</th></tr>
-            <tr>
-                <th onclick="sortTable(0,1,this)">Rang</th>
-                <th onclick="sortTable(1,1,this)">Date</th>
-                <th>Barre</th>
-                <th onclick="sortTable(3,1,this)">{{ option|headcount }}<img id="fleche-sort" src="{% static 'companion/img/fleche.png' %}" style="transform:rotate(90deg)"></th>
-                <th>W/L</th>
-            </tr>
-            {% for i in rankMois %}
-                <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
-                    <td>{{ i.Rank }}</td>
-                    <td data-date="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ color }}"></div></td>
-                    <td>{{ i.Count|tempsvoice:option }}</td>
-                    <td>{{ i.W }} / {{ i.L }}</td>
-                </tr>
-            {% endfor %}
-            <tr><th colspan="4">Périodes annuelles</th></tr>
-            {% for i in rankAnnee %}
-                <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
-                    <td>{{ i.Rank }}</td>
-                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ color }}"></div></td>
-                    <td>{{ i.Count|tempsvoice:option }}</td>
-                    <td>{{ i.W }} / {{ i.L }}</td>
-                </tr>
-            {% endfor %}
-        {% else %} 
             <tr><th colspan="4">Périodes mensuelles</th></tr>
             <tr>
                 <th onclick="sortTable(0,1,this)">Rang</th>
                 <th onclick="sortTable(1,1,this)">Date</th>
-                <th>Barre</th>
                 <th onclick="sortTable(3,1,this)">{{ option|headcount }}<img id="fleche-sort" src="{% static 'companion/img/fleche.png' %}" style="transform:rotate(90deg)"></th>
+                <th>W/L</th>
             </tr>
             {% for i in rankMois %}
-                <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
+                <tr onClick="addIndicsPeriod('{{ option }}','{{ i.Mois }}','{{ i.Annee }}')">
                     <td>{{ i.Rank }}</td>
                     <td data-date="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ color }}"></div></td>
-                    <td>{{ i.Count|tempsvoice:option }}</td>
+                    <td class="barretd">{{ i.Count|tempsvoice:option }}
+                        <div class="contour-barre">
+                        <div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ color }}"></div></div>
+                    </td>
+                    <td class="barretd">{{ i.W }} / {{ i.L }}
+                        <div class="contour-barre">
+                        <div class="barre" style="width:calc(100%*{{ i.W }}/({{ i.W }} + {{ i.L }})); background-color: {{ color }}"></div></div>
+                    </td>
                 </tr>
             {% endfor %}
             <tr><th colspan="4">Périodes annuelles</th></tr>
             {% for i in rankAnnee %}
-                <tr onClick="newSite('{{ i.Mois }}','{{ i.Annee }}',this)">
+                <tr onClick="addIndicsPeriod('{{ option }}','{{ i.Mois }}','{{ i.Annee }}')">
                     <td>{{ i.Rank }}</td>
                     <td>{{ i.Mois }}/{{ i.Annee }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ color }}"></div></td>
-                    <td>{{ i.Count|tempsvoice:option }}</td>
+                    <td class="barretd">{{ i.Count|tempsvoice:option }}
+                        <div class="contour-barre">
+                        <div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ color }}"></div></div>
+                    </td>
+                    <td class="barretd">{{ i.W }} / {{ i.L }}
+                        <div class="contour-barre">
+                        <div class="barre" style="width:calc(100%*{{ i.W }}/({{ i.W }} + {{ i.L }})); background-color: {{ color }}"></div></div>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %} 
+            <tr><th colspan="3">Périodes mensuelles</th></tr>
+            <tr>
+                <th onclick="sortTable(0,1,this)">Rang</th>
+                <th onclick="sortTable(1,1,this)">Date</th>
+                <th onclick="sortTable(3,1,this)">{{ option|headcount }}<img id="fleche-sort" src="{% static 'companion/img/fleche.png' %}" style="transform:rotate(90deg)"></th>
+            </tr>
+            {% for i in rankMois %}
+                <tr onClick="addIndicsPeriod('{{ option }}','{{ i.Mois }}','{{ i.Annee }}')">
+                    <td>{{ i.Rank }}</td>
+                    <td data-date="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
+                    <td class="barretd">{{ i.Count|tempsvoice:option }}
+                        <div class="contour-barre">
+                        <div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxM }}); background-color: {{ color }}"></div></div>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr><th colspan="4">Périodes annuelles</th></tr>
+            {% for i in rankAnnee %}
+                <tr onClick="addIndicsPeriod('{{ option }}','{{ i.Mois }}','{{ i.Annee }}')">
+                    <td>{{ i.Rank }}</td>
+                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                    <td class="barretd">{{ i.Count|tempsvoice:option }}
+                        <div class="contour-barre">
+                        <div class="barre" style="width:calc(100%*{{ i.Count }}/{{ maxA }}); background-color: {{ color }}"></div></div>
+                    </td>
             </tr>
         {% endfor %}
         {% endif %}
     </table>
-    <iframe id="iframeevol" src="/companion/iframeblank?option={{ option }}&command={{ command }}&plus={{ plus }}" scrolling="no" onload="resizeIframe(this)"></iframe>
+    <div class="grid-stats-2" id="grid-indics">
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Indicateurs</div>
+        <script>addIndics("{{ option }}")</script>
+    </div>
+    <div class="grid-stats-2" id="grid-indics-period">
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Indicateurs sur la période sélectionnée</div>
+    </div>
+    <div class="grid-stats-2">
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Tendances</div>
+    </div>
+    <div class="grid-stats-2" id="grid-graph">
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Graphique</div>
+        <script>addGraph("{{ option }}")</script>
+    </div>
 </div>
 {% endblock stats %}

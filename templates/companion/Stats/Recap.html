@@ -3,6 +3,7 @@
 
 {% block stats %}
 {% load TagsCustom %}
+{% load static %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
     function addRanks(option) {
@@ -37,7 +38,7 @@
 
                 }
                 if (data[2]) {
-                    $("#ranks").append(`<tr id="ranksplus"><td colspan="6" onclick="addRanks('${option}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>`)
+                    $("#ranks").append(`<tr id="ranksplus"><td colspan="6" onclick="addRanks('${option}')"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>`)
                     table.dataset.nb = Number(table.dataset.nb)+1
                 }
             }    
@@ -77,7 +78,7 @@
 
                 }
                 if (data[2]) {
-                    $("#first").append(`<tr id="firstplus"><td colspan="6" onclick="addFirst('${option}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>`)
+                    $("#first").append(`<tr id="firstplus"><td colspan="6" onclick="addFirst('${option}')"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>`)
                     table.dataset.nb = Number(table.dataset.nb)+1
                 }
             }    
@@ -102,7 +103,7 @@
 
                 }
                 if (data[2]) {
-                    $("#periods").append(`<tr id="periodsplus"><td colspan="6" onclick="addPeriods('${option}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>`)
+                    $("#periods").append(`<tr id="periodsplus"><td colspan="6" onclick="addPeriods('${option}')"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>`)
                     table.dataset.nb = Number(table.dataset.nb)+1
                 }
             }    
@@ -133,7 +134,7 @@
 
                 }
                 if (data[2]) {
-                    $("#evol").append(`<tr id="evolplus"><td colspan="6" onclick="addEvol('${option}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>`)
+                    $("#evol").append(`<tr id="evolplus"><td colspan="6" onclick="addEvol('${option}')"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>`)
                     table.dataset.nb = Number(table.dataset.nb)+1
                 }
             }    
@@ -164,7 +165,7 @@
 
                 }
                 if (data[2]) {
-                    $("#perso").append(`<tr id="persoplus"><td colspan="6" onclick="addPerso('${option}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>`)
+                    $("#perso").append(`<tr id="persoplus"><td colspan="6" onclick="addPerso('${option}')"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>`)
                     table.dataset.nb = Number(table.dataset.nb)+1
                 }
             }    
@@ -189,7 +190,7 @@
 
                 }
                 if (data[2]) {
-                    $("#jours").append(`<tr id="joursplus"><td colspan="6" onclick="addJours('${option}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>`)
+                    $("#jours").append(`<tr id="joursplus"><td colspan="6" onclick="addJours('${option}')"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>`)
                     table.dataset.nb = Number(table.dataset.nb)+1
                 }
             }    
@@ -275,7 +276,7 @@
             </tr>
         {% endfor %}
         {% if ranks|getI:2 %}
-            <tr id="ranksplus"><td colspan="6" onclick="addRanks('{{ option }}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>
+            <tr id="ranksplus"><td colspan="6" onclick="addRanks('{{ option }}')"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>
         {% endif %}
     </table>
 
@@ -306,7 +307,7 @@
             </tr>
         {% endfor %}
         {% if evol|getI:2 %}
-        <tr id="evolplus"><td colspan="6" onclick="addEvol('{{ option }}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>
+        <tr id="evolplus"><td colspan="6" onclick="addEvol('{{ option }}')"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>
         {% endif %}
         </table>
     {% endif %}
@@ -345,7 +346,7 @@
                 </tr>
             {% endfor %}
             {% if perso|getI:2 %}
-                <tr id="persoplus"><td colspan="6" onclick="addPerso('{{ option }}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>
+                <tr id="persoplus"><td colspan="6" onclick="addPerso('{{ option }}')"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>
             {% endif %}
         </table>
     {% endif %}
@@ -418,7 +419,7 @@
                 </tr>
             {% endfor %}
         {% if first|getI:2 %}
-        <tr id="firstplus"><td colspan="6" onclick="addFirst('{{ option }}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>
+        <tr id="firstplus"><td colspan="6" onclick="addFirst('{{ option }}')"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>
         {% endif %}
     </table>
     {% endif %}
@@ -442,7 +443,7 @@
                 </tr>
             {% endfor %}
             {% if periods|getI:2 %}
-            <tr id="periodsplus"><td colspan="6" onclick="addPeriods('{{ option }}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>
+            <tr id="periodsplus"><td colspan="6" onclick="addPeriods('{{ option }}')"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>
             {% endif %}
         </table>
     {% endif %}
@@ -466,7 +467,7 @@
             </tr>
         {% endfor %}
         {% if jours|getI:2 %}
-        <tr id="joursplus"><td colspan="6" onclick="addJours('{{ option }}')"><img src="https://cdn.discordapp.com/attachments/726034739550486618/977158439673397268/Plus.png"></td></tr>
+        <tr id="joursplus"><td colspan="6" onclick="addJours('{{ option }}')"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>
         {% endif %}
     </table>
     {% endif %}

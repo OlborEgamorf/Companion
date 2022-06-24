@@ -216,30 +216,79 @@
                 <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}"></span>
                 <span id="Guild" class="text-bar">{{ guildname }}</span>
             </a>
-            <a href="/companion/{{ guildid }}/home" onmouseenter="showBar('Stats')" style="background-color: #696969;" onmouseleave="hideBar('Stats')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="{% static 'companion/img/stats.png' %}"></span>
-                <span id="Stats" class="text-bar">Statistiques</span>
-            </a>
-            <a onmouseenter="showBar('Sondages')" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="{% static 'companion/img/poll.png' %}"></span>
-                <span id="Sondages" class="text-bar">Sondages</span>
-            </a>
-            <a  onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="{% static 'companion/img/sv.png' %}"></span>
-                <span id="SV" class="text-bar">Savez-Vous ?</span>
-            </a>
-            <a  onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="{% static 'companion/img/anniv.png' %}"></span>
-                <span id="Anniv" class="text-bar">Anniversaires</span>
-            </a>
-            <a  onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="{% static 'companion/img/outils.png' %}"></span>
-                <span id="Outils" class="text-bar">Outils</span>
-            </a>
-            <a  onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" onclick="clickServ(this)">
-                <span class="little-icon-guild" ><img src="{% static 'companion/img/admin.png' %}"></span>
-                <span id="Admin" class="text-bar">Administration</span>
-            </a>
+
+            {% if pagestats %}
+                <a href="/companion/{{ guildid }}/stats/" onmouseenter="showBar('Stats')" style="background-color: #696969;" onmouseleave="hideBar('Stats')" onclick="clickServ(this)" id="a-">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/stats.png' %}"></span>
+                    <span id="Stats" class="text-bar">Statistiques</span>
+                </a>
+            {% else %} 
+                <a href="/companion/{{ guildid }}/stats/" onmouseenter="showBar('Stats')" onmouseleave="hideBar('Stats')" onclick="clickServ(this)" id="a-">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/stats.png' %}"></span>
+                    <span id="Stats" class="text-bar">Statistiques</span>
+                </a>
+            {% endif %}
+
+            {% if pagepolls %}
+                <a href="/companion/{{ guildid }}/polls/" onmouseenter="showBar('Sondages')" style="background-color: #696969;" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/poll.png' %}"></span>
+                    <span id="Sondages" class="text-bar">Sondages</span>
+                </a>
+            {% else %} 
+                <a href="/companion/{{ guildid }}/polls/" onmouseenter="showBar('Sondages')" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/poll.png' %}"></span>
+                    <span id="Sondages" class="text-bar">Sondages</span>
+                </a>
+            {% endif %}
+
+            {% if pagesv %}
+                <a onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" style="background-color: #696969;" onclick="clickServ(this)">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/sv.png' %}"></span>
+                    <span id="SV" class="text-bar">Savez-Vous ?</span>
+                </a>
+            {% else %} 
+                <a onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" onclick="clickServ(this)">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/sv.png' %}"></span>
+                    <span id="SV" class="text-bar">Savez-Vous ?</span>
+                </a>
+            {% endif %}
+
+            {% if pageanniv %}
+                <a onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" style="background-color: #696969;" onclick="clickServ(this)">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/anniv.png' %}"></span>
+                    <span id="Anniv" class="text-bar">Anniversaires</span>
+                </a>
+            {% else %} 
+                <a onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" onclick="clickServ(this)">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/anniv.png' %}"></span>
+                    <span id="Anniv" class="text-bar">Anniversaires</span>
+                </a>
+            {% endif %}
+
+            {% if pageoutils %}
+                <a onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" style="background-color: #696969;" onclick="clickServ(this)">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/outils.png' %}"></span>
+                    <span id="Outils" class="text-bar">Outils</span>
+                </a>
+            {% else %} 
+                <a onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" onclick="clickServ(this)">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/outils.png' %}"></span>
+                    <span id="Outils" class="text-bar">Outils</span>
+                </a>
+            {% endif %}
+
+            {% if pageadmin %}
+                <a onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" style="background-color: #696969;" onclick="clickServ(this)">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/admin.png' %}"></span>
+                    <span id="Admin" class="text-bar">Administration</span>
+                </a>
+            {% else %} 
+                <a onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" onclick="clickServ(this)">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/admin.png' %}"></span>
+                    <span id="Admin" class="text-bar">Administration</span>
+                </a>
+            {% endif %}
+
         {% endif %}
         
         {% if pagestats %}
@@ -540,16 +589,14 @@
                     </li>
                 {% elif not mix %}
                     <li id="nav-rapport" class="lvl-0">
-                        <a>Rapports</a>
+                        <a>Studio</a>
                         <ul class="mega-menu-tab">
                             <li class="lvl-1">
                                 <h2>Options</h2>
                                 <ul class="lvl-2">
-                                    {% for o in options %}
-                                        {% if o != "divers" %}
-                                            <li><a href="/companion/{{ guildid }}/stats/rapport/{{ o }}">{{ o|getOption }}</a></li>
-                                        {% endif %}
-                                    {% endfor %}
+                                    <li><a>Dashboard</a></li>
+                                    <li><a>Fusions</a></li>
+                                    <li><a>Graph Studio</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -570,6 +617,26 @@
             </ul>
         </nav>
 
+        <script>
+            var command=document.getElementById("nav-{{ command }}")
+            command.children[0].style.backgroundColor="#36F"
+        </script>
+    
+    {% elif pagepolls %}
+        <nav class="mega-menu">
+            <ul class="mega-menu-main">
+                <li id="nav-poll" class="lvl-0">
+                    <a href="/companion/{{ guildid }}/polls/">Sondages</a>
+                </li>
+                <li id="nav-petitions" class="lvl-0">
+                    <a href="/companion/{{ guildid }}/polls/petitions/">Pétitions</a>
+                </li>
+                <li id="nav-ga" class="lvl-0">
+                    <a href="/companion/{{ guildid }}/polls/giveaways/">Giveaway</a>
+                </li>
+            </ul>
+        </nav>
+        
         <script>
             var command=document.getElementById("nav-{{ command }}")
             command.children[0].style.backgroundColor="#36F"

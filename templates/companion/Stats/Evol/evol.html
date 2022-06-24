@@ -38,8 +38,8 @@
     <input type="text" id="searchTable" onkeyup="searchName(1)" placeholder="Recherchez une date">
     <input id="input-collapse" type="checkbox" onclick="toggle(this)" name="ytes"> <label for="input-collapse">Affiner</label>
 </div>
-<div class="stats">
-    <table id="tableot">
+<div class="grid-stats" id="main-grid">
+    <table class="grid-stats-1" id="tableot">
         <tr><th colspan="5">Statistiques évolution {{ mois }} {{ annee }}, {{ nom }}</th></tr>
         <tr>
             <th colspan="2">Rang</th>
@@ -68,10 +68,18 @@
             </tr>
         {% endfor %}
     </table>
-    {% if guildid == "ot/jeux" %}
-        <iframe id="iframeevol" src="/companion/ot/jeux/{{ option }}/iframeperiods?data={{ mois }}?{{ annee }}?None" scrolling="no" onload="resizeIframe(this)"></iframe>
-    {% else %}
-        <iframe id="iframeevol" src="/companion/iframeblank?option={{ option }}&command={{ command }}&plus={{ plus }}" scrolling="no" onload="resizeIframe(this)"></iframe>
-    {% endif %}
+    <div class="grid-stats-2" id="grid-indics">
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Indicateurs</div>
+    </div>
+    <div class="grid-stats-2" id="grid-indics-period">
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Indicateurs sur la période sélectionnée</div>
+    </div>
+    <div class="grid-stats-2">
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Tendances</div>
+    </div>
+    <div class="grid-stats-2" id="grid-graph">
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Graphique</div>
+        
+    </div>
 </div>
 {% endblock stats %}

@@ -1,5 +1,6 @@
 {% extends "companion/BASE.html" %}
 {% block script %}
+{% load static %}
 <script type="text/javascript">
 
     function confirm(button) {
@@ -16,15 +17,14 @@
 {% block stats %}
 {% load TagsCustom %}
 
-<div class="guild-stats">Vous possèdez <strong>{{ coins }}</strong> OT Coins</div>
+
 
 {% if mess != None %} 
     <div class="guild-stats" style="background-color:{{ colormess }}">{{ mess }}</div>
 {% endif %}
 
-<form action="" method="post"> {% csrf_token %}
-<div class="div-titres">
-    
+<form action="" method="post" style="margin-top:30px"> {% csrf_token %}
+<div class="grid-onecol" id="main-grid">
     <table>
         <tr><th colspan="5">Titres en boutique</th></tr>
         <tr>
@@ -101,4 +101,8 @@
     </table>
 </div>
 </form>
+
+<script>
+    loadHeightZero()
+</script>
 {% endblock stats %}

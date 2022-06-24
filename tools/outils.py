@@ -1,5 +1,8 @@
+import json
 import os
+from random import randint
 import sqlite3
+import time
 
 import requests
 from os.path import exists
@@ -355,3 +358,18 @@ def createPhrase(text:(str or list)) -> str:
         text=" ".join(text)
     return text.replace("'","’")
 
+def sendAndWait(data):
+    json_string = json.dumps(data)
+    file='{0}/Com/{1}_{2}.json'.format(root,time.time(),randint(0,10000))
+    with open(file, 'w') as outfile:
+        outfile.write(json_string)
+    to=0
+    while data["function"]!="return":
+        to+=1
+        time.sleep(0.3)
+        with open(file) as json_file:
+            data = json.load(json_file)
+        if to==40:
+            raise AssertionError("Le bot est en maintenance.")
+    os.remove(file)
+    return data

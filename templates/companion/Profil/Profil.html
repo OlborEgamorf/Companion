@@ -3,7 +3,7 @@
 {% load TagsCustom %}
 <div class="guild-stats">Tableau jeux</div>
 
-<div class="div-profil">
+<div class="grid-threecol">
     {% for i in jeux %}
         <table class="table-jeux">
             <tr><th colspan="3">{{ i }}</th></tr>
@@ -30,7 +30,7 @@
 {% if id == idprofil %}
     <div class="guild-stats">Recap stats</div>
 
-    <div class="div-profil">
+    <div class="grid-twocol">
         <table class="table-recap">
             <tr><th colspan="5">Messages envoyés par serveur</th></tr>
             <tr>

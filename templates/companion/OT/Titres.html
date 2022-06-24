@@ -136,7 +136,7 @@
     </div>
 </div>
 
-<div class="div-profil" id="all-titres">
+<div class="grid-threecol" id="all-titres">
     {% for i in titresInfos %}
         <table class="table-jeux" data-rarete="{{ i.Rareté|usedict:dictRarete }}" data-collection="{{ i.Collection }}" style="display: inline-table;">
             <tr><th colspan="3">{{ i.Nom }}</th></tr>

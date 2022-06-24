@@ -1,0 +1,157 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+{% load static %}
+
+<script>
+    function addProp() {
+        form = document.getElementById("form")
+        nb = Number(form.dataset.nb)
+        if (nb <= 9) {
+            form.dataset.nb = nb+1
+            $("#propplus").before(`<tr id="trprop${nb+1}"><td>Proposition ${nb+1}</td><td colspan="2"><input name="prop${nb+1}" type="text" style="width:-moz-available;text-align:left"></td></tr>`)
+        }
+    }
+
+    function delProp() {
+        form = document.getElementById("form")
+        nb = Number(form.dataset.nb)
+        if (nb > 2) {
+            form.dataset.nb = nb-1
+            $(`#trprop${nb}`).remove()
+        }
+    }
+
+    function confirm(button) {
+        val=button.value
+        button.value="Confirmer"
+        sleep(100).then(() => {button.type="submit"})
+        sleep(10000).then(() => {
+            button.type="button"
+            button.value=val})
+    }
+
+</script>
+
+<div class="grid-threecenter" style="margin-top: 30px;">
+    <div style="grid-column: 2 / span 1;">
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Nouvelle pétition</div>
+        <div>
+            <form action="/companion/{{ guildid }}/polls/petitions/create" method="post"> {% csrf_token %}
+                <table style="margin-top: 30px;" data-nb="2" id="form">
+                    <tr><th colspan="3">Créez votre pétition</th></tr>
+                    <tr>
+                        <td>Objet</td>
+                        <td colspan="2"><input name="question" type="text" style="width:-moz-available;text-align:left" placeholder="Quel est le but de votre pétition ?"></td>
+                    </tr>    
+                    <tr>
+                        <td>Description</td>
+                        <td colspan="2"><textarea name="description" type="text" style="width:-moz-available;text-align:left" placeholder="Décrivez ce que vous voulez faire (optionnel)" maxlength="400" rows="3"></textarea></td>
+                    </tr>    
+                    <tr>
+                        <td>Nombre de signatures</td>
+                        <td colspan="2"><input name="signatures" type="number" style="width:-moz-available;text-align:left" min="2" max="20000" placeholder="Saisissez un nombre"></td>
+                    </tr>              
+                    <tr>
+                        <td>Fin de la pétition</td>
+                        <td colspan="2">
+                            <input style="background-color: #111; "type="datetime-local" id="time" name="time" value="{{ time }}" min="{{ min }}" max="{{ max }}">
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Salon d'envoi</td>
+                        <td colspan="2">
+                            <select name="channel" id="channel">
+                                {% for i in allchans %}
+                                    <option value="{{ i.id }}">{{ i.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr><td colspan="3"><input type="submit" value="Lancer la pétition"></td></tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="grid-twocol" style="margin-top: 30px;">
+    <div>
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Pétitions actives</div>
+        <div>
+            {% for i in active %} 
+                {% if not i.Hide %}
+                    <form action="/companion/{{ guildid }}/polls/petitions/sign/{{ i.ID }}" method="post"> {% csrf_token %}
+                        <table class="table-recap" style="margin-top: 30px;">
+                            <tr><th colspan="3">{{ i.Petition }}</th></tr>
+                            <tr><td colspan="3">{{ i.Description }}</td></tr>
+                            <tr><th colspan="3">Statut</th></tr>
+                            <tr><td colspan="3" class="barretd">{{ i.Final|calcpercent:i.Nb }}%
+                                <div class="contour-barre">
+                                    {% if i.Final|calcpercent:i.Nb < 100 %}
+                                        <div class="barre" style="width:{{ i.Final|calcpercent:i.Nb }}%"></div></div>
+                                    {% else %}
+                                        <div class="barre" style="width:100%"></div></div>
+                                    {% endif %}
+                            </td></tr>
+                            
+                            <tr>
+                                <td>Objectif : {{ i.Nb }}</td>
+                                <td>Signatures : {{ i.Final }}</td>
+                                {% if i.User %}
+                                    <td>Vous avez signé !</td></tr>
+                                {% else %}
+                                    <td><input type="button" class="bouton-achat" value="Signer" onclick="confirm(this)"></td></td>
+                                {% endif %}
+                            </tr>
+                            
+                            <tr><th>Début</th><th>Fin</th><th>Auteur</th></tr>
+                            <tr><td>{{ i.Debut|epochtodate }}</td><td>{{ i.Fin|epochtodate }}</td><td>Olbor</td></tr>
+                            <tr><td colspan="3"><a href="https://discord.com/channels/{{ guildid }}/{{ i.Channel }}/{{ i.ID }}">Lien vers la pétition</a></td></tr>
+                        </table>
+                    </form>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <div>
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Pétitions passées</div>
+        <div>
+            {% for i in allpolls %} 
+                {% if not i.Hide %}
+                
+                    <table class="table-recap" style="margin-top: 30px;">
+                        <tr><th colspan="3">{{ i.Petition }}</th></tr>
+                        <tr><td colspan="3">{{ i.Description }}</td></tr>
+                        <tr><th colspan="3">Résultats</th></tr>
+                        <tr><td colspan="3" class="barretd">{{ i.Final|calcpercent:i.Nb }}%
+                            <div class="contour-barre">
+                            {% if i.Final|calcpercent:i.Nb < 100 %}
+                                <div class="barre" style="width:{{ i.Final|calcpercent:i.Nb }}%"></div></div>
+                            {% else %}
+                                <div class="barre" style="width:100%"></div></div>
+                            {% endif %}
+                        </td></tr>    
+                        <tr>
+                            <td>Objectif : {{ i.Nb }}</td>
+                            <td>Signatures : {{ i.Final }}</td>
+                            {% if i.Final >= i.Nb %} 
+                                <td>Vous avez réussi !</td>
+                            {% else %}
+                                <td>La pétition a échoué.</td>
+                            {% endif %}
+                        </tr>   
+
+                        <tr><th>Début</th><th>Fin</th><th>Auteur</th></tr>
+                        <tr><td>{{ i.Debut|epochtodate }}</td><td>{{ i.Fin|epochtodate }}</td><td>Olbor</td></tr>
+                    </table>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock stats %}
