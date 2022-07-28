@@ -18,8 +18,39 @@ from companion.views.Pin import ajoutPin, delPin
 from companion.views.Profil.Custom import viewProfilPerso
 from companion.views.Profil.Home import viewProfilHome
 from companion.views.Profil.Titres import viewProfilTitres
+from companion.views.Serveurs.Anniv.Anniv import (setAnniv, viewAnniv)
 from companion.views.Serveurs.Home import viewGuildHome
-from companion.views.Serveurs.Polls.Petitions import createPetition, viewPetitions, votePetition
+from companion.views.Serveurs.Outils.Adieu import (addImgAD, addMessAD, chanAD,
+                                                   delImgAD, delMessAD,
+                                                   editImgAD, editMessAD,
+                                                   simulateAD, toggleAD,
+                                                   toggleImgAD, toggleMessAD,
+                                                   viewGestionAD)
+from companion.views.Serveurs.Outils.AnnivAuto import (addImgAnniv,
+                                                       addMessAnniv, chanAnniv,
+                                                       delImgAnniv,
+                                                       delMessAnniv,
+                                                       editImgAnniv,
+                                                       editMessAnniv,
+                                                       simulateAnniv,
+                                                       toggleAnniv,
+                                                       toggleImgAnniv,
+                                                       toggleMessAnniv, viewGestionAnniv)
+from companion.views.Serveurs.Outils.Bienvenue import (addImgBV, addMessBV,
+                                                       chanBV, delImgBV,
+                                                       delMessBV, editImgBV,
+                                                       editMessBV, simulateBV,
+                                                       toggleBV, toggleImgBV,
+                                                       toggleMessBV,
+                                                       viewGestionBV)
+from companion.views.Serveurs.Outils.Tableaux import (addTab, delTab, editTab,
+                                                      toggleTab,
+                                                      toggleTableaux,
+                                                      viewGestionTableaux)
+from companion.views.Serveurs.Outils.VoiceEphem import viewGestionVoiceEphem
+from companion.views.Serveurs.Polls.Petitions import (createPetition,
+                                                      viewPetitions,
+                                                      votePetition)
 from companion.views.Serveurs.Polls.Polls import (answerPoll, createPoll,
                                                   viewPolls)
 from companion.views.Serveurs.Stats.Evol.Evol import evolJeux, viewEvol
@@ -53,7 +84,8 @@ from companion.views.Serveurs.Stats.Periods.ServCompare import viewServCompare
 from companion.views.Serveurs.Stats.Ranks.MoreRanks import (getAvAp, getEvol,
                                                             getHistoFirst,
                                                             getIndics)
-from companion.views.Serveurs.Stats.Ranks.Pantheon import (pantheonJeux,
+from companion.views.Serveurs.Stats.Ranks.Pantheon import (morePantheon,
+                                                           pantheonJeux,
                                                            viewPantheon)
 from companion.views.Serveurs.Stats.Ranks.Perso import viewPerso
 from companion.views.Serveurs.Stats.Ranks.PersoCompare import viewPersoCompare
@@ -70,6 +102,10 @@ from companion.views.Serveurs.Stats.Rapports.Rapports import viewRapports
 from companion.views.Serveurs.Stats.Recap import (addMoreRecap,
                                                   addMoreRecapJeux, recapJeux,
                                                   viewRecapStats)
+from companion.views.Serveurs.SV.SV import (addSV, editSV, viewAddSV,
+                                            viewModoSV, viewPersoSV,
+                                            viewSVRandom)
+from companion.views.Serveurs.Timeline.Timeline import viewTimeline
 
 urlpatterns = [
     path('', home, name="companion-home"),
@@ -113,17 +149,78 @@ urlpatterns = [
     path("<int:guild>/<str:option>/iframefirst/graphs",iFrameGraphFirst,name="iframe-graphs-ranks"),
     path("<int:guild>/<str:option>/iframejours/graphs",iFrameGraphJours,name="iframe-graphs-ranks"),
 
-    path("<int:guild>/polls/",viewPolls,name="stats-home"),
-    path("<int:guild>/polls/create",createPoll,name="stats-home"),
-    path("<int:guild>/polls/vote/<int:pollid>",answerPoll,name="stats-home"),
+    path("<int:guild>/sondages/",viewPolls,name="stats-home"),
+    path("<int:guild>/sondages/create",createPoll,name="stats-home"),
+    path("<int:guild>/sondages/vote/<int:pollid>",answerPoll,name="stats-home"),
 
-    path("<int:guild>/polls/petitions/",viewPetitions,name="stats-home"),
-    path("<int:guild>/polls/petitions/create",createPetition,name="stats-home"),
-    path("<int:guild>/polls/petitions/sign/<int:pollid>",votePetition,name="stats-home"),
+    path("<int:guild>/petitions/",viewPetitions,name="stats-home"),
+    path("<int:guild>/petitions/create",createPetition,name="stats-home"),
+    path("<int:guild>/petitions/sign/<int:pollid>",votePetition,name="stats-home"),
 
-    path("<int:guild>/polls/giveaways/",viewPetitions,name="stats-home"),
-    path("<int:guild>/polls/giveaways/create",createPetition,name="stats-home"),
-    path("<int:guild>/polls/giveaways/enter/<int:pollid>",votePetition,name="stats-home"),
+    path("<int:guild>/giveaways/",viewPetitions,name="stats-home"),
+    path("<int:guild>/giveaways/create",createPetition,name="stats-home"),
+    path("<int:guild>/giveaways/enter/<int:pollid>",votePetition,name="stats-home"),
+
+    path("<int:guild>/sv/",viewSVRandom,name="stats-home"),
+    path("<int:guild>/sv/add/",viewAddSV,name="stats-home"),
+    path("<int:guild>/sv/edit/<int:idsv>",editSV,name="stats-home"),
+    path("<int:guild>/sv/perso/",viewPersoSV,name="stats-home"),
+    path("<int:guild>/sv/modo/",viewModoSV,name="stats-home"),
+    path("<int:guild>/sv/add/add",addSV,name="stats-home"),
+
+    path("<int:guild>/anniv/",viewAnniv,name="stats-home"),
+    path("<int:guild>/anniv/set",setAnniv,name="stats-home"),
+
+    path("<int:guild>/timeline/",viewTimeline,name="stats-home"),
+
+    path("<int:guild>/bienvenue/",viewGestionBV,name="stats-home"),
+    path("<int:guild>/adieu/",viewGestionAD,name="stats-home"),
+    path("<int:guild>/annivauto/",viewGestionAnniv,name="stats-home"),
+    path("<int:guild>/tableaux/",viewGestionTableaux,name="stats-home"),
+    path("<int:guild>/cmdauto/",viewGestionVoiceEphem,name="stats-home"),
+    path("<int:guild>/dynicon/",viewGestionVoiceEphem,name="stats-home"),
+
+    path("<int:guild>/bienvenue/simulate/<int:idimg>",simulateBV,name="stats-home"),
+    path("<int:guild>/bienvenue/chanbv",chanBV,name="stats-home"),
+    path("<int:guild>/bienvenue/togglebv/",toggleBV,name="stats-home"),
+    path("<int:guild>/bienvenue/toggleimg/<int:idimg>",toggleImgBV,name="stats-home"),
+    path("<int:guild>/bienvenue/togglemessage/<int:idmessage>",toggleMessBV,name="stats-home"),
+    path("<int:guild>/bienvenue/editmessage/<int:idmessage>",editMessBV,name="stats-home"),
+    path("<int:guild>/bienvenue/editimg/<int:idimg>",editImgBV,name="stats-home"),
+    path("<int:guild>/bienvenue/addmessage/",addMessBV,name="stats-home"),
+    path("<int:guild>/bienvenue/addimg",addImgBV,name="stats-home"),
+    path("<int:guild>/bienvenue/delmessage/<int:idmessage>",delMessBV,name="stats-home"),
+    path("<int:guild>/bienvenue/delimg/<int:idimg>",delImgBV,name="stats-home"),
+
+    path("<int:guild>/adieu/simulate/<int:idimg>",simulateAD,name="stats-home"),
+    path("<int:guild>/adieu/chanad",chanAD,name="stats-home"),
+    path("<int:guild>/adieu/togglead/",toggleAD,name="stats-home"),
+    path("<int:guild>/adieu/toggleimg/<int:idimg>",toggleImgAD,name="stats-home"),
+    path("<int:guild>/adieu/togglemessage/<int:idmessage>",toggleMessAD,name="stats-home"),
+    path("<int:guild>/adieu/editmessage/<int:idmessage>",editMessAD,name="stats-home"),
+    path("<int:guild>/adieu/editimg/<int:idimg>",editImgAD,name="stats-home"),
+    path("<int:guild>/adieu/addmessage/",addMessAD,name="stats-home"),
+    path("<int:guild>/adieu/addimg",addImgAD,name="stats-home"),
+    path("<int:guild>/adieu/delmessage/<int:idmessage>",delMessAD,name="stats-home"),
+    path("<int:guild>/adieu/delimg/<int:idimg>",delImgAD,name="stats-home"),
+
+    path("<int:guild>/annivauto/simulate/<int:idimg>",simulateAnniv,name="stats-home"),
+    path("<int:guild>/annivauto/chanad",chanAnniv,name="stats-home"),
+    path("<int:guild>/annivauto/toggleanniv/",toggleAnniv,name="stats-home"),
+    path("<int:guild>/annivauto/toggleimg/<int:idimg>",toggleImgAnniv,name="stats-home"),
+    path("<int:guild>/annivauto/togglemessage/<int:idmessage>",toggleMessAnniv,name="stats-home"),
+    path("<int:guild>/annivauto/editmessage/<int:idmessage>",editMessAnniv,name="stats-home"),
+    path("<int:guild>/annivauto/editimg/<int:idimg>",editImgAnniv,name="stats-home"),
+    path("<int:guild>/annivauto/addmessage/",addMessAnniv,name="stats-home"),
+    path("<int:guild>/annivauto/addimg",addImgAnniv,name="stats-home"),
+    path("<int:guild>/annivauto/delmessage/<int:idmessage>",delMessAnniv,name="stats-home"),
+    path("<int:guild>/annivauto/delimg/<int:idimg>",delImgAnniv,name="stats-home"),
+
+    path("<int:guild>/tableaux/toggletableaux/",toggleTableaux,name="stats-home"),
+    path("<int:guild>/tableaux/toggletab/<int:idtab>",toggleTab,name="stats-home"),
+    path("<int:guild>/tableaux/edittab/<int:idtab>",editTab,name="stats-home"),
+    path("<int:guild>/tableaux/addtab/",addTab,name="stats-home"),
+    path("<int:guild>/tableaux/deltab/<int:idtab>",delTab,name="stats-home"),
 
     path("profil/<int:user>",viewProfilHome,name="user-profil"),
     path("profil/<int:user>/titres",viewProfilTitres,name="user-titres"),
@@ -145,6 +242,8 @@ urlpatterns = [
     path("<int:guild>/<str:option>/ranksmore/histofirst",getHistoFirst,name="stats-ranks"),
     path("<int:guild>/<str:option>/ranksmore/evol",getEvol,name="stats-ranks"),
     path("<int:guild>/<str:option>/ranksmore/avap",getAvAp,name="stats-ranks"),
+
+    path("<int:guild>/<str:option>/pantheonmore",morePantheon,name="stats-ranks"),
 
     path("<int:guild>/<str:option>/periodsmore/indics",getIndicsPeriods,name="stats-ranks"),
     path("<int:guild>/<str:option>/periodsmore/graph",getGraphPeriods,name="stats-ranks"),
@@ -192,3 +291,10 @@ urlpatterns = [
     #path("<int:guild>/emotes/mondial/",emotesMondialGuild,name="guild-emotes-mondial"),
     
 ]
+
+
+"""path("<int:guild>/outils/voiceephem/togglevoiceephem/",toggleVoiceEphem,name="stats-home"),
+    path("<int:guild>/outils/voiceephem/togglehub/<int:idhub>",toggleHub,name="stats-home"),
+    path("<int:guild>/outils/voiceephem/edithub/<int:idhub>",editHub,name="stats-home"),
+    path("<int:guild>/outils/voiceephem/addhub/",addHub,name="stats-home"),
+    path("<int:guild>/outils/voiceephem/delhub/<int:idhub>",delHub,name="stats-home"),"""

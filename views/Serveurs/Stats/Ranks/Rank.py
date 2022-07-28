@@ -99,7 +99,7 @@ def viewRankObj(request,guild,option):
 
     for i in curseur.execute("SELECT * FROM {0}{1}{2} ORDER BY Rank ASC LIMIT 150".format(moisDB,anneeDB,obj)).fetchall():
 
-        ligne=getUserTable(i,curseurGet,guild)
+        ligne=getUserTable(i,curseurGet,curseurGuild,guild)
         if option=="divers" and obj=="11":
             ligne["Count"]=tempsVoice(i["Count"])
 

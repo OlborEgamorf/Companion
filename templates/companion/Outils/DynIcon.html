@@ -1,0 +1,158 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+{% load static %}
+
+<script>
+    function confirm(button) {
+        val=button.value
+        button.value="Supprimer vraiment"
+        sleep(100).then(() => {button.type="submit"})
+        sleep(10000).then(() => {
+            button.type="button"
+            button.value=val})
+    }
+
+    function toogleDyn(tog) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                window.location.replace("/companion/{{ guildid }}/dynicon");
+            }    
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/dynicon/toggleDyn?active=${tog.checked == true}`,true)
+        httpRequest.send()
+    }
+
+    function toogleImg(tog,idimg) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.open("GET",`/companion/{{ guildid }}/dynicon/toggleimg/${idimg}?active=${tog.checked == true}`,true)
+        httpRequest.send()
+    }
+
+    function editImg(idimg) {
+        var description = document.getElementById(`description-${idimg}`).value
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.open("GET",`/companion/{{ guildid }}/dynicon/editimg/${idimg}?description=${description}`,true)
+        httpRequest.send()
+    }
+
+    function delImg(element,idimg) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                $(element).parent().parent().parent().parent().remove()
+            }
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/dynicon/delimg/${idimg}`,true)
+        httpRequest.send()
+    }
+
+    function test(obj) {
+        console.log(obj)
+    }
+
+</script>
+<link rel="stylesheet" media="screen" type="text/css" href="{% static 'companion/colorpicker/src/coloris.css' %}" />
+<script type="text/javascript" src="{% static 'companion/colorpicker/src/coloris.js' %}"></script>
+
+{% if etatDyn.Active %}
+    <div class="grid-onecol" style="margin-top: 40px;">
+        <table >
+            <tr>
+                <th>Icone de serveur dymanique</th>
+                <th>
+                    <label class="switch">
+                        <input onchange='toogleDyn(this)' type="checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </th>
+            </tr>
+            <tr><td colspan="2">Modifiez l'icone de votre serveur tous les jours, semaines ou même mois avec cet outils ! Vous pouvez permettre à vos membres d'ajouter des icones, avec des descriptions et d'y taguer les membres présents !</td></tr>
+        </table>
+        <table>
+            <tr><th>Paramètres</th></tr>
+            <tr>
+                <td>Salon d'envoi</td>
+                <td>
+                    <form method="post" action="/companion/{{ guildid }}/dynicon/chanDyn" enctype="multipart/form-data"> {% csrf_token %}
+                        <select name="salon" id="salon">
+                            {% for i in allchans %}
+                                <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td>Changements après</td>
+                <td><input name="change" type="number" style="width:-moz-available;text-align:left" min="1" max="500" value="{{ nombre }}">
+                    <select name="unite" id="unite">
+                        <option value="jours">Jours</option>
+                        <option value="mois">Mois</option>
+                        <option value="annee">Annees</option>
+                    </select>
+                </td>
+            </tr>
+            <tr><td><input type="submit" value="Sauvegarder" class="input-click"></td></tr>
+        </table>
+    </div>
+{% else %}
+    <div class="grid-onecol" style="margin-top: 30px;">
+        <table>
+            <tr>
+                <th>Icone de serveur dymanique</th>
+                <th>
+                    <label class="switch">
+                        <input onchange='toogleDyn(this)' type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                </th>
+            </tr>
+            <tr><td colspan="2">Modifiez l'icone de votre serveur tous les jours, semaines ou même mois avec cet outils ! Vous pouvez permettre à vos membres d'ajouter des icones, avec des descriptions et d'y taguer les membres présents !</td></tr>
+        </table>
+    </div>
+{% endif %}
+
+{% if etatDyn.Active %}
+    <div style="text-align: justify;margin: 0; "class="guild-stats">Toutes les icônes ajoutées</div>
+    <div class="grid-twocol" style="margin-top: 30px;">
+        {% for i in images %}
+            <table style="margin-top: 30px;">
+                <tr>
+                    <th>Image {{ i.Nombre }}</th>
+                    <th>
+                        <label class="switch">
+                            {% if i.Active %}
+                                <input onchange='toogleImg(this,"{{ i.Nombre }}")' type="checkbox" checked>
+                            {% else %}
+                                <input onchange='toogleImg(this,"{{ i.Nombre }}")' type="checkbox">
+                            {% endif %}
+                            <span class="slider round"></span>
+                        </label>
+                    </th>
+                </tr>
+                <tr><td colspan="2"><img id="img-{{ i.Nombre }}" class="image-sv" src="{{ i.Path }}"></td></tr>
+                <tr><td>Description</td><td><input id="description-{{ i.Nombre }}" style="width: -moz-available;" type="text" name="source" value="{{ i.Message }}"></td></tr>
+                
+                
+                <tr>
+                    <input onclick='editImg("{{ i.Nombre }}")' type="button" value="Enregistrer" class="input-click">
+                    <input onclick='delImg(this,"{{ i.Nombre }}")' type="button" value="Supprimer" class="input-click"></td>
+                </tr>
+            </table>
+        {% endfor %}
+        <form method="post" action="/companion/{{ guildid }}/dynicon/addimg" enctype="multipart/form-data"> {% csrf_token %}
+            <table style="margin-top: 30px;">
+                <tr><th colspan="2">Nouvelle image</th></tr>
+                <tr><td>Image</td><td><input type="file" name="image" accept="image/*" required></td></tr>
+                <tr><td>Message</td><td><input style="width: -moz-available;" type="text" name="message" required></td></tr>
+                <tr><th colspan="2"><input type="submit" value="Envoyer" class="input-click"></th></tr>
+            </table>
+        </form>
+    </div>
+
+{% endif %}
+
+
+{% endblock stats %}

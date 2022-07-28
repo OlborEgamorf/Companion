@@ -65,21 +65,27 @@ def viewRankCompare(request,guild,option):
                 stats1[i]["Win2"]=stats2[i]["Win"]
                 stats1[i]["Lose2"]=stats2[i]["Lose"]
             try:
-                stats1[i]["Evol"]=list(filter(lambda x:stats2[i]["ID"]==x["ID"], stats1))[0]["Rank"]-stats2[i]["Rank"]
+                evolLine=list(filter(lambda x:stats2[i]["ID"]==x["ID"], stats1))
+                stats1[i]["Evol"]=evolLine[0]["Rank"]-stats2[i]["Rank"]
+                stats1[i]["CountVar"]=evolLine[0]["Count"]-stats2[i]["Count"]
             except:
                 stats1[i]["Evol"]=0
+                stats1[i]["CountVar"]=0
             stats1[i]["Rank"]=i+1
         else:
             try:
-                evol=list(filter(lambda x:stats2[i]["ID"]==x["ID"], stats1))[0]["Rank"]-stats2[i]["Rank"]
+                evolLine=list(filter(lambda x:stats2[i]["ID"]==x["ID"], stats1))
+                evol=evolLine[0]["Rank"]-stats2[i]["Rank"]
+                countVar=evolLine[0]["Count"]-stats2[i]["Count"]
             except:
                 evol=0
-                if option in ("messages","voice","mots"):
-                    stats1.append({"Nom2":stats2[i]["Nom"],"Count2":stats2[i]["Count"],"Avatar2":stats2[i]["Avatar"],"Color2":stats2[i]["Color"],"ID2":stats2[i]["ID"],"Evol":evol,"Rank":i+1})
-                elif categ=="Jeux":
-                   stats1.append({"Nom2":stats2[i]["Nom"],"Count2":stats2[i]["Count"],"Emote2":stats2[i]["Emote"],"Color2":stats2[i]["Color"],"ID2":stats2[i]["ID"],"Evol":evol,"Rank":i+1,"Win2":stats2[i]["Win"],"Lose2":stats2[i]["Lose"]}) 
-                else:
-                    stats1.append({"Nom2":stats2[i]["Nom"],"Count2":stats2[i]["Count"],"ID2":stats2[i]["ID"],"Evol":evol,"Rank":i+1}) 
+                countVar=0
+            if option in ("messages","voice","mots"):
+                stats1.append({"Nom2":stats2[i]["Nom"],"Count2":stats2[i]["Count"],"Avatar2":stats2[i]["Avatar"],"Color2":stats2[i]["Color"],"ID2":stats2[i]["ID"],"Evol":evol,"Rank":i+1,"CountVar":countVar})
+            elif categ=="Jeux":
+                stats1.append({"Nom2":stats2[i]["Nom"],"Count2":stats2[i]["Count"],"Emote2":stats2[i]["Emote"],"Color2":stats2[i]["Color"],"ID2":stats2[i]["ID"],"Evol":evol,"Rank":i+1,"Win2":stats2[i]["Win"],"Lose2":stats2[i]["Lose"],"CountVar":countVar}) 
+            else:
+                stats1.append({"Nom2":stats2[i]["Nom"],"Count2":stats2[i]["Count"],"ID2":stats2[i]["ID"],"Evol":evol,"Rank":i+1,"CountVar":countVar}) 
     
     if categ=="Jeux":
         ctx={"rank":stats1,"max":maxi,"pagestats":True,"ot":True,

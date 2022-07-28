@@ -102,4 +102,4 @@ def viewStatsHome(request,guild):
 
     ctx["stats"]=stats_final
     ctx["perso"]=perso_final
-    return render(request, "companion/Stats/Home.html", ctx)
+    return render(request, "companion/Timeline.html", ctx)

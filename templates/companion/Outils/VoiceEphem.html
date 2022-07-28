@@ -1,0 +1,155 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+{% load static %}
+
+<script>
+    function confirm(button) {
+        val=button.value
+        button.value="Supprimer vraiment"
+        sleep(100).then(() => {button.type="submit"})
+        sleep(10000).then(() => {
+            button.type="button"
+            button.value=val})
+    }
+
+    function toogleVoiceEphem(tog) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                window.location.replace("/companion/{{ guildid }}/outils/voiceephem");
+            }    
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/outils/voiceephem/togglevoiceephem?active=${tog.checked == true}`,true)
+        httpRequest.send()
+    }
+
+    function toogleHub(tog,idhub) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.open("GET",`/companion/{{ guildid }}/outils/voiceephem/togglehub/${idhub}?active=${tog.checked == true}`,true)
+        httpRequest.send()
+    }
+
+
+    function editHub(idhub) {
+        
+        var limite = document.getElementById(`limite-${idhub}`).value
+        var pattern = document.getElementById(`pattern-${idhub}`).value
+
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.open("GET",`/companion/{{ guildid }}/outils/voiceephem/edithub/${idhub}?limite=${limite}&pattern=${pattern}`,true)
+        httpRequest.send()
+    }
+
+    function delHub(element,idhub) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                $(element).parent().parent().parent().parent().remove()
+            }
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/outils/voiceephem/delhub/${idhub}`,true)
+        httpRequest.send()
+    }
+
+    function test(obj) {
+        console.log(obj)
+    }
+
+</script>
+
+{% if etatVoice.Active %}
+    <div class="grid-stats" style="margin-top: 30px;">
+        <table class="grid-stats-1">
+            <tr>
+                <th>Salons vocaux éphémères</th>
+                <th>
+                    <label class="switch">
+                        {% if etatVoice.Active %}
+                            <input onchange='toogleVoiceEphem(this)' type="checkbox" checked>
+                        {% else %}
+                            <input onchange='toogleVoiceEphem(this)' type="checkbox">
+                        {% endif %}
+                        <span class="slider round"></span>
+                    </label>
+                </th>
+            </tr>
+            <tr><td colspan="2" style="padding: 10px;">Retrouvez les meilleurs messages de votre serveur au même endroit, avec les voiceephem !<br>Déterminez le nombre de réactions nécessaire d'une emote, et s'il est dépassé sur un message, il sera copié dans le salon de votre choix !<br>Ce module est aussi plus communemment appelé 'Starboard' !</td></tr>
+        </table>
+
+        <table class="grid-stats-2">
+            <tr><th colspan="2">Balises de texte</th></tr>
+            <tr><td>{user}</td><td>Nom de l'invocateur du salon</td></tr>
+            <tr><td>{nb}</td><td>Numéro du salon actif depuis le hub</td></tr>
+            <tr><td>{lettre}</td><td>Pareil que {nb}, mais avec les lettres de l'alphabet</td></tr>
+        </table>
+    </div>
+{% else %}
+    <div class="grid-onecol" style="margin-top: 30px;">
+        <table>
+            <tr>
+                <th>Salons vocaux éphémères</th>
+                <th>
+                    <label class="switch">
+                        {% if etatVoice.Active %}
+                            <input onchange='toogleVoiceEphem(this)' type="checkbox" checked>
+                        {% else %}
+                            <input onchange='toogleVoiceEphem(this)' type="checkbox">
+                        {% endif %}
+                        <span class="slider round"></span>
+                    </label>
+                </th>
+            </tr>
+            <tr><td colspan="2" style="padding: 10px;">Retrouvez les meilleurs messages de votre serveur au même endroit, avec les voiceephem !<br>Déterminez le nombre de réactions nécessaire d'une emote, et s'il est dépassé sur un message, il sera copié dans le salon de votre choix !<br>Ce module est aussi plus communemment appelé 'Starboard' !</td></tr>
+        </table>
+    </div>
+{% endif %}
+
+{% if etatVoice.Active %}
+    <div style="text-align: justify;margin-top: 30px; "class="guild-stats">Hubs</div>
+    <div class="grid-twocol">
+        {% for i in hubs %}
+            <table style="margin-top: 30px;">
+                <tr>
+                    <th>Hub {{ i.Nombre }}</th>
+                    <th>
+                        <label class="switch">
+                            {% if i.Active %}
+                                <input onchange='toogleHub(this,"{{ i.Nombre }}")' type="checkbox" checked>
+                            {% else %}
+                                <input onchange='toogleHub(this,"{{ i.Nombre }}")' type="checkbox">
+                            {% endif %}
+                            <span class="slider round"></span>
+                        </label>
+                    </th>
+                </tr>
+                <tr><td>Pattern de nom</td><td><input type="text" value="{{ i.Pattern }}" id="pattern-{{ i.Nombre }}" required></td></tr>
+                <tr><td>Limite de membre dans les salons créés</td><td><input type="number" min="0" value="{{ i.Limite }}" id="limite-{{ i.Nombre }}" required></td></tr>
+                <tr><td>Salon</td><td>{{ i.Nom }}</td></tr>
+                <tr><td colspan="2"><input onclick='editHub("{{ i.Nombre }}")' type="button" value="Enregistrer" class="input-click"><input onclick='delHub(this,"{{ i.Nombre }}")' type="button" value="Supprimer" class="input-click"></td></tr>
+            </table>
+        {% endfor %}
+        <form method="post" action="/companion/{{ guildid }}/outils/voiceephem/addHub"> {% csrf_token %}
+            <table style="margin-top: 30px;">
+                <tr><th colspan="2">Nouveau tableau</th></tr>
+                <tr><td>Pattern de nom</td><td><input type="text" id="pattern-{{ i.Nombre }}" required></td></tr>
+                <tr><td>Limite de membre dans les salons créés</td><td><input type="number" min="0" value="{{ i.Limite }}" id="limite-{{ i.Nombre }}" required></td></tr>
+                <tr>
+                    <td>Salon</td>
+                    <td>
+                        <select name="salon" name="salon-new">
+                            {% for i in allchans %}
+                                <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr><td colspan="2"><input type="submit" value="Ajouter" class="input-click"></td></tr>
+            </table>
+        </form>
+    </div>
+
+{% endif %}
+
+
+{% endblock stats %}

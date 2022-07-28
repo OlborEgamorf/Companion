@@ -16,7 +16,7 @@
                 $("#ranksplus").remove()
                 for (i=0 ; i<data[0].length ; i++) {
                     var tr = $("<tr></tr>")
-                    tr.append(`<td>${data[0][i].Rank}</td>`)
+                    tr.append(`<td style="border-left-color: ${data[0][i].Color};border-left-style: solid;border-left-width: medium;">${data[0][i].Rank}</td>`)
                     if (option == "tortues" || option == "tortuesduo" || option == "p4" || option == "matrice" || option == "morpion" || option == "trivialversus" || option == "trivialbr" || option == "trivialparty") {
                         if (data[0][i].Emote == null) {
                             tr.append(`<td><a href="/companion/profil/${data[0][i].ID}"><img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a></td>`)
@@ -56,7 +56,7 @@
                 $("#firstplus").remove()
                 for (i=0 ; i<data[0].length ; i++) {
                     var tr = $("<tr></tr>")
-                    tr.append(`<td>${data[0][i].Mois}/${data[0][i].Annee}</td>`)
+                    tr.append(`<td style="border-left-color: ${data[0][i].Color};border-left-style: solid;border-left-width: medium;">${data[0][i].Mois}/${data[0][i].Annee}</td>`)
                     if (option == "tortues" || option == "tortuesduo" || option == "p4" || option == "matrice" || option == "morpion" || option == "trivialversus" || option == "trivialbr" || option == "trivialparty") {
                         if (data[0][i].Emote == null) {
                             tr.append(`<td><a href="/companion/profil/${data[0][i].ID}"><img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a></td>`)
@@ -96,7 +96,7 @@
                 $("#periodsplus").remove()
                 for (i=0 ; i<data[0].length ; i++) {
                     var tr = $("<tr></tr>")
-                    tr.append(`<td>${data[0][i].Rank}</td>`)
+                    tr.append(`<td style="border-left-color: ${table.dataset.color};border-left-style: solid;border-left-width: medium;">${data[0][i].Rank}</td>`)
                     tr.append(`<td>${data[0][i].Mois}/${data[0][i].Annee}</td>`)
                     tr.append(`<td class="barretd-recap">${formatCount(data[0][i].Count,option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data[0][i].Count}/${table.dataset.max}); background-color: ${table.dataset.color}"></div></div> </td>`)
                     $("#periods").append(tr)
@@ -122,11 +122,11 @@
                 for (i=0 ; i<data[0].length ; i++) {
                     var tr = $("<tr></tr>")
                     if (data[0][i].Evol > 0) {
-                        tr.append(`<td style="background-color: green;">${data[0][i].Rank}</td><td><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png"><br>${data[0][i].Evol}</td>`)
+                        tr.append(`<td style="background-color: green;border-left-color: ${table.dataset.color};border-left-style: solid;border-left-width: medium;">${data[0][i].Rank}</td><td><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png"><br>${data[0][i].Evol}</td>`)
                     } else if (data[0][i].Evol < 0) {
-                        tr.append(`<td style="background-color: red;">${data[0][i].Rank}</td><td>${data[0][i].Evol}<br><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png"></td>`)
+                        tr.append(`<td style="background-color: red;border-left-color: ${table.dataset.color};border-left-style: solid;border-left-width: medium;">${data[0][i].Rank}</td><td>${data[0][i].Evol}<br><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png"></td>`)
                     } else {
-                        tr.append(`<td colspan="2">${data[0][i].Rank}</td>`)
+                        tr.append(`<td style="border-left-color: ${table.dataset.color};border-left-style: solid;border-left-width: medium;" colspan="2">${data[0][i].Rank}</td>`)
                     }
                     tr.append(`<td>${data[0][i].Jour} / ${data[0][i].Mois} / ${data[0][i].Annee}</td>`)
                     tr.append(`<td class="barretd-recap">${formatCount(data[0][i].Count,option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data[0][i].Count}/${table.dataset.max}); background-color: ${table.dataset.color}"></div></div> </td>`)
@@ -153,7 +153,7 @@
                 $("#persoplus").remove()
                 for (i=0 ; i<data[0].length ; i++) {
                     var tr = $("<tr></tr>")
-                    tr.append(`<td>${data[0][i].Rank}</td>`)
+                    tr.append(`<td style="border-left-color: ${table.dataset.color};border-left-style: solid;border-left-width: medium;">${data[0][i].Rank}</td>`)
 
                     if (option == "emotes" || option == "reactions") {
                         tr.append(`<td><img src="https://cdn.discordapp.com/emojis/${data[0][i].ID}?size=128" style="border-radius: 0%;"></td>`)
@@ -183,9 +183,9 @@
                 $("#joursplus").remove()
                 for (i=0 ; i<data[0].length ; i++) {
                     var tr = $("<tr></tr>")
-                    tr.append(`<td>${data[0][i].Rank}</td>`)
+                    tr.append(`<td style="border-left-style: solid;border-left-width: medium;">${data[0][i].Rank}</td>`)
                     tr.append(`<td>${data[0][i].Jour} / ${data[0][i].Mois} / ${data[0][i].Annee}</td>`)
-                    tr.append(`<td class="barretd-recap">${formatCount(data[0][i].Count,option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data[0][i].Count}/${table.dataset.max}); background-color: ${data[0][i].Color}"></div></div> </td>`)
+                    tr.append(`<td class="barretd-recap">${formatCount(data[0][i].Count,option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data[0][i].Count}/${table.dataset.max});"></div></div> </td>`)
                     $("#jours").append(tr)
 
                 }
@@ -231,10 +231,11 @@
         {% for i in ranks|getI:0 %}
         {% if i.ID == id %}
             <tr class="user">
+                <td style="border-left-color: {{ i.Color }};border-left-style: solid;border-left-width: 8px;">{{ i.Rank }}</td>
         {% else %}
             <tr>
+                <td style="border-left-color: {{ i.Color }};border-left-style: solid;border-left-width: medium;">{{ i.Rank }}</td>
         {% endif %}
-                <td>{{ i.Rank }}</td>
                 {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
                     <td>
                         {% if i.Emote != None %}
@@ -291,13 +292,13 @@
         {% for i in evol|getI:0 %}
             <tr class="evol">
                 {% if i.Evol > 0 %}
-                    <td style="background-color: green;">{{ i.Rank }}</td>
+                    <td style="background-color: green;border-left-color: {{ color }};border-left-style: solid;border-left-width: medium;">{{ i.Rank }}</td>
                     <td><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png"><br>{{ i.Evol }}</td>
                 {% elif i.Evol < 0 %}
-                    <td style="background-color: red;">{{ i.Rank }}</td>
+                    <td style="background-color: red;border-left-color: {{ color }};border-left-style: solid;border-left-width: medium;">{{ i.Rank }}</td>
                     <td>{{ i.Evol }}<br><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png"></td>
                 {% else %}
-                    <td colspan="2">{{ i.Rank }}</td>
+                    <td style="border-left-color: {{ color }};border-left-style: solid;border-left-width: medium;" colspan="2">{{ i.Rank }}</td>
                 {% endif %}
                 <td class="date">{{ i.Jour }} / {{ i.Mois }} / {{ i.Annee }}</td>
                 <td class="barretd-recap">{{ i.Count|tempsvoice:option }}
@@ -332,7 +333,7 @@
             
             {% for i in perso|getI:0 %}
                 <tr>
-                    <td>{{ i.Rank }}</td>
+                    <td style="border-left-color: {{ color }};border-left-style: solid;border-left-width: medium;">{{ i.Rank }}</td>
                     {% if option == "emotes" or option == "reactions" %}
                         <td>
                             <img src="https://cdn.discordapp.com/emojis/{{ i.ID }}?size=128" style="border-radius: 0%;">
@@ -381,7 +382,7 @@
                 {% else %}
                     <tr>
                 {% endif %}
-                    <td>{{ i.Mois }}/{{ i.Annee }}</td>
+                    <td style="border-left-color: {{ i.Color }};border-left-style: solid;border-left-width: medium;">{{ i.Mois }}/{{ i.Annee }}</td>
                     {% if option == "messages" or option == "mots" or option == "voice" %}
                         <td>
                             {% if i.Avatar %}
@@ -434,7 +435,7 @@
             </tr>
             {% for i in periods|getI:0 %}
                 <tr>
-                    <td>{{ i.Rank }}</td>
+                    <td style="border-left-color: {{ color }};border-left-style: solid;border-left-width: medium;">{{ i.Rank }}</td>
                     <td id="{{ i.Annee }}{{ i.Mois }}">{{ i.Mois }}/{{ i.Annee }}</td>
                     <td class="barretd-recap">{{ i.Count|tempsvoice:option }}
                         <div class="contour-barre">
@@ -458,7 +459,7 @@
         </tr>
         {% for i in jours|getI:0 %}
             <tr>
-                <td>{{ i.Rank }}</td>
+                <td style="border-left-style: solid;border-left-width: medium;">{{ i.Rank }}</td>
                 <td class="date">{{ i.Jour }} / {{ i.Mois }} / {{ i.Annee }}</td>
                 <td class="barretd-recap">{{ i.Count|tempsvoice:option }}
                     <div class="contour-barre">

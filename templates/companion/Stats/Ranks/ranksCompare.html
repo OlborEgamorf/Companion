@@ -4,6 +4,50 @@
 {% block stats %}
 {% load TagsCustom %}
 
+<script>
+    function addIndics(option,mois,annee) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                var data = JSON.parse(httpRequest.response)
+                var table = $(`<table style="margin-bottom:30px">
+                                <tr><th colspan='2'>Indicateurs statistiques ${mois} ${annee}</th></tr>
+
+                                <tr><td>Valeur Maximale</td><td class="barretd">${formatCount(data["max"],option)}<div class="contour-barre"><div class="barre" style="width:100%"></div></div></td></tr>
+                                <tr><td>Moyenne</td><td class="barretd">${formatCount(data["moy"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["moy"]}/${data["max"]})"></div></div></td>
+                                <tr><td>Médiane</td><td class="barretd">${formatCount(data["med"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["med"]}/${data["max"]})"></div></div></td>
+                                <tr><td>Valeur minimale</td><td class="barretd">${formatCount(data["min"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["min"]}/${data["max"]})"></div></div></td>
+                            
+                                <tr><th colspan="2">Autres</th></tr>
+                                <tr id="indics-perso"><td>Vous</td><td class="barretd">${formatCount(data["you"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["you"]}/${data["max"]});background-color:${data["color"]}"></div></div></td>
+                                <tr><td>Total</td><td class="barretd">${formatCount(data["sum"],option)}<div class="contour-barre"><div class="barre" style="width:100%"></div></div></td>
+                                <tr><td>Entrées</td><td class="barretd">${data["entrees"]}<div class="contour-barre"><div class="barre" style="width:100%"></div></div></td>
+
+                                <tr><th colspan="2">Dates clés</th></tr></table>                                
+                                `)
+                if (data["bestAnnee"] != undefined) {
+                    $(table).append(`<tr><td>Meilleure année</td><td>20${data["bestAnnee"]["Annee"]}</td></tr>`)
+                }
+                if (data["bestMois"] != undefined) {
+                    $(table).append(`<tr><td>Meilleur mois</td><td>${data["bestMois"]["Mois"]}/${data["bestMois"]["Annee"]}</td></tr>`)
+                }
+                if (data["bestJour"] != undefined) {
+                    $(table).append(`<tr><td>Meilleur jour</td><td>${data["bestJour"]["Jour"]}/${data["bestJour"]["Mois"]}/20${data["bestJour"]["Annee"]}</td></tr>`)
+                }
+                
+                $("#grid-indics").append(table)
+
+                if (data["you"] == null) {
+                    $("#indics-perso").remove()
+                }
+                
+            }
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/{{ option }}/ranksmore/indics?mois=${mois}&annee=${annee}`,true)
+        httpRequest.send()
+    }
+</script>
+
 <form action="" method="get" class="form-example">
     <div class="navbar">
         <select name="mois1">
@@ -47,41 +91,9 @@
     </div>
 </form>
 
-<div class="stats" style="width:80%">
-    <table id="tablecompare">
+<div class="grid-stats" style="margin-top: 30px;">
+    <table class="grid-stats-1">
         {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
-            <tr>
-                <th style="width:47.5%" colspan="4">Classement {{ mois1 }} {{ annee1 }}</th>
-                <th style="width:5%">VS</th>
-                <th style="width:47.5%" colspan="5">Classement {{ mois2 }} {{ annee2 }}</th>
-            </tr>
-            <tr>
-                <th style="width:10%">{{ option|headcount }}</th>
-                <th style="width:22.5%" id="leg-barre">Barre</th>
-                <th style="width:15%" colspan="2">{{ option|headnom }}</th>
-                <th style="width:5%">Rang</th>
-                <th style="width:15%" colspan="3">{{ option|headnom }}</th>
-                <th style="width:22.5%" id="leg-barre">Barre</th>
-                <th style="width:10%">{{ option|headcount }}</th>
-            </tr>
-        {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
-        <tr>
-            <th style="width:47.5%" colspan="5">Classement {{ mois1 }} {{ annee1 }}</th>
-            <th style="width:5%">VS</th>
-            <th style="width:47.5%" colspan="6">Classement {{ mois2 }} {{ annee2 }}</th>
-        </tr>
-        <tr>
-            <th style="width:5%">W/L</th>
-            <th style="width:5%">{{ option|headcount }}</th>
-            <th style="width:22.5%" id="leg-barre">Barre</th>
-            <th style="width:15%" colspan="2">{{ option|headnom }}</th>
-            <th style="width:5%">Rang</th>
-            <th style="width:15%" colspan="3">{{ option|headnom }}</th>
-            <th style="width:22.5%" id="leg-barre">Barre</th>
-            <th style="width:5%">{{ option|headcount }}</th>
-            <th style="width:5%">W/L</th>
-        </tr>
-        {% else %}
             <tr>
                 <th style="width:47.5%" colspan="3">Classement {{ mois1 }} {{ annee1 }}</th>
                 <th style="width:5%">VS</th>
@@ -89,11 +101,37 @@
             </tr>
             <tr>
                 <th style="width:10%">{{ option|headcount }}</th>
-                <th style="width:22.5%" id="leg-barre">Barre</th>
+                <th style="width:15%" colspan="2">{{ option|headnom }}</th>
+                <th style="width:5%">Rang</th>
+                <th style="width:15%" colspan="3">{{ option|headnom }}</th>
+                <th style="width:10%">{{ option|headcount }}</th>
+            </tr>
+        {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
+        <tr>
+            <th style="width:47.5%" colspan="4">Classement {{ mois1 }} {{ annee1 }}</th>
+            <th style="width:5%">VS</th>
+            <th style="width:47.5%" colspan="5">Classement {{ mois2 }} {{ annee2 }}</th>
+        </tr>
+        <tr>
+            <th style="width:5%">W/L</th>
+            <th style="width:5%">{{ option|headcount }}</th>
+            <th style="width:15%" colspan="2">{{ option|headnom }}</th>
+            <th style="width:5%">Rang</th>
+            <th style="width:15%" colspan="3">{{ option|headnom }}</th>
+            <th style="width:5%">{{ option|headcount }}</th>
+            <th style="width:5%">W/L</th>
+        </tr>
+        {% else %}
+            <tr>
+                <th style="width:47.5%" colspan="2">Classement {{ mois1 }} {{ annee1 }}</th>
+                <th style="width:5%">VS</th>
+                <th style="width:47.5%" colspan="3">Classement {{ mois2 }} {{ annee2 }}</th>
+            </tr>
+            <tr>
+                <th style="width:10%">{{ option|headcount }}</th>
                 <th style="width:15%">{{ option|headnom }}</th>
                 <th style="width:5%">Rang</th>
                 <th style="width:15%" colspan="2">{{ option|headnom }}</th>
-                <th style="width:22.5%" id="leg-barre">Barre</th>
                 <th style="width:10%">{{ option|headcount }}</th>
             </tr>
         {% endif %}
@@ -103,8 +141,12 @@
                 {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
                     <td>{{ i.Win }} / {{ i.Lose }}</td>
                 {% endif %}
-                <td>{{ i.Count|tempsvoice:option }}</td>
-                <td style="justify-content: flex-end;display: flex;"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }} ; margin-top:15px"></div></td>
+
+                <td style="text-align: end;width:30%">{{ i.Count|tempsvoice:option }}
+                    <div style="justify-content: flex-end;display: flex;" class="contour-barre">
+                    <div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></div>
+                </td>
+                
                 <td style="text-align: end;">{{ i.Nom }}</td>
                 {% if mix and command == "periods" %}
                     <td>
@@ -172,8 +214,15 @@
                         <td>{{ i.Evol }}<br><img style="height: 20px;width: 20px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png"></td>
                     {% endif %}
 
-                    <td><div class="barre" style="width:calc(100%*{{ i.Count2 }}/{{ max }}); background-color: {{ i.Color2 }}"></div></td>
-                    <td>{{ i.Count2|tempsvoice:option }}</td>
+                    <td class="barretd" style="width:30%">{{ i.Count2|tempsvoice:option }}
+                        {% if i.CountVar < 0 %} 
+                            <img style="height: 15px;width: 15px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687366647818/rougeTdry.png">
+                        {% elif i.CountVar > 0 %}
+                            <img style="height: 15px;width: 15px;" src="https://cdn.discordapp.com/attachments/726034739550486618/930823687551201321/rougeTdqsdry.png">
+                        {% endif %}
+                        <div class="contour-barre">
+                        <div class="barre" style="width:calc(100%*{{ i.Count2 }}/{{ max }}); background-color: {{ i.Color2 }}"></div></div>
+                    </td>
 
                     {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
                         <td>{{ i.Win2 }} / {{ i.Lose2 }}</td>
@@ -182,5 +231,12 @@
             </tr>
         {% endfor %}
     </table>
+    <div id="grid-indics" class="grid-stats-2">
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Indicateurs</div>
+        <script>
+        addIndics("{{ option }}","{{ mois1 }}","{{ annee1 }}")
+        addIndics("{{ option }}","{{ mois2 }}","{{ annee2 }}")</script>
+    </div>
+
 </div>
 {% endblock stats %}

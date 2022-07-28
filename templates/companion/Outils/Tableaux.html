@@ -1,0 +1,198 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+{% load static %}
+
+<script>
+    function confirm(button) {
+        val=button.value
+        button.value="Supprimer vraiment"
+        sleep(100).then(() => {button.type="submit"})
+        sleep(10000).then(() => {
+            button.type="button"
+            button.value=val})
+    }
+
+    function toogleTableaux(tog) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                window.location.replace("/companion/{{ guildid }}/tableaux");
+            }    
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/tableaux/toggletableaux?active=${tog.checked == true}`,true)
+        httpRequest.send()
+    }
+
+    function toogleTab(tog,idtab) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.open("GET",`/companion/{{ guildid }}/tableaux/toggletab/${idtab}?active=${tog.checked == true}`,true)
+        httpRequest.send()
+    }
+
+
+    function editTab(idtab) {
+        
+        var emote = document.getElementsByName(`emote-${idtab}`)
+        var emote = emote[0].value
+        var react = document.getElementById(`react-${idtab}`).value
+        var salon = document.getElementById(`salon-${idtab}`).value
+
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.open("GET",`/companion/{{ guildid }}/tableaux/edittab/${idtab}?emote=${emote}&react=${react}&salon=${salon}`,true)
+        httpRequest.send()
+    }
+
+    function delTab(element,idtab) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                $(element).parent().parent().parent().parent().remove()
+            }
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/tableaux/deltab/${idtab}`,true)
+        httpRequest.send()
+    }
+
+    function test(obj) {
+        console.log(obj)
+    }
+
+</script>
+<script>
+    $( function() {
+        $.widget( "custom.iconselectmenu", $.ui.selectmenu, {
+        _renderItem: function( ul, item ) {
+            var li = $( "<li>" ),
+            wrapper = $( "<div>", { text: item.label } );
+    
+            if ( item.disabled ) {
+            li.addClass( "ui-state-disabled" );
+            }
+    
+            $( "<span>", {
+            style: item.element.attr( "data-style" ),
+            "class": "ui-icon " + item.element.attr( "data-class" )
+            })
+            .appendTo( wrapper );
+    
+            return li.append( wrapper ).appendTo( ul );
+        }
+        });
+    
+        $( ".obj" )
+        .iconselectmenu()
+        .iconselectmenu( "menuWidget" )
+            .addClass( "ui-menu-icons customicons" );
+    
+    } );
+</script>
+
+<style>
+    {% for i in emotes %}
+        .ui-icon.o{{ i.ID }} {
+            background: url("https://cdn.discordapp.com/emojis/{{ i.ID }}?size=128") 0 0 no-repeat;
+            background-size: contain;
+        }
+    {% endfor %}
+</style>
+
+<div class="grid-onecol" style="margin-top: 30px;">
+    <table>
+        <tr>
+            <th>Tableaux d'emotes</th>
+            <th>
+                <label class="switch">
+                    {% if etatTab.Active %}
+                        <input onchange='toogleTableaux(this)' type="checkbox" checked>
+                    {% else %}
+                        <input onchange='toogleTableaux(this)' type="checkbox">
+                    {% endif %}
+                    <span class="slider round"></span>
+                </label>
+            </th>
+        </tr>
+        <tr><td colspan="2" style="padding: 10px;">Retrouvez les meilleurs messages de votre serveur au même endroit, avec les Tableaux !<br>Déterminez le nombre de réactions nécessaire d'une emote, et s'il est dépassé sur un message, il sera copié dans le salon de votre choix !<br>Ce module est aussi plus communemment appelé 'Starboard' !</td></tr>
+    </table>
+</div>
+
+{% if etatTab.Active %}
+    <div style="text-align: justify;margin-top: 30px; "class="guild-stats">Tableaux</div>
+    <div class="grid-twocol">
+        {% for i in tableaux %}
+            <table style="margin-top: 30px;">
+                <tr>
+                    <th>Tableau {{ i.Nombre }}</th>
+                    <th>
+                        <label class="switch">
+                            {% if i.Active %}
+                                <input onchange='toogleTab(this,"{{ i.Nombre }}")' type="checkbox" checked>
+                            {% else %}
+                                <input onchange='toogleTab(this,"{{ i.Nombre }}")' type="checkbox">
+                            {% endif %}
+                            <span class="slider round"></span>
+                        </label>
+                    </th>
+                </tr>
+                <tr>
+                    <td>Emote</td>
+                    {% if i.ID == 0 %}
+                        <td>N'importe la quelle</td>
+                    {% else %} 
+                        <td><img src="https://cdn.discordapp.com/emojis/{{ i.ID }}"></td>
+                    {% endif %}
+                </tr>
+                <tr><td>Réactions nécessaires</td><td><input type="number" min="1" value="{{ i.Count }}" id="react-{{ i.Nombre }}"></td></tr>
+                <tr>
+                    <td>Salon</td>
+                    <td>
+                        <select name="salon" id="salon-{{ i.Nombre }}">
+                            {% for i in allchans %}
+                                <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                
+                <tr><td colspan="2"><input onclick='editTab("{{ i.Nombre }}")' type="button" value="Enregistrer" class="input-click"><input onclick='delTab(this,"{{ i.Nombre }}")' type="button" value="Supprimer" class="input-click"></td></tr>
+            </table>
+        {% endfor %}
+        <form method="post" action="/companion/{{ guildid }}/tableaux/addtab"> {% csrf_token %}
+            <table style="margin-top: 30px;">
+                <tr><th colspan="2">Nouveau tableau</th></tr>
+                <tr>
+                    <td>Emote</td>
+                    <td>
+                        <fieldset>
+                            <select name="emote-new" id="obj">
+                                {% for j in emotes %}
+                                    {% if j.ID == i.ID %}
+                                        <option value="{{ j.ID }}" data-class="o{{ j.ID }}" selected>{{ j.Nom }}</option>
+                                    {% else %}
+                                        <option value="{{ j.ID }}" data-class="o{{ j.ID }}">{{ j.Nom }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr><td>Réactions nécessaires</td><td><input type="number" min="1" name="react-new"></td></tr>
+                <tr>
+                    <td>Salon</td>
+                    <td>
+                        <select name="salon" name="salon-new">
+                            {% for i in allchans %}
+                                <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr><td colspan="2"><input type="submit" value="Ajouter" class="input-click"></td></tr>
+            </table>
+        </form>
+    </div>
+
+{% endif %}
+
+
+{% endblock stats %}

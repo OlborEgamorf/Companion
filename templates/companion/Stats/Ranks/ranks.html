@@ -13,16 +13,17 @@
                                 <tr><th colspan='2'>Indicateurs statistiques</th></tr>
 
                                 <tr><td>Valeur Maximale</td><td class="barretd">${formatCount(data["max"],option)}<div class="contour-barre"><div class="barre" style="width:100%"></div></div></td></tr>
-                                <tr><td>Moyenne</td><td class="barretd">${formatCount(data["moy"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["moy"]}/${data["max"]})"></div></div></td>
-                                <tr><td>Médiane</td><td class="barretd">${formatCount(data["med"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["med"]}/${data["max"]})"></div></div></td>
-                                <tr><td>Valeur minimale</td><td class="barretd">${formatCount(data["min"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["min"]}/${data["max"]})"></div></div></td>
+                                <tr><td>Moyenne</td><td class="barretd">${formatCount(data["moy"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["moy"]}/${data["max"]})"></div></div></td></tr>
+                                <tr><td>Médiane</td><td class="barretd">${formatCount(data["med"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["med"]}/${data["max"]})"></div></div></td></tr>
+                                <tr><td>Valeur minimale</td><td class="barretd">${formatCount(data["min"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["min"]}/${data["max"]})"></div></div></td></tr>
                             
                                 <tr><th colspan="2">Autres</th></tr>
-                                <tr><td>Vous</td><td class="barretd">${formatCount(data["you"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["you"]}/${data["max"]});background-color:${data["color"]}"></div></div></td>
-                                <tr><td>Total</td><td class="barretd">${formatCount(data["sum"],option)}<div class="contour-barre"><div class="barre" style="width:100%"></div></div></td>
-                                <tr><td>Entrées</td><td class="barretd">${data["entrees"]}<div class="contour-barre"><div class="barre" style="width:100%"></div></div></td>
+                                <tr id="indics-perso"><td>Vous</td><td class="barretd">${formatCount(data["you"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["you"]}/${data["max"]});background-color:${data["color"]}"></div></div></td></tr>
+                                <tr><td>Total</td><td class="barretd">${formatCount(data["sum"],option)}<div class="contour-barre"><div class="barre" style="width:100%"></div></div></td></tr>
+                                <tr><td>Entrées</td><td class="barretd">${data["entrees"]}<div class="contour-barre"><div class="barre" style="width:100%"></div></div></td></tr>
 
-                                <tr><th colspan="2">Dates clés</th></tr></table>`)
+                                <tr><th colspan="2">Dates clés</th></tr></table>                                
+                                `)
                 if (data["bestAnnee"] != undefined) {
                     $(table).append(`<tr><td>Meilleure année</td><td>20${data["bestAnnee"]["Annee"]}</td></tr>`)
                 }
@@ -32,8 +33,13 @@
                 if (data["bestJour"] != undefined) {
                     $(table).append(`<tr><td>Meilleur jour</td><td>${data["bestJour"]["Jour"]}/${data["bestJour"]["Mois"]}/20${data["bestJour"]["Annee"]}</td></tr>`)
                 }
+                
                 $("#grid-indics").append(table)
-                loadHeight()
+
+                if (data["you"] == null) {
+                    $("#indics-perso").remove()
+                }
+                
             }
         }
         httpRequest.open("GET",`/companion/{{ guildid }}/{{ option }}/ranksmore/indics?mois={{ mois }}&annee={{ annee }}&obj={{ obj }}`,true)
@@ -48,11 +54,11 @@
                 var table = $("<table><tr><th colspan='2'>Membre</th><th>Période</th><th>Nombre de jours</th></table>")
                 for (i=0 ; i<data.length ; i++) {
                     var tr = $("<tr></tr>")
-                    if (option == "messages" || option == "mots" || option == "voice" || "{{ obj }}" != "0" ) {
+                    if (option == "messages" || option == "mots" || option == "voice" || "{{ obj }}" != "None" ) {
                         if (data[i].Avatar == null) {
-                            tr.append(`<td><a href="/companion/profil/${data[i].ID}"><img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a></td>`)
+                            tr.append(`<td style="border-left-style: solid;border-left-width: medium;"><a href="/companion/profil/${data[i].ID}"><img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a></td>`)
                         } else {
-                            tr.append(`<td><a href="/companion/profil/${data[i].ID}"><img src="https://cdn.discordapp.com/avatars/${data[i].ID}/${data[i].Avatar}.png?size=128"></a></td>`)
+                            tr.append(`<td style="border-left-color:${data[i].Color};border-left-style: solid;border-left-width: medium;"><a href="/companion/profil/${data[i].ID}"><img src="https://cdn.discordapp.com/avatars/${data[i].ID}/${data[i].Avatar}.png?size=128"></a></td>`)
                         }
                     } else if (option == "emotes" || option == "reactions") {
                         tr.append(`<td><img src="https://cdn.discordapp.com/emojis/${data[i].ID}?size=128" style="border-radius: 0%;"></td>`)
@@ -63,7 +69,7 @@
                     $(table).append(tr)
                 }
                 $("#grid-first").append(table)
-                loadHeight()
+                
             }
         }
         httpRequest.open("GET",`/companion/{{ guildid }}/{{ option }}/ranksmore/histofirst?mois={{ mois }}&annee={{ annee }}&obj={{ obj }}`,true)
@@ -76,11 +82,18 @@
             if (httpRequest.readyState === 4) {
                 $("#graph-evol").remove()
                 var data = JSON.parse(httpRequest.response)
-                console.log(data)
-                var div = $("<div id='graph-evol'></div>")
+                var div = $("<div id='graph-evol' class='contour-graph'></div>")
                 div.append(data["graph"])
                 $("#grid-evol").append(div)
-                loadHeight()
+
+                old=document.getElementById("grid-evol").dataset.compare
+                if (old != "0" && old != "{{ id }}") {
+                    document.getElementById(`rank-${old}`).style.borderLeftWidth="medium"
+                }
+                
+                document.getElementById(`rank-${compare}`).style.borderLeftWidth="8px"
+                document.getElementById("grid-evol").dataset.compare=compare
+                
             }
         }
         httpRequest.open("GET",`/companion/{{ guildid }}/{{ option }}/ranksmore/evol?mois={{ mois }}&annee={{ annee }}&obj=${compare}`,true)
@@ -93,18 +106,24 @@
         httpRequest.onreadystatechange = function () {
             if (httpRequest.readyState === 4) {
                 var data = JSON.parse(httpRequest.response)
-                var table = $("<table><tr><th>Période</th><th>Total</th><th>Moyenne</th><th>Valeur max</th><th>Vous</th></table>")
+                if (option == "messages" || option =="voice" || "{{ obj }}" != "None") {
+                    var table = $("<table><tr><th>Période</th><th>Total</th><th>Moyenne</th><th>Valeur max</th><th>Vous</th></table>")
+                } else {
+                    var table = $("<table><tr><th>Période</th><th>Total</th><th>Moyenne</th><th>Valeur max</th></table>")
+                }
                 for (i=0 ; i<data["table"].length ; i++) {
                     var tr = $("<tr></tr>")         
                     tr.append(`<td style="text-align: start;">${data["table"][i]["mois"]}/20${data["table"][i]["annee"]}</td>`)
                     tr.append(`<td class="barretd" style="width:20%">${formatCount(data["table"][i]["sum"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["table"][i]["sum"]}/${data["maxSum"]})"></div></div></td>`)
                     tr.append(`<td class="barretd" style="width:20%">${formatCount(data["table"][i]["moy"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["table"][i]["moy"]}/${data["maxVal"]})"></div></div></td>`)
                     tr.append(`<td class="barretd" style="width:20%">${formatCount(data["table"][i]["max"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["table"][i]["max"]}/${data["maxVal"]}")></div></div></td>`)
-                    tr.append(`<td class="barretd" style="width:20%">${formatCount(data["table"][i]["you"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["table"][i]["you"]}/${data["maxVal"]});background-color:${data["color"]}"></div></div></td>`)
+                    if (option == "messages" || option =="voice" || "{{ obj }}" != "None") {
+                        tr.append(`<td class="barretd" style="width:20%">${formatCount(data["table"][i]["you"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["table"][i]["you"]}/${data["maxVal"]});background-color:${data["color"]}"></div></div></td>`)
+                    } 
                     $(table).append(tr)
                 }
                 $("#grid-avap").append(table)
-                loadHeight()
+                
             }
         }
         httpRequest.open("GET",`/companion/{{ guildid }}/{{ option }}/ranksmore/avap?mois={{ mois }}&annee={{ annee }}&obj={{ obj }}`,true)
@@ -142,8 +161,7 @@
                 <tr>
                     <th>Rang</th>
                     <th colspan="2">Joueur</th>
-                    <th id="leg-barre">Barre</th>
-                    <th>Points</th>
+                    <th id="leg-barre">Points</th>
                     <th>W/L</th>
                     <th>Badge</th>
                 </tr>
@@ -159,11 +177,16 @@
 
             {% for i in rank %}
                 {% if i.ID == id %}
-                    <tr class="user" onClick="addEvol('{{ option }}','{{ i.ID }}')">
+                    <tr class="user">
+                        <td id="rank-{{ i.ID }}" style="border-left-color: {{ i.Color }};border-left-style: solid;border-left-width: 8px;">
+                            {{ i.Rank }}
+                        </td>
                 {% else %}
                     <tr onClick="addEvol('{{ option }}','{{ i.ID }}')">
+                        <td id="rank-{{ i.ID }}" style="border-left-color: {{ i.Color }};border-left-style: solid;border-left-width: medium;">
+                            {{ i.Rank }}
+                        </td>
                 {% endif %}
-                        <td>{{ i.Rank }}</td>
                         {% if option == "messages" or option == "mots" or option == "voice" or obj != None %}
                             <td>
                                 {% if i.Avatar %}
@@ -171,7 +194,7 @@
                                     <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
                                 {% else %}
                                     <a href="/companion/profil/{{ i.ID }}">
-                                    <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                                    <img src="{% static 'companion/img/Silouhette2.png' %}"></a>
                                 {% endif %}
                             </td>
                         {% elif option == "emotes" or option == "reactions" %}
@@ -189,11 +212,18 @@
                                     <img src="https://cdn.discordapp.com/emojis/{{ i.Emote }}"></a>
                                 {% else %}
                                     <a href="/companion/profil/{{ i.ID }}">
-                                    <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                                    <img src="{% static 'companion/img/Silouhette2.png' %}"></a>
                                 {% endif %}
                             </td>
                         {% endif %}
-                        <td style="text-align: start;">{{ i.Nom }}</td>
+                        
+                        <td style="text-align: start;">
+                            {% if i.VIP %}
+                                <img style="width: auto;height: 25px;"src="{% static 'companion/img/IMG_0742.png' %}">
+                            {% endif %}
+                            <span style="vertical-align:middle">{{ i.Nom }}</span>
+                            
+                        </td>
                         <td class="barretd">{{ i.Count|tempsvoice:option }}
                             <div class="contour-barre">
                             <div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></div>
@@ -211,37 +241,52 @@
             {% endfor %}
         </table>
     </div>
-    <div class="grid-stats-2" id="grid-indics">
-        <div style="text-align: justify;margin: 0; "class="guild-stats">Indicateurs</div>
-        <script>addIndics("{{ option }}")</script>
-    </div>
-    {% if annee != "Global" %}
-        <div class="grid-stats-2" id="grid-evol">
-            <div style="text-align: justify;margin: 0; "class="guild-stats">Votre évolution</div>
-            <div id="graph-evol"></div>
-            <script>addEvol("{{ option }}","{{ id }}")</script>
-        </div>
-        <div class="grid-stats-2" id="grid-first">
-            <div style="text-align: justify;margin: 0; "class="guild-stats">Historique des premiers</div>
-            <script>addHistoFirst("{{ option }}")</script>
-        </div>
-        <div class="grid-stats-2" id="grid-avap">
-            <div style="text-align: justify;margin: 0; "class="guild-stats">Comparé à d'autres périodes</div>
-            <script>addAvAp("{{ option }}")</script>
-        </div>
+    <div class="grid-stats-2">
+        <div class="grid-onecol">
+            <div id="grid-indics">
+                <div style="text-align: justify;margin: 0; "class="guild-stats">Indicateurs</div>
+                <script>addIndics("{{ option }}")</script>
+            </div>
+            {% if annee != "Global" %}
+                <div id="grid-evol" data-compare="0">
+                    {% if option == "messages" or option == "voice" %}
+                        <div style="text-align: justify;margin: 0; "class="guild-stats">Votre évolution</div>
+                    {% else %} 
+                        <div style="text-align: justify;margin: 0; "class="guild-stats">Cliquez sur {{ option|nomsearch }} pour voir son évolution</div>
+                    {% endif %}
+                    <div id="graph-evol" class="contour-graph"></div>
+                    {% if option == "messages" or option == "voice" %}
+                        <script>addEvol("{{ option }}","{{ id }}")</script>
+                    {% endif %}
+                </div>
+                <div  id="grid-first">
+                    <div style="text-align: justify;margin: 0; "class="guild-stats">Historique des premiers</div>
+                    <script>addHistoFirst("{{ option }}")</script>
+                </div>
+                <div  id="grid-avap">
+                    <div style="text-align: justify;margin: 0; "class="guild-stats">Comparé à d'autres périodes</div>
+                    <script>addAvAp("{{ option }}")</script>
+                </div>
 
-    {% else %}
-        <div class="grid-stats-2" id="grid-evol">
-            <div style="text-align: justify;margin: 0; "class="guild-stats">Votre évolution</div>
-            <div id="graph-evol"></div>
-            <script>addEvol("{{ option }}","{{ id }}")</script>
+            {% else %}
+                <div id="grid-evol" data-compare="0">
+                    {% if option == "messages" or option == "voice" %}
+                        <div style="text-align: justify;margin: 0; "class="guild-stats">Votre évolution</div>
+                    {% else %} 
+                        <div style="text-align: justify;margin: 0; "class="guild-stats">Cliquez sur {{ option|nomsearch }} pour voir son évolution</div>
+                    {% endif %}
+                    <div id="graph-evol"></div>
+                    {% if option == "messages" or option == "voice" %}
+                        <script>addEvol("{{ option }}","{{ id }}")</script>
+                    {% endif %}
+                </div>
+                <div  id="grid-first">
+                    <div style="text-align: justify;margin: 0; "class="guild-stats">Historique des premiers</div>
+                    <script>addHistoFirst("{{ option }}")</script>
+                </div>
+            {% endif %}
         </div>
-        <div class="grid-stats-2" id="grid-first">
-            <div style="text-align: justify;margin: 0; "class="guild-stats">Historique des premiers</div>
-            <script>addHistoFirst("{{ option }}")</script>
-        </div>
-    {% endif %}
-    
+    </div>
     
 </div>
 {% endblock stats %}

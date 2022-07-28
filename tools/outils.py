@@ -27,6 +27,12 @@ dictDivers={3:"Images envoyées",2:"GIFs envoyés",1:"Fichiers envoyés",4:"Lien
 with open('os/SQL.txt') as f:
     root = f.read().strip()
 
+with open('os/Static.txt') as f:
+    static = f.read().strip()
+
+with open('os/discord.txt') as f:
+    url = f.read().strip()
+
 
 def getTimes(guild,option,categ):
     connexion,curseur=connectSQL(guild,dictOptions[option],categ,"GL","")

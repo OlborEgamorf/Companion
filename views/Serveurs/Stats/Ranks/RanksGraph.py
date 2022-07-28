@@ -159,7 +159,7 @@ def barPlot(guild,option,categ,curseur,curseurGet,curseurGuild,moisDB,anneeDB,ci
 
     fig.update_layout(
         
-        paper_bgcolor="#111",
+        paper_bgcolor="#222",
         plot_bgcolor="#333",
         font_family="Roboto",
         font_color="white",
@@ -183,7 +183,7 @@ def barPlot(guild,option,categ,curseur,curseurGet,curseurGuild,moisDB,anneeDB,ci
             colors.append("rgb(110,200,250)")
         
         figCirc=go.Figure(data=go.Pie(labels=names,values=counts,ids=ids))
-        figCirc.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",font_size=14,height=750,title="Proportions",
+        figCirc.update_layout(paper_bgcolor="#222",plot_bgcolor="#333",font_family="Roboto",font_color="white",font_size=14,height=750,title="Proportions",
         legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
         figCirc.update_traces(marker_colors=colors,textposition='inside')
         figCirc.update_yaxes(automargin=True)
@@ -253,7 +253,7 @@ def barAnim(guild,option,curseur,curseurGet,curseurGuild,moisDB,anneeDB):
     fig_dict["layout"]["yaxis"] = {"title": enteteCount(option)+plus,"range":[0,round(maxi/div,2)*1.1]}
     fig_dict["layout"]["hovermode"] = "closest"
     fig_dict["layout"]["showlegend"] = False
-    fig_dict["layout"]["paper_bgcolor"] = "#111"
+    fig_dict["layout"]["paper_bgcolor"] = "#222"
     fig_dict["layout"]["plot_bgcolor"] = "#333"
     fig_dict["layout"]["font_family"] = "Roboto"
     fig_dict["layout"]["font_color"] = "white"
@@ -457,14 +457,14 @@ def pointPlot(guild,option,curseur,curseurGet,curseurGuild,moisDB,anneeDB,categ)
     figCount.add_trace(go.Scatter(x=listeMed,y=listeIDs,marker=dict(color="gold", size=8),mode="markers",name="Médiane"))
     figCount.add_trace(go.Scatter(x=listeMoy,y=listeIDs,marker=dict(color="cyan", size=8),mode="markers",name="Moyenne"))
     figCount.add_trace(go.Scatter(x=listeMax,y=listeIDs,marker=dict(color="yellowgreen", size=8),mode="markers",name="Maximum"))
-    figCount.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Indicateurs sur le nombre de {0} pour le Top 15".format(enteteCount(option).lower()),xaxis_title=enteteCount(option)+plus,yaxis_title=enteteNom(option),legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
+    figCount.update_layout(paper_bgcolor="#222",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Indicateurs sur le nombre de {0} pour le Top 15".format(enteteCount(option).lower()),xaxis_title=enteteCount(option)+plus,yaxis_title=enteteNom(option),legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
     figCount.update_yaxes(automargin=True,ticktext=listeNoms,tickvals=listeIDs)
     figCount.update_xaxes(showgrid=False, zeroline=False)
 
     figRank.add_trace(go.Scatter(x=listeRankMed,y=listeIDs,marker=dict(color="gold", size=8),mode="markers",name="Médiane"))
     figRank.add_trace(go.Scatter(x=listeRankMoy,y=listeIDs,marker=dict(color="turquoise", size=8),mode="markers",name="Moyenne"))
     figRank.add_trace(go.Scatter(x=listeRankMax,y=listeIDs,marker=dict(color="yellowgreen", size=8),mode="markers",name="Minimum"))
-    figRank.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Indicateurs sur les rangs pour le Top 15",xaxis_title="Rang",yaxis_title=enteteNom(option),legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
+    figRank.update_layout(paper_bgcolor="#222",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Indicateurs sur les rangs pour le Top 15",xaxis_title="Rang",yaxis_title=enteteNom(option),legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
     figRank.update_yaxes(automargin=True,ticktext=listeNoms,tickvals=listeIDs)
     figRank.update_xaxes(showgrid=False, zeroline=False,autorange="reversed")
 
@@ -516,7 +516,7 @@ def heatmapMois(guild,option,mois,annee):
                     textfont={"size":11},
                     colorscale="YlGnBu"))
                     
-    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=500,title="Calendrier {0} chaque jour du mois".format(enteteCount(option)))
+    fig.update_layout(paper_bgcolor="#222",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=500,title="Calendrier {0} chaque jour du mois".format(enteteCount(option)))
     fig.update_yaxes(automargin=True, showgrid=False, zeroline=False)
     fig.update_xaxes(showgrid=False, zeroline=False)
     return plot(fig,output_type='div')
@@ -568,7 +568,7 @@ def heatmapAnnee(guild,option,annee):
                     textfont={"size":10},
                     colorscale="YlGnBu"))
                     
-    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",title="Calendrier {0} chaque jour d'activité du serveur sur l'année".format(enteteCount(option).lower()),height=600,xaxis_title="Jours",yaxis_title="Mois")
+    fig.update_layout(paper_bgcolor="#222",plot_bgcolor="#333",font_family="Roboto",font_color="white",title="Calendrier {0} chaque jour d'activité du serveur sur l'année".format(enteteCount(option).lower()),height=600,xaxis_title="Jours",yaxis_title="Mois")
     fig.update_yaxes(automargin=True)
     return plot(fig,output_type='div')
 
@@ -612,7 +612,7 @@ def heatmapGlobal(guild,option,curseur):
                     textfont={"size":14},
                     colorscale="YlGnBu"))
                     
-    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",title="Calendrier {0} chaque mois d'activité du serveur".format(enteteCount(option).lower()))
+    fig.update_layout(paper_bgcolor="#222",plot_bgcolor="#333",font_family="Roboto",font_color="white",title="Calendrier {0} chaque mois d'activité du serveur".format(enteteCount(option).lower()))
     fig.update_yaxes(automargin=True)
     return plot(fig,output_type='div')
 
@@ -700,7 +700,7 @@ def linePlot(guild,option,user,curseur,curseurGet,curseurGuild,categ,moisDB,anne
         else:
             fig.add_trace(go.Scatter(x=listeX[i], y=listeY[i],mode='lines+markers+text',name=nom,marker=dict(color=color, size=12),line=dict(color=color,dash=dictLine[count]),text=listeR[i],textposition="top center"))
 
-    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Évolution des trois premiers du classement sur les 10 derniers mois",xaxis_title="Dates",yaxis_title=enteteCount(option)+plus,hovermode="x unified",legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
+    fig.update_layout(paper_bgcolor="#222",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=600,title="Évolution des trois premiers du classement sur les 10 derniers mois",xaxis_title="Dates",yaxis_title=enteteCount(option)+plus,hovermode="x unified",legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="right",x=1))
     fig.update_yaxes(automargin=True)
     fig.update_xaxes(showgrid=False, zeroline=False)
     return plot(fig,output_type='div')

@@ -28,9 +28,14 @@ def getIndics(request,guild,option):
     moy=int(curseur.execute("SELECT AVG(Count) AS Moy FROM {0}{1}".format(moisDB,anneeDB)).fetchone()["Moy"])
     som=curseur.execute("SELECT SUM(Count) AS Somme FROM {0}{1}".format(moisDB,anneeDB)).fetchone()["Somme"]
     ent=curseur.execute("SELECT COUNT() AS Count FROM {0}{1}".format(moisDB,anneeDB)).fetchone()["Count"]
-    you=curseur.execute("SELECT Count FROM {0}{1} WHERE ID={2}".format(moisDB,anneeDB,user.id)).fetchone()
-    if you!=None:
-        you=you["Count"]
+
+    if option in ("messages","voice") or categ=="Jeux":
+        you=curseur.execute("SELECT Count FROM {0}{1} WHERE ID={2}".format(moisDB,anneeDB,user.id)).fetchone()
+        if you!=None:
+            you=you["Count"]
+    else:
+        you=None
+
     table=curseur.execute("SELECT Count FROM {0}{1} ORDER BY Count DESC".format(moisDB,anneeDB)).fetchall()
     med=table[len(table)//2]["Count"]
 
@@ -38,18 +43,27 @@ def getIndics(request,guild,option):
         allMois=getTablePerso(guild,dictOptions[option],guild,False,"M","countDesc")
         allAnnee=getTablePerso(guild,dictOptions[option],guild,False,"A","countDesc")
 
-        bestJour=curseurGL.execute("SELECT * FROM dayRank ORDER BY Count DESC").fetchone()
+        if option in ("messages","voice"):
+            bestJour=curseurGL.execute("SELECT * FROM dayRank ORDER BY Count DESC").fetchone()
+        else:
+            bestJour=None
         bestMois=allMois[0]
         bestAnnee=allAnnee[0]
     elif moisDB=="to":
         allMois=getTablePerso(guild,dictOptions[option],guild,False,"M","countDesc")
         allMois=list(filter(lambda x:x["Annee"]==anneeDB, allMois))
 
-        bestJour=curseurGL.execute("SELECT * FROM dayRank WHERE Annee='{0}' ORDER BY Count DESC".format(anneeDB)).fetchone()
+        if option in ("messages","voice"):
+            bestJour=curseurGL.execute("SELECT * FROM dayRank WHERE Annee='{0}' ORDER BY Count DESC".format(anneeDB)).fetchone()
+        else:
+            bestJour=None
         bestMois=allMois[0]
         bestAnnee=None
     else:
-        bestJour=curseurGL.execute("SELECT * FROM dayRank WHERE Annee='{0}' AND Mois='{1}' ORDER BY Count DESC".format(anneeDB,tableauMois[moisDB])).fetchone()
+        if option in ("messages","voice"):
+            bestJour=curseurGL.execute("SELECT * FROM dayRank WHERE Annee='{0}' AND Mois='{1}' ORDER BY Count DESC".format(anneeDB,tableauMois[moisDB])).fetchone()
+        else:
+            bestJour=None
         bestMois,bestAnnee=None,None
 
     connexionGet,curseurGet=connectSQL("OT","Meta","Guild",None,None)
@@ -80,9 +94,9 @@ def getHistoFirst(request,guild,option):
                 if i["ID"]!=idFirst:
                     if option in ("messages","voice","mots"):
                         infos=getUserInfo(idFirst,curseurGet,guild)
-                        histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(i["DateID"])),"Nom":infos["Nom"],"Avatar":infos["Avatar"],"Jours":jours})
+                        histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(i["DateID"])),"Nom":infos["Nom"],"Avatar":infos["Avatar"],"Jours":jours,"Color":infos["Color"]})
                     else:
-                        infos=getNom(i["ID"],option,curseurGet,False)
+                        infos=getNom(idFirst,option,curseurGet,False)
                         histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(i["DateID"])),"Nom":infos,"Jours":jours})
                     idFirst=i["ID"]
                     date=i["DateID"]
@@ -91,9 +105,9 @@ def getHistoFirst(request,guild,option):
 
             if option in ("messages","voice","mots"):
                 infos=getUserInfo(idFirst,curseurGet,guild)
-                histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"En cours","Nom":infos["Nom"],"Avatar":infos["Avatar"],"Jours":jours})
+                histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"En cours","Nom":infos["Nom"],"Avatar":infos["Avatar"],"Jours":jours,"Color":infos["Color"]})
             else:
-                infos=getNom(i["ID"],option,curseurGet,False)
+                infos=getNom(idFirst,option,curseurGet,False)
                 histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"En cours","Nom":infos,"Jours":jours})
 
     elif moisDB=="to":
@@ -109,9 +123,9 @@ def getHistoFirst(request,guild,option):
                 if i["ID"]!=idFirst:
                     if option in ("messages","voice","mots"):
                         infos=getUserInfo(idFirst,curseurGet,guild)
-                        histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(i["DateID"])),"Nom":infos["Nom"],"Avatar":infos["Avatar"],"Jours":jours})
+                        histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(i["DateID"])),"Nom":infos["Nom"],"Avatar":infos["Avatar"],"Jours":jours,"Color":infos["Color"]})
                     else:
-                        infos=getNom(i["ID"],option,curseurGet,False)
+                        infos=getNom(idFirst,option,curseurGet,False)
                         histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(i["DateID"])),"Nom":infos,"Jours":jours})
                     idFirst=i["ID"]
                     date=i["DateID"]
@@ -120,9 +134,9 @@ def getHistoFirst(request,guild,option):
 
             if option in ("messages","voice","mots"):
                 infos=getUserInfo(idFirst,curseurGet,guild)
-                histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"En cours","Nom":infos["Nom"],"Avatar":infos["Avatar"],"Jours":jours})
+                histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"En cours","Nom":infos["Nom"],"Avatar":infos["Avatar"],"Jours":jours,"Color":infos["Color"]})
             else:
-                infos=getNom(i["ID"],option,curseurGet,False)
+                infos=getNom(idFirst,option,curseurGet,False)
                 histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"En cours","Nom":infos,"Jours":jours})
 
     else:
@@ -138,9 +152,9 @@ def getHistoFirst(request,guild,option):
                 if i["ID"]!=idFirst:
                     if option in ("messages","voice","mots"):
                         infos=getUserInfo(idFirst,curseurGet,guild)
-                        histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(i["DateID"])),"Nom":infos["Nom"],"Avatar":infos["Avatar"],"Jours":jours})
+                        histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(i["DateID"])),"Nom":infos["Nom"],"Avatar":infos["Avatar"],"Jours":jours,"Color":infos["Color"]})
                     else:
-                        infos=getNom(i["ID"],option,curseurGet,False)
+                        infos=getNom(idFirst,option,curseurGet,False)
                         histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(i["DateID"])),"Nom":infos,"Jours":jours})
                     idFirst=i["ID"]
                     date=i["DateID"]
@@ -149,9 +163,9 @@ def getHistoFirst(request,guild,option):
 
             if option in ("messages","voice","mots"):
                 infos=getUserInfo(idFirst,curseurGet,guild)
-                histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"En cours","Nom":infos["Nom"],"Avatar":infos["Avatar"],"Jours":jours})
+                histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"En cours","Nom":infos["Nom"],"Avatar":infos["Avatar"],"Jours":jours,"Color":infos["Color"]})
             else:
-                infos=getNom(i["ID"],option,curseurGet,False)
+                infos=getNom(idFirst,option,curseurGet,False)
                 histo.append({"ID":str(idFirst),"DateDebut":"{0[4]}{0[5]}/{0[2]}{0[3]}/{0[0]}{0[1]}".format(str(date)),"DateFin":"En cours","Nom":infos,"Jours":jours})
 
     return JsonResponse(data=histo,safe=False)
@@ -174,9 +188,13 @@ def getEvol(request,guild,option):
     if user.id==int(obj):
         graph=linePlots(guild,option,curseur,curseurGet,curseurGuild,user.id,moisDB,anneeDB,True,categ)
     else:
-        infos1=getUserInfo(user.id,curseurGet,guild)
-        infos2=getUserInfo(obj,curseurGet,guild)
-        graph=evolGraphCompare(option,curseur,user.id,obj,moisDB,anneeDB,infos1["Nom"],infos2["Nom"],infos1["Color"],infos2["Color"])
+        if option in ("messages","voice"):
+            infos1=getUserInfo(user.id,curseurGet,guild)
+            infos2=getUserInfo(obj,curseurGet,guild)
+            graph=evolGraphCompare(option,curseur,user.id,obj,moisDB,anneeDB,infos1["Nom"],infos2["Nom"],infos1["Color"],infos2["Color"])
+        else:
+            nom=getNom(obj,option,curseurGet,False)
+            graph=evolGraphCompare(option,curseur,user.id,obj,moisDB,anneeDB,None,nom,None,"turquoise")
     return JsonResponse(data={"graph":graph},safe=False)
 
 

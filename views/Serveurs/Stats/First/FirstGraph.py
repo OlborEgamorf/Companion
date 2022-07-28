@@ -181,9 +181,9 @@ def linePlot(guild,option,user,color,curseur,curseurGet,curseurGuild,graphnb,cat
         hovertemplate = "%{y}",
         name="Moyenne du serveur"))
 
-    fig.update_layout(paper_bgcolor="#111",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Pour chaque mois d'activité, comparaison entre vous, le premier, et la moyenne du serveur en terme de {0}".format(enteteCount(option).lower()),xaxis_title="Date",yaxis_title=enteteCount(option)+plus,hovermode="x")
+    fig.update_layout(paper_bgcolor="#222",plot_bgcolor="#333",font_family="Roboto",font_color="white",height=800,title="Pour chaque mois d'activité, comparaison entre vous, le premier, et la moyenne du serveur en terme de {0}".format(enteteCount(option).lower()),xaxis_title="Date",yaxis_title=enteteCount(option)+plus,hovermode="x")
     fig.update_yaxes(automargin=True)
-    fig.update_xaxes(showgrid=False, zeroline=False,rangeslider_visible=True,type="date",rangeselector=dict(font_color="#111",
+    fig.update_xaxes(showgrid=False, zeroline=False,rangeslider_visible=True,type="date",rangeselector=dict(font_color="#222",
             buttons=list([
                 dict(count=3,
                      label="3 mois",
@@ -228,7 +228,7 @@ def linePlot(guild,option,user,color,curseur,curseurGet,curseurGuild,graphnb,cat
 
         figNb.update_layout(
             
-            paper_bgcolor="#111",
+            paper_bgcolor="#222",
             plot_bgcolor="#333",
             font_family="Roboto",
             font_color="white",

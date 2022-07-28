@@ -1,10 +1,9 @@
 {% extends "companion/BASE.html" %}
 
 {% block stats %}
-<div class="stats" style="justify-content: center;">
-    <div id="tableot">
+<div class="grid-onecol" style="justify-content: center;">
+    <div>
         <div class="guild-stats">Pour vous</div>
-
         {% if fig != None %}
         <div class="graphs">
             {% autoescape off %}
@@ -36,7 +35,8 @@
             {% endautoescape %}
         </div>
         {% endif %}
-
+    </div>
+    <div>
         <div class="guild-stats">Pour le serveur</div>
 
         {% if fig5 != None %}
@@ -63,10 +63,5 @@
         </div>
         {% endif %}
     </div>
-    {% if command == "ranks" %}
-        <iframe src="/companion/{{ guildid }}/{{ option }}/iframeranks/graphs?data={{ mois }}?{{ annee }}?{{ obj }}" scrolling="no" onload="resizeIframe(this)"></iframe>
-    {% elif command == "periods" %}
-        <iframe src="/companion/{{ guildid }}/{{ option }}/iframeperiods/graphs?data={{ obj }}" scrolling="no" onload="resizeIframe(this)"></iframe>
-    {% endif %}
 </div>
 {% endblock stats %}

@@ -27,7 +27,7 @@ def viewGuildHome(request,guild):
 
     ctx={"avatar":user_full["Avatar"],"id":user.id,"nom":user_full["Nom"],
     "guildname":guild_full["Nom"],"guildid":guild,"guildicon":guild_full["Icon"],
-    "stats":stats,"outils":True,"sv":True,"polls":True,"admin":True,"anniv":True,
+    "stats":stats,"outils":True,"sv":True,"polls":True,"admin":True,"anniv":True,"timeline":True,
     "travel":False,"selector":False}
     
     return render(request, "companion/GuildHome.html", ctx)

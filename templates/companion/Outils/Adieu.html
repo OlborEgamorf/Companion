@@ -1,0 +1,317 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+{% load static %}
+
+<script>
+    function confirm(button) {
+        val=button.value
+        button.value="Supprimer vraiment"
+        sleep(100).then(() => {button.type="submit"})
+        sleep(10000).then(() => {
+            button.type="button"
+            button.value=val})
+    }
+
+    function simulate(idimg) {
+        var httpRequest = new XMLHttpRequest()
+        var image = document.getElementById(`img-${idimg}`)
+        var mess = document.getElementById(`messimg-${idimg}`).value
+        var color = document.getElementById(`color-${idimg}`).value
+        var taille = document.getElementById(`taille-${idimg}`).value
+        var filtre = document.getElementById(`filtre-${idimg}`).checked
+
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                var data = JSON.parse(httpRequest.response)
+                image.src=data["img"]
+            }    
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/adieu/simulate/${idimg}?mess=${mess}&taille=${taille}&color=${color.slice(1)}&filtre=${filtre}`,true)
+        httpRequest.send()
+    }
+
+    function toogleAD(tog) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                window.location.replace("/companion/{{ guildid }}/adieu");
+            }    
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/adieu/togglead?active=${tog.checked == true}`,true)
+        httpRequest.send()
+    }
+
+    function toogleImg(tog,idimg) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.open("GET",`/companion/{{ guildid }}/adieu/toggleimg/${idimg}?active=${tog.checked == true}`,true)
+        httpRequest.send()
+    }
+
+    function toogleMessage(tog,idmessage) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.open("GET",`/companion/{{ guildid }}/adieu/togglemessage/${idmessage}?active=${tog.checked == true}`,true)
+        httpRequest.send()
+    }
+
+    function editMessage(tog,idmessage) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.open("GET",`/companion/{{ guildid }}/adieu/editmessage/${idmessage}?message=${tog.value}`,true)
+        httpRequest.send()
+    }
+
+    function editImg(idimg) {
+        var image = document.getElementById(`img-${idimg}`)
+        var mess = document.getElementById(`messimg-${idimg}`).value
+        var color = document.getElementById(`color-${idimg}`).value
+        var taille = document.getElementById(`taille-${idimg}`).value
+        var mode = document.getElementById(`mode-${idimg}`).value
+        var filtre = document.getElementById(`filtre-${idimg}`).checked
+
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.open("GET",`/companion/{{ guildid }}/adieu/editimg/${idimg}?mess=${mess}&taille=${taille}&color=${color.slice(1)}&mode=${mode}&filtre=${filtre}`,true)
+        httpRequest.send()
+    }
+
+    function delMessage(element,idmessage) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                $(element).parent().parent().parent().parent().remove()
+            }
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/adieu/delmessage/${idmessage}`,true)
+        httpRequest.send()
+    }
+
+    function delImg(element,idimg) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                $(element).parent().parent().parent().parent().remove()
+            }
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/adieu/delimg/${idimg}`,true)
+        httpRequest.send()
+    }
+
+    function addMessage() {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                data=JSON.parse(httpRequest.response)
+                $("#table-add").before(`
+                <table style="margin-top: 30px;">
+                    <tr>
+                        <th>Message ${data["count"]}</th>
+                        <th><label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label></th>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><input id="mess-new" style="width: -moz-available;" type="text" value="Adieu {name}..." onfocusout="editMessage(this,'${data["count"]}')"></td>
+                    </tr>
+                    <tr><td colspan="2"><input onclick='delMessage(this,${data["count"]})' type="button" value="Supprimer" class="input-click"></td></tr>
+                </table>`)
+            }    
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/adieu/addmessage`,true)
+        httpRequest.send()
+    }
+
+    function test(obj) {
+        console.log(obj)
+    }
+
+</script>
+<link rel="stylesheet" media="screen" type="text/css" href="{% static 'companion/colorpicker/src/coloris.css' %}" />
+<script type="text/javascript" src="{% static 'companion/colorpicker/src/coloris.js' %}"></script>
+
+{% if etatAD.Active %}
+<div class="grid-stats" style="margin-top: 30px;">
+    <table class="grid-stats-1">
+        <tr>
+            <th>Départs de membres</th>
+            <th>
+                <label class="switch">
+                    <input onchange='toogleAD(this)' name="bv" type="checkbox" checked>
+                    <span class="slider round"></span>
+                </label>
+            </th>
+        </tr>
+        <tr><td colspan="2">Dites au revoir aux personnes qui quittent votre serveur avec des messages et des images d'adieu, totalement personnalisables, qui s'afficheront dans le salon de votre choix dès que quelqu'un partira de votre serveur.</td></tr>
+    </table>
+        <table class="grid-stats-2">
+            <tr><th>Choisir le salon d'envoi</th></tr>
+            <tr>
+                <td>
+                    <form method="post" action="/companion/{{ guildid }}/adieu/chanad" enctype="multipart/form-data"> {% csrf_token %}
+                        <select name="salon" id="salon">
+                            {% for i in allchans %}
+                                <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            <tr><td><input type="submit" value="Sauvegarder" class="input-click"></td></tr>
+        </table>
+
+        <table class="grid-stats-2">
+            <tr><th colspan="2">Balises de texte</th></tr>
+            <tr><td>{name}</td><td>Donne le nom du membre</td></tr>
+            <tr><td>{guild}</td><td>Donne le nom du serveur</td></tr>
+            <tr><td>{number}</td><td>Donne le nombre de membres sur le serveur</td></tr>
+        </table>
+</div>
+{% else %}
+<div class="grid-onecol" style="margin-top: 30px;">
+    <table>
+        <tr>
+            <th>Départs de membres</th>
+            <th>
+                <label class="switch">
+                    <input onchange='toogleAD(this)' type="checkbox">
+                    <span class="slider round"></span>
+                </label>
+            </th>
+        </tr>
+        <tr><td colspan="2">Dites au revoir aux personnes qui quittent votre serveur avec des messages et des images d'adieu, totalement personnalisables, qui s'afficheront dans le salon de votre choix dès que quelqu'un partira de votre serveur.</td></tr>
+    </table>
+</div>
+{% endif %}
+
+{% if etatAD.Active %}
+    <div class="grid-twocol" style="margin-top: 30px;">
+        <div>
+            <div style="text-align: justify;margin: 0; "class="guild-stats">Messages d'adieu</div>
+            {% for i in messages %}
+                <table style="margin-top: 30px;">
+                    <tr>
+                        <th>Message {{ i.Nombre }}</th>
+                        <th>
+                            <label class="switch">
+                                {% if i.Active %}
+                                    <input onchange='toogleMessage(this,"{{ i.Nombre }}")' type="checkbox" checked>
+                                {% else %}
+                                    <input onchange='toogleMessage(this,"{{ i.Nombre }}")' type="checkbox">
+                                {% endif %}
+                                <span class="slider round"></span>
+                            </label>
+                        </th>
+                    </tr>
+                    <tr><td colspan="2"><input id="mess-{{ i.Nombre }}" style="width: -moz-available;" type="text" value="{{ i.Message }}" onfocusout="editMessage(this,'{{ i.Nombre }}')"></td></tr>
+                    <tr><td colspan="2"><input onclick='delMessage(this,"{{ i.Nombre }}")' type="button" value="Supprimer" class="input-click"></td></tr>
+                </table>
+            {% endfor %}
+            <table id="table-add" style="margin-top: 30px;">
+                <tr><th>Nouvelle phrase</th></tr>
+                <tr id="ranksplus"><td onclick="addMessage()"><img src="{% static 'companion/img/Plus.png' %}"></td></tr>
+            </table>
+        </div>
+        <div>
+            <div style="text-align: justify;margin: 0; "class="guild-stats">Images d'adieu</div>
+            {% for i in images %}
+                <table style="margin-top: 30px;">
+                    <tr>
+                        <th>Image {{ i.Nombre }}</th>
+                        <th>
+                            <label class="switch">
+                                {% if i.Active %}
+                                    <input onchange='toogleImg(this,"{{ i.Nombre }}")' type="checkbox" checked>
+                                {% else %}
+                                    <input onchange='toogleImg(this,"{{ i.Nombre }}")' type="checkbox">
+                                {% endif %}
+                                <span class="slider round"></span>
+                            </label>
+                        </th>
+                    </tr>
+                    <tr><td colspan="2"><img id="img-{{ i.Nombre }}" class="image-sv" src="{{ i.Path }}"></td></tr>
+                    <tr><td>Texte</td><td><input id="messimg-{{ i.Nombre }}" style="width: -moz-available;" type="text" value="{{ i.Message }}"></td></tr>
+                    <tr><td>Couleur</td><td><input id="color-{{ i.Nombre }}" type="text" value="{{ i.Couleur }}" class="coloris">
+                        <script>
+                            Coloris({
+                            el: '.coloris',
+                            theme: 'large',
+                            themeMode: 'dark',
+                            format: 'hex',
+                            alpha:false,
+                            swatches: ['#264653','#2a9d8f','#e9c46a','#f4a261','#e76f51','#d62828','#023e8a','#0077b6','#0096c7','#00b4d8','#48cae4']
+                            });
+                        </script>
+                    </td></tr>
+                    <tr><td>Taille de la police</td><td><input id="taille-{{ i.Nombre }}" type="number" style="width:-moz-available;text-align:left" min="20" max="150" value="{{ i.Taille }}"></td></tr>
+                    <tr><td>Mode jour/nuit</td><td>
+                        <select id="mode-{{ i.Nombre }}" name="mode-{{ i.Nombre }}">
+                            {% if i.Mode == "jour" %}
+                                <option selected>Jour</option>
+                            {% else %} 
+                                <option>Jour</option>
+                            {% endif %}
+                            {% if i.Mode == "nuit" %}
+                                <option selected>Nuit</option>
+                            {% else %} 
+                                <option>Nuit</option>
+                            {% endif %}
+                            {% if i.Mode == "all" %}
+                                <option selected>Tout</option>
+                            {% else %} 
+                                <option>Tout</option>
+                            {% endif %}
+                        </select>
+                    </td></tr>
+                    {% if i.Filtre %}
+                        <tr><td>Filtre noir et blanc</td><td><input type="checkbox" id="filtre-{{ i.Nombre }}" checked> </td></tr>
+                    {% else %}
+                        <tr><td>Filtre noir et blanc</td><td><input type="checkbox" id="filtre-{{ i.Nombre }}"> </td></tr>
+                    {% endif %}
+                    <tr>
+                        <td colspan="2"><input onclick='simulate("{{ i.Nombre }}")' type="button" value="Simuler" class="input-click">
+                        <input onclick='editImg("{{ i.Nombre }}")' type="button" value="Enregistrer" class="input-click">
+                        <input onclick='delImg(this,"{{ i.Nombre }}")' type="button" value="Supprimer" class="input-click"></td>
+                    </tr>
+                </table>
+            {% endfor %}
+            <form method="post" action="/companion/{{ guildid }}/adieu/addimg" enctype="multipart/form-data"> {% csrf_token %}
+                <table style="margin-top: 30px;">
+                    <tr><th colspan="2">Nouvelle image</th></tr>
+                    <tr><td>Image</td><td><input type="file" name="image" accept="image/*" required></td></tr>
+                    <tr><td>Message</td><td><input style="width: -moz-available;" type="text" name="message" required></td></tr>
+                    <tr><th colspan="2"><input type="submit" value="Envoyer" class="input-click"></th></tr>
+                </table>
+            </form>
+        </div>
+    </div>
+
+    <div class="grid-threecenter" style="margin-top: 30px;">
+        <div class="grid-threecenter-div">
+            <table style="margin-top: 30px;">
+                <tr><th>Choisir le salon d'envoi</th></tr>
+                <tr>
+                    <td>
+                        <form method="post" action="/companion/{{ guildid }}/adieu/chanad" enctype="multipart/form-data"> {% csrf_token %}
+                            <select name="salon" id="salon">
+                                {% for i in allchans %}
+                                    <option value="{{ i.id }}">{{ i.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </td>
+                </tr>
+                <tr><td><input type="submit" value="Sauvegarder" class="input-click"></td></tr>
+            </table>
+
+            <table style="margin-top: 30px;">
+                <tr><th colspan="2">Balises de texte</th></tr>
+                <tr><td>{name}</td><td>Donne le nom du membre</td></tr>
+                <tr><td>{guild}</td><td>Donne le nom du serveur</td></tr>
+                <tr><td>{number}</td><td>Donne le nombre de membres sur le serveur</td></tr>
+            </table>
+        </div>
+    </div>
+
+{% endif %}
+
+
+{% endblock stats %}

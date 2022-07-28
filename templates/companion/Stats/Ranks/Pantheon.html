@@ -2,13 +2,51 @@
 {% block script %}
 <script type="text/javascript">
     
-    function newSite(id,mois,annee,obj) {
-        var site = "/companion/{{ guildid }}/{{ option }}/iframeserv?data="+mois+"?"+annee+"?"+id
-        document.getElementById('iframeevol').src = site;
-        try {document.getElementById("elselect").id = NaN}
-        catch {}
-        obj.id = "elselect"
-    }    
+    function addIndics(option) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                var data = JSON.parse(httpRequest.response)
+                var table = $(`<table style="margin-bottom:30px">
+                                <tr><th colspan='2'>Indicateurs statistiques</th></tr>
+                                <tr><td>Moyenne</td><td class="barretd">${formatCount(data["moy"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["moy"]}/${data["maxi"]})"></div></div></td></tr>
+                                <tr><td>Médiane</td><td class="barretd">${formatCount(data["med"],option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["med"]}/${data["maxi"]})"></div></div></td></tr>
+                                <tr><td>Entrées</td><td class="barretd">${data["entrees"]}<div class="contour-barre"><div class="barre" style="width:100%"></div></div></td></tr>
+                                </table>`)
+                
+                var tableTop50 = $(`<table style="margin-bottom:30px"><tr><th colspan='3'>Représentation dans le Top 50</th></tr></table>`)
+                for (i=0 ; i<data["membres"].length ; i++) {
+                    var tr = $("<tr></tr>")
+                    if (option == "messages" || option == "mots" || option == "voice") {
+                        if (data["membres"][i].Avatar == null) {
+                            tr.append(`<td style="border-left-style: solid;border-left-width: medium;"><a href="/companion/profil/${data["membres"][i].ID}"><img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a></td>`)
+                        } else {
+                            tr.append(`<td style="border-left-color:${data["membres"][i].Color};border-left-style: solid;border-left-width: medium;"><a href="/companion/profil/${data["membres"][i].ID}"><img src="https://cdn.discordapp.com/avatars/${data["membres"][i].ID}/${data["membres"][i].Avatar}.png?size=128"></a></td>`)
+                        }
+                    } else if (option == "emotes" || option == "reactions") {
+                        tr.append(`<td><img src="https://cdn.discordapp.com/emojis/${data["membres"][i].ID}?size=128" style="border-radius: 0%;"></td>`)
+                    }                    
+                    tr.append(`<td style="text-align: start;">${data["membres"][i].Nom}</td>`)
+                    tr.append(`<td class="barretd">${data["membres"][i].Count}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["membres"][i].Count}/${data["maxiMembres"]})"></div></div></td>`)
+                    $(tableTop50).append(tr)
+                }
+
+                var tableTop50Date = $("<table><tr><th colspan='2'>Représentation dans le Top 50 - Périodes</th></tr></table>")
+                for (i=0 ; i<data["dates"].length ; i++) {
+                    var tr = $("<tr></tr>")           
+                    tr.append(`<td>${data["dates"][i].ID}</td>`)
+                    tr.append(`<td class="barretd">${data["dates"][i].Count}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data["dates"][i].Count}/${data["maxiDates"]})"></div></div></td>`)
+                    $(tableTop50Date).append(tr)
+                }
+                
+                $("#grid-indics").append(table)
+                $("#grid-indics").append(tableTop50)
+                $("#grid-indics").append(tableTop50Date)
+            }
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/{{ option }}/pantheonmore`,true)
+        httpRequest.send()
+    }
 
 </script>
 {% endblock script %}
@@ -26,15 +64,14 @@
     {% endif %}
 </div>
 
-<div class="stats">
-    <table id="tableot">
+<div class="grid-stats">
+    <table class="grid-stats-1">
         {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" or obj != None %}
             <tr><th colspan="6">Panthéon - Le classement des classements</th></tr>
             <tr>
                 <th>Rang (base)</th>
                 <th>Date</th>
                 <th colspan="2">{{ option|headnom }}</th>
-                <th id="leg-barre">Barre</th>
                 <th>{{ option|headcount }}</th>
             </tr>
         {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
@@ -43,7 +80,6 @@
                 <th>Rang (base)</th>
                 <th>Date</th>
                 <th colspan="2">Joueur</th>
-                <th id="leg-barre">Barre</th>
                 <th>Points</th>
                 <th>W/L</th>
                 <th>Badge</th>
@@ -54,7 +90,6 @@
                 <th>Rang (base)</th>
                 <th>Date</th>
                 <th>{{ option|headnom }}</th>
-                <th id="leg-barre">Barre</th>
                 <th>{{ option|headcount }}</th>
             </tr>
         {% endif %}
@@ -62,10 +97,12 @@
         {% for i in rank %}
             {% if i.ID == id %}
                 <tr class="user" onClick="newSite('{{ i.ID }}','{{ i.Mois }}','{{ i.Annee }}',this)">
+                    <td style="border-left-color: {{ i.Color }};border-left-style: solid;border-left-width: 8px;">{{ i.Rank }} ({{ i.RankOri }})</td>
             {% else %}
                 <tr onClick="newSite('{{ i.ID }}','{{ i.Mois }}','{{ i.Annee }}',this)">
+                    <td style="border-left-color: {{ i.Color }};border-left-style: solid;border-left-width: medium;">{{ i.Rank }} ({{ i.RankOri }})</td>
             {% endif %}
-                    <td>{{ i.Rank }} ({{ i.RankOri }})</td>
+                    
                     <td>{{ i.Mois }}/{{ i.Annee }}</td>
                     {% if option == "messages" or option == "mots" or option == "voice" or obj != None %}
                         <td>
@@ -97,8 +134,10 @@
                         </td>
                     {% endif %}
                     <td style="text-align: start;">{{ i.Nom }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
-                    <td>{{ i.Count|tempsvoice:option }}</td>
+                    <td class="barretd">{{ i.Count|tempsvoice:option }}
+                        <div class="contour-barre">
+                        <div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></div>
+                    </td>
                     {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
                         <td>{{ i.Win }}/{{ i.Lose }}</td>
                         <td>
@@ -111,6 +150,9 @@
                 </tr>
         {% endfor %}
     </table>
-    <iframe id="iframeevol" src="/companion/iframeblank?option={{ option }}&command={{ command }}&plus={{ plus }}" scrolling="no" onload="resizeIframe(this)"></iframe>
+    <div class="grid-stats-2" id="grid-indics">
+        <div style="text-align: justify;margin: 0; "class="guild-stats">Indicateurs</div>
+        <script>addIndics("{{ option }}")</script>
+    </div>
 </div>
 {% endblock stats %}

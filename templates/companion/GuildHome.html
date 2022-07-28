@@ -13,6 +13,13 @@
 </head>
 
 <body>
+    <header class="header-ot">
+
+        <span class="user-avatar"><img  src="{% static 'companion/img/capucheB.png' %}">
+        <h1>Companion</h1></span>
+        
+    </header>
+
     <div class="sidenav" id="side">
         <a href="/companion/" class="ot-logo" onmouseenter="showBar('OT')" onmouseleave="hideBar('OT')" onclick="clickServ(this)">
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128"></span>
@@ -30,23 +37,23 @@
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png"></span>
             <span id="Stats" class="text-bar">Statistiques</span>
         </a>
-        <a  onmouseenter="showBar('Sondages')" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
+        <a href="/companion/{{ guildid }}/polls/" onmouseenter="showBar('Sondages')" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604052315136050/poll.png"></span>
             <span id="Sondages" class="text-bar">Sondages</span>
         </a>
-        <a  onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" onclick="clickServ(this)">
+        <a href="/companion/{{ guildid }}/sv/" onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" onclick="clickServ(this)">
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604056203231252/sv.png"></span>
             <span id="SV" class="text-bar">Savez-Vous ?</span>
         </a>
-        <a onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" onclick="clickServ(this)">
+        <a href="/companion/{{ guildid }}/anniv/" onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" onclick="clickServ(this)">
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/888141462066303056/anniv.png"></span>
             <span id="Anniv" class="text-bar">Anniversaires</span>
         </a>
-        <a onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" onclick="clickServ(this)">
+        <a href="/companion/{{ guildid }}/outils/" onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" onclick="clickServ(this)">
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604051069407272/outils.png"></span>
             <span id="Outils" class="text-bar">Outils</span>
         </a>
-        <a onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" onclick="clickServ(this)">
+        <a href="/companion/{{ guildid }}/admin/" onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" onclick="clickServ(this)">
             <span class="little-icon-guild" ><img src="https://cdn.discordapp.com/attachments/726034739550486618/870604058883420170/admin.png"></span>
             <span id="Admin" class="text-bar">Administration</span>
         </a>
@@ -63,67 +70,197 @@
         </div>
     </div>
 
-    <div class="guild-stats">Où souhaitez-vous aller ?</div>
-    <div class="all-guilds">
+    <div class="grid-twocol">
         {% if stats %}
-            <a href="/companion/{{ guildid }}/stats">
-                <div class="card-guild">
-                    <span class="icon-guild">
-                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604054831714344/stats.png">
-                    </span>
-                    <span class="guild-name">Statistiques d'activité du serveur</span>
+            <div>
+                <div class="guild-stats">Statistiques d'activité du serveur</div>
+                <div class="all-guilds">
+                    <a href="/companion/{{ guildid }}/stats">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="{% static 'companion/img/stats.PNG' %}">
+                            </span>
+                            <span class="guild-name">Statistiques</span>
+                        </div>
+                    </a>
                 </div>
-            </a>
+            </div>
         {% endif %}
+
+        <div>
+            <div class="guild-stats">Communautaire</div>
+            <div class="all-guilds">
+                {% if sv %}
+                    <a href="/companion/{{ guildid }}/sv">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="{% static 'companion/img/sv.PNG' %}">
+                            </span>
+                            <span class="guild-name">Savez-Vous ?</span>
+                        </div>
+                    </a>
+                {% endif %}
+                {% if anniv %}
+                    <a href="/companion/{{ guildid }}/anniv">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="{% static 'companion/img/anniv.PNG' %}">
+                            </span>
+                            <span class="guild-name">Anniversaires</span>
+                        </div>
+                    </a>
+                {% endif %}
+                {% if timeline %}
+                    <a href="/companion/{{ guildid }}/timeline">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="{% static 'companion/img/capucheB.PNG' %}">
+                            </span>
+                            <span class="guild-name">Chronologie</span>
+                        </div>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
         {% if polls %}
-            <a href="/companion/{{ guildid }}/polls">
-                <div class="card-guild">
-                    <span class="icon-guild">
-                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604052315136050/poll.png">
-                    </span>
-                    <span class="guild-name">Gestion des sondage</span>
+            <div>
+                <div class="guild-stats">Sondages</div>
+                <div class="all-guilds">
+                    <a href="/companion/{{ guildid }}/sondages">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="{% static 'companion/img/poll.PNG' %}">
+                            </span>
+                            <span class="guild-name">Sondages</span>
+                        </div>
+                    </a>
+                    <a href="/companion/{{ guildid }}/petitions">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="{% static 'companion/img/poll.PNG' %}">
+                            </span>
+                            <span class="guild-name">Pétitions</span>
+                        </div>
+                    </a>
+                    <a href="/companion/{{ guildid }}/giveaways">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="{% static 'companion/img/poll.PNG' %}">
+                            </span>
+                            <span class="guild-name">Giveaways</span>
+                        </div>
+                    </a>
                 </div>
-            </a>
+            </div>
         {% endif %}
-        {% if sv %}
-            <a >
-                <div class="card-guild">
-                    <span class="icon-guild">
-                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604056203231252/sv.png">
-                    </span>
-                    <span class="guild-name">Boîte de connaissances du serveur</span>
-                </div>
-            </a>
-        {% endif %}
-        {% if anniv %} 
-            <a >
-                <div class="card-guild">
-                    <span class="icon-guild">
-                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/888141462066303056/anniv.png">
-                    </span>
-                    <span class="guild-name">Anniversaires</span>
-                </div>
-            </a>
-        {% endif %}
+
         {% if outils %}
-            <a >
-                <div class="card-guild">
-                    <span class="icon-guild">
-                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604051069407272/outils.png">
-                    </span>
-                    <span class="guild-name">Gestion des outils</span>
+            <div>
+                <div class="guild-stats">Outils</div>
+                <div class="all-guilds">
+                    <a href="/companion/{{ guildid }}/bienvenue">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="{% static 'companion/img/bienvenue.PNG' %}">
+                            </span>
+                            <span class="guild-name">Messages de Bienvenue</span>
+                        </div>
+                    </a>
+                    <a href="/companion/{{ guildid }}/adieu">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="{% static 'companion/img/adieu.PNG' %}">
+                            </span>
+                            <span class="guild-name">Messages d'Adieu</span>
+                        </div>
+                    </a>
+                    <a href="/companion/{{ guildid }}/tableaux">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="{% static 'companion/img/tableaux.PNG' %}">
+                            </span>
+                            <span class="guild-name">Tableaux</span>
+                        </div>
+                    </a>
+                    <a href="/companion/{{ guildid }}/cmdauto">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="{% static 'companion/img/capucheB.PNG' %}">
+                            </span>
+                            <span class="guild-name">Commandes automatiques</span>
+                        </div>
+                    </a>
+                    <a href="/companion/{{ guildid }}/annivauto">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="{% static 'companion/img/anniv.PNG' %}">
+                            </span>
+                            <span class="guild-name">Messages d'Anniversaire</span>
+                        </div>
+                    </a>
+                    
                 </div>
-            </a>
+            </div>
         {% endif %}
+
+        <div>
+            <div class="guild-stats">Privilège - Fonctionnalités expérimentales / Coming soon</div>
+            <div class="all-guilds">
+                
+                <a href="/companion/{{ guildid }}/dynicon">
+                    <div class="card-outils">
+                        <span class="icon-guild">
+                            <img class="img-outils" src="{% static 'companion/img/capucheB.PNG' %}">
+                        </span>
+                        <span class="guild-name">Icones Dynamiques</span>
+                    </div>
+                </a>
+
+                <a>
+                    <div class="card-outils">
+                        <span class="icon-guild">
+                            <img class="img-outils" src="{% static 'companion/img/capucheB.PNG' %}">
+                        </span>
+                        <span class="guild-name">Commandes personnalisées</span>
+                    </div>
+                </a>
+
+                <a>
+                    <div class="card-outils">
+                        <span class="icon-guild">
+                            <img class="img-outils" src="{% static 'companion/img/capucheB.PNG' %}">
+                        </span>
+                        <span class="guild-name">Role Selector</span>
+                    </div>
+                </a>
+
+                <a href="/privileges/">
+                    <div class="card-outils">
+                        <span class="icon-guild">
+                            <img class="img-outils" src="{% static 'companion/img/IMG_0742.PNG' %}">
+                        </span>
+                        <span class="guild-name">Améliorer le serveur</span>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
         {% if admin %}
-            <a >
-                <div class="card-guild">
-                    <span class="icon-guild">
-                        <img class="img-guild" src="https://cdn.discordapp.com/attachments/726034739550486618/870604058883420170/admin.png">
-                    </span>
-                    <span class="guild-name">Administration</span>
+            <div>
+                <div class="guild-stats">Paramètres</div>
+                <div class="all-guilds">
+                    <a href="/companion/{{ guildid }}/admin">
+                        <div class="card-outils">
+                            <span class="icon-guild">
+                                <img class="img-outils" src="https://cdn.discordapp.com/attachments/726034739550486618/870604058883420170/admin.png">
+                            </span>
+                            <span class="guild-name">Paramètres</span>
+                        </div>
+                    </a>
                 </div>
-            </a>
+            </div>
         {% endif %}
     </div>
 

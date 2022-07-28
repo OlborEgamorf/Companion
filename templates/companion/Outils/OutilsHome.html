@@ -1,0 +1,21 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+{% load static %}
+
+<div class="guild-stats">Où souhaitez-vous aller ?</div>
+<div class="all-guilds">
+    {% for i in listeOutils %}
+        <a>
+            <div class="card-outils">
+                <span>
+                    <img class="img-outils" src="{% static 'companion/img/outils.PNG' %}">
+                </span>
+                <span class="guild-name">{{ i }}</span>
+            </div>
+        </a>
+    {% endfor %}
+</div>
+
+
+{% endblock stats %}

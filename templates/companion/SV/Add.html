@@ -1,0 +1,22 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+{% load static %}
+
+
+<div class="grid-threecenter" style="margin-top: 30px;">
+    <div class="grid-threecenter-div">
+        <form method="post" action="/companion/{{ guildid }}/sv/add/add" enctype="multipart/form-data"> {% csrf_token %}
+            <table style="margin-top: 30px;border-color: {{ auteur.Color }};">
+                <tr><th colspan="2">Ajoutez une nouvelle phrase à la collection</th></tr>
+                <tr><td colspan="2" style="font-size:20px;padding: 10px;"><textarea required name="sv" type="text" style="width:-moz-available;text-align:left" placeholder="Que devrions nous savoir ??" maxlength="2000" rows="4"></textarea></td></tr>
+                <tr><td>Ajouter une image (optionnel)</td><td><input type="file" name="image" accept="image/*"></td></tr>
+                <tr><td>Ajouter une source (optionnel)</td><td><input style="width: -moz-available;" type="text" name="source"></td></tr>
+                <tr><th colspan="2"><input type="submit" value="Valider et envoyer"></th></tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+
+{% endblock stats %}

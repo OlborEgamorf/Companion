@@ -16,15 +16,17 @@
 </head>
 
 <header class="header-ot">
-    <span class="links"><img src="https://cdn.discordapp.com/attachments/726034739550486618/908452059496448000/capucheB.png?size=128">
-        <h1>Olbor Track</h1>
-        <div class="links">
-            <a>Accueil</a>
-            <a>Fonctionnalités</a>
-            <a href="/companion/">Companion</a>
-            <a href="https://discord.com/oauth2/authorize?client_id=699728606493933650&permissions=120259472576&scope=bot">Ajouter sur votre serveur</a>
-        </div>
-    </span>
+
+    <span class="user-avatar"><img  src="{% static 'companion/img/capucheB.png' %}">
+    <h1>OT</h1></span>
+    <div class="links">
+        <a href="/">Accueil</a>
+        <a>Fonctionnalités</a>
+        <a href="/companion/">Companion</a>
+        <a href="/privileges/">Privilège</a>
+        <a href="https://discord.com/oauth2/authorize?client_id=699728606493933650&permissions=120259472576&scope=bot">Ajouter sur votre serveur</a>
+    </div>
+    
 </header>
 
 <div class="box-home" style="display: inline;">
@@ -37,13 +39,97 @@
 <div class="box-home">
     <div style="width:50%">
         <h1 style="text-align: left;">
+            <img class="img-home" src="{% static 'companion/img/stats.PNG' %}">
             Statistiques
         </h1>
         <p>
             Découvrez le nombre de messages envoyés, le temps passé en vocal, les salons et emotes les plus utilisées, pour vous et votre serveur entier.<br><br>Différents affichages sont disponibles pour les visualiser : classements, graphiques, comparateurs, analyses et résumés.
         </p>
     </div>
-    <div style="flex-flow: wrap;display: flex;width: 50%;">
-        <img style="border-radius: 15px;margin: auto;" src="{% static 'companion/img/StatsMontage.PNG' %}">
+
+    <div class="slideshow-container">
+        <div class="mySlides1">
+          <img src="{% static 'companion/img/homeStatsRanks.PNG' %}">
+        </div>
+      
+        <div class="mySlides1">
+          <img src="{% static 'companion/img/homeStatsCompare.PNG' %}">
+        </div>
+      
+        <div class="mySlides1">
+          <img src="{% static 'companion/img/homeStatsGraph.PNG' %}" >
+        </div>
+        
+        <div class="mySlides1">
+            <img src="{% static 'companion/img/homeStatsEmote.PNG' %}" >
+          </div>
+      
+        <a class="prev" onclick="plusSlides(-1, 0)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1, 0)">&#10095;</a>
     </div>
+
+</div>
+
+</div>
+<div class="box-home">
+    <div style="width:50%">
+        <h1 style="text-align: left;">
+            <img class="img-home" src="{% static 'companion/img/outils.PNG' %}">
+            Outils
+        </h1>
+        <p>
+            Découvrez le nombre de messages envoyés, le temps passé en vocal, les salons et emotes les plus utilisées, pour vous et votre serveur entier.<br><br>Différents affichages sont disponibles pour les visualiser : classements, graphiques, comparateurs, analyses et résumés.
+        </p>
+    </div>
+    <div class="slideshow-container">
+        <div class="mySlides2">
+          <img src="{% static 'companion/img/homeStatsRanks.PNG' %}">
+        </div>
+      
+        <div class="mySlides2">
+          <img src="{% static 'companion/img/homeStatsCompare.PNG' %}">
+        </div>
+      
+        <div class="mySlides2">
+          <img src="{% static 'companion/img/homeStatsGraph.PNG' %}" >
+        </div>
+        
+        <div class="mySlides2">
+            <img src="{% static 'companion/img/homeStatsEmote.PNG' %}" >
+          </div>
+      
+        <a class="prev" onclick="plusSlides(-1, 1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1, 1)">&#10095;</a>
+    </div>
+    
+    
+</div>
+
+<script>
+    let slideIndex = [1,1];
+    /* Class the members of each slideshow group with different CSS classes */
+    let slideId = ["mySlides1", "mySlides2"]
+    showSlides(1, 0);
+    showSlides(1, 1);
+
+    function plusSlides(n, no) {
+    showSlides(slideIndex[no] += n, no);
+    }
+
+    function showSlides(n, no) {
+    let i;
+    let x = document.getElementsByClassName(slideId[no]);
+    if (n > x.length) {slideIndex[no] = 1}
+    if (n < 1) {slideIndex[no] = x.length}
+    for (i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+    }
+    x[slideIndex[no]-1].style.display = "block";
+    } 
+</script>
+
+<div class="footer-ot">
+    <span class="footer-links">
+        <a href="/companion"><img class="image-small" src="{% static 'companion/img/capucheB.png' %}"></a>
+    </span>
 </div>

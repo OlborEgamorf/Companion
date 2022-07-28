@@ -14,7 +14,7 @@
                 $(`#${option}plus`).remove()
                 for (i=0 ; i<data[0].length ; i++) {
                     var tr = $("<tr></tr>")
-                    tr.append(`<td>${data[0][i].Rank}</td>`)
+                    tr.append(`<td style="border-left-color: ${data[0][i].Color};border-left-style: solid;border-left-width: medium;">${data[0][i].Rank}</td>`)
                     if (option == "tortues" || option == "tortuesduo" || option == "p4" || option == "matrice" || option == "morpion" || option == "trivialversus" || option == "trivialbr" || option == "trivialparty") {
                         if (data[0][i].Emote == null) {
                             tr.append(`<td><a href="/companion/profil/${data[0][i].ID}"><img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a></td>`)
@@ -31,8 +31,7 @@
                         tr.append(`<td><img src="https://cdn.discordapp.com/emojis/${data[0][i].ID}?size=128" style="border-radius: 0%;"></td>`)
                     }                    
                     tr.append(`<td style="text-align: start;">${data[0][i].Nom}</td>`)
-                    tr.append(`<td class="barretd"><div class="barre" style="width:calc(100%*${data[0][i].Count}/${table.dataset.max});background-color: ${data[0][i].Color}"></div></td>`)
-                    tr.append(`<td>${formatCount(data[0][i].Count,option)}</td>`)
+                    tr.append(`<td class="barretd-recap">${formatCount(data[0][i].Count,option)}<div class="contour-barre"><div class="barre" style="width:calc(100%*${data[0][i].Count}/${table.dataset.max}); background-color: ${data[0][i].Color}"></div></div> </td>`)
                     $("#"+option).append(tr)
 
                 }
@@ -72,7 +71,7 @@
 
 </script>
 
-<div class="div-profil">
+<div class="grid-twocol">
     {% for option in alloptions %}
         <table class="table-recap" id="{{ option }}" data-max="{{ ranks|globmax:option }}" data-nb="1">
             {% if option == "messages" or option == "mots" or option == "voice" or option == "emotes" or option == "reactions" %}
@@ -80,7 +79,6 @@
                 <tr>
                     <th>Rang</th>
                     <th colspan="2">{{ option|headnom }}</th>
-                    <th id="leg-barre">Barre</th>
                     <th>{{ option|headcount }}</th>
                 </tr>
             {% elif option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
@@ -88,7 +86,6 @@
                 <tr>
                     <th>Rang</th>
                     <th colspan="2">Joueur</th>
-                    <th id="leg-barre">Barre</th>
                     <th>Points</th>
                     <th>Badge</th>
                 </tr>
@@ -97,7 +94,6 @@
                 <tr>
                     <th>Rang</th>
                     <th>{{ option|headnom }}</th>
-                    <th id="leg-barre">Barre</th>
                     <th>{{ option|headcount }}</th>
                 </tr>
             {% endif %}
@@ -108,7 +104,7 @@
             {% else %}
                 <tr>
             {% endif %}
-                    <td>{{ i.Rank }}</td>
+                    <td style="border-left-color: {{ i.Color }};border-left-style: solid;border-left-width: medium;">{{ i.Rank }}</td>
                     {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
                         <td>
                             {% if i.Emote != None %}
@@ -136,8 +132,10 @@
                     
                     {% endif %}
                     <td style="text-align: start;">{{ i.Nom }}</td>
-                    <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ ranks|globmax:option }}); background-color: {{ i.Color }}"></div></td>
-                    <td>{{ i.Count|tempsvoice:option }}</td>
+                    <td class="barretd-recap">{{ i.Count|tempsvoice:option }}
+                        <div class="contour-barre">
+                        <div class="barre" style="width:calc(100%*{{ i.Count }}/{{ ranks|globmax:option }}); background-color: {{ i.Color }}"></div></div>
+                    </td>
                     {% if option == "tortues" or option == "tortuesduo" or option == "p4" or option == "matrice" or option == "morpion" or option == "trivialversus" or option == "trivialbr" or option == "trivialparty" %}
                         <td>
                             {% if i.BadgeJeu != None %}

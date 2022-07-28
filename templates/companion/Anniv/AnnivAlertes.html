@@ -1,0 +1,77 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+{% load static %}
+
+<script>
+    function toogleAnniv(tog) {
+        var httpRequest = new XMLHttpRequest()
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === 4) {
+                window.location.replace("/companion/{{ guildid }}/anniv/alertes");
+            }    
+        }
+        httpRequest.open("GET",`/companion/{{ guildid }}/anniv/alertes/toggle?active=${tog.checked == true}`,true)
+        httpRequest.send()
+    }
+</script>
+
+{% if etatAnniv.Active %}
+    <div class="grid-onecol" style="margin-top: 40px;">
+        <table >
+            <tr>
+                <th>Messages d'anniversaire</th>
+                <th>
+                    <label class="switch">
+                        <input onchange='toogleAnniv(this)' name="bv" type="checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </th>
+            </tr>
+            <tr><td colspan="2">Fêtez les anniversaires de vos membres, avec un message personnalisé envoyé dans le salon de votre choix à chaque fois qu'un anniversaire est fêté !</td></tr>
+        </table>
+    </div>
+    <div class="grid-twocol" style="margin-top: 30px;">
+        <table>
+            <tr><th colspan="2">Paramètrez l'alerte</th></tr>
+            <tr>
+                <td>Salon d'envoi</td>
+                <td>
+                    <form method="post" action="/companion/{{ guildid }}/anniv/alertes/edit" enctype="multipart/form-data"> {% csrf_token %}
+                        <select name="salon" id="salon">
+                            {% for i in allchans %}
+                                <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            <tr><td colspan="2"><textarea required name="message" type="text" style="width:-moz-available;text-align:left" placeholder="Quel message envoyer ?" maxlength="500" rows="3"></textarea></td></tr>
+            <tr><td colspan="2"><input type="submit" value="Sauvegarder" class="input-click"></td></tr>
+        </table>
+
+        <table>
+            <tr><th colspan="2">Balises de texte</th></tr>
+            <tr><td>{user}</td><td>Mentionne le membre</td></tr>
+            <tr><td>{name}</td><td>Donne le nom du membre</td></tr>
+            <tr><td>{date}</td><td>Donne le jour de son anniversaire</td></tr>
+        </table>
+    </div>
+{% else %}
+    <div class="grid-onecol" style="margin-top: 30px;">
+        <table>
+            <tr>
+                <th>Messages d'anniversaire</th>
+                <th>
+                    <label class="switch">
+                        <input onchange='toogleAnniv(this)' name="bv" type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                </th>
+            </tr>
+            <tr><td colspan="2">Fêtez les anniversaires de vos membres, avec un message personnalisé envoyé dans le salon de votre choix à chaque fois qu'un anniversaire est fêté !</td></tr>
+        </table>
+    </div>
+{% endif %}
+
+{% endblock stats %}

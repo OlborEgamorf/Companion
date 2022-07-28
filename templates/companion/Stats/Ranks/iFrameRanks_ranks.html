@@ -58,10 +58,10 @@
                     {% endif %}
     
                     <td style="text-align: start;">{{ i.Nom }}</td>
-                    {% if plus != "graph" %}
-                        <td class="barretd"><div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></td>
-                    {% endif %}
-                    <td>{{ i.Count|tempsvoice:option }}</td>
+                    <td class="barretd">{{ i.Count|tempsvoice:option }}
+                        <div class="contour-barre">
+                        <div class="barre" style="width:calc(100%*{{ i.Count }}/{{ max }}); background-color: {{ i.Color }}"></div></div>
+                    </td>
                 </tr>
             {% endfor %}
     </table>

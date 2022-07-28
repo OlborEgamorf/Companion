@@ -1,0 +1,58 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+{% load static %}
+
+<script>
+    function confirm(button) {
+        val=button.value
+        button.value="Supprimer vraiment"
+        sleep(100).then(() => {button.type="submit"})
+        sleep(10000).then(() => {
+            button.type="button"
+            button.value=val})
+    }
+
+</script>
+
+<div class="guild-stats">Toutes les phrases</div>
+<div class="grid-threecol" style="margin-top: 30px;">
+    {% for i in all %}
+        <form method="post" action="/companion/{{ guildid }}/sv/edit/{{ i.Count }}"> {% csrf_token %}
+            <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                <tr><th colspan="3">Phrase n°{{ i.Count }}</th></tr>
+                <tr><td colspan="3" style="font-size:20px;padding: 10px;">{{ i.Texte }}</td></tr>
+                {% if i.Image != "None" %} 
+                    <tr><td colspan="3"><img class="image-sv" src="{{ i.Image }}"></td></tr>
+                {% endif %}
+                <tr>
+                    <td>Auteur</td>
+                    <td colspan="2">
+                        {% if i.Avatar %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                        {{ i.Nom }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Source</td>
+                    {% if i.Source == "None" %}
+                        <td colspan="2">Non spécifiée</td>
+                    {% else %}
+                        <td colspan="2">{{ i.Source }}</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td colspan="3"><input onclick="confirm(this)" type="button" value="Supprimer" name="del" class="input-click"></td>
+                </tr>
+            </table>
+        </form>
+    {% endfor %}
+</div>
+
+
+{% endblock stats %}

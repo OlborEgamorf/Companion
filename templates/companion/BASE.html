@@ -88,6 +88,47 @@
             {% endfor %}
         </style>
     {% endif %}
+
+    {% if profil and color %} 
+    <style>
+        body {
+            background: linear-gradient(to bottom, #131840 0%, {{ color }} 100%);
+        }
+
+        table {
+            border-left: {{ color }} solid medium;
+            border-bottom: {{ color }} solid medium;
+        }
+
+        .header-ot {
+            background: linear-gradient(to bottom left, #0000FF 0%, {{ color }} 100%);
+        }
+
+        .guild-stats {
+            border-top: {{ color }} solid medium;
+        }
+
+        .sidenav {
+            border-right: {{ color }} solid medium;
+        }
+
+        .sidenav:hover {
+            scrollbar-color: {{ color }} #222;
+        }
+
+        .all-guilds {
+            border-bottom: {{ color }} solid medium;
+        }
+
+        .card-guild {
+            border-bottom: {{ color }} solid medium;
+        }
+        
+        .mini-header {
+            background: {{ color }};
+        }
+    </style>
+    {% endif %}
 </head>
 
 <script type="text/javascript">
@@ -131,10 +172,69 @@
 <body>
     <header class="header-ot">
 
-        <span class="user-avatar"><img  src="{% static 'companion/img/capucheB.png' %}">
-        <h1>Companion</h1></span>
+        {% if profil %} 
+            {% if id == idprofil or guildscom|len != 0 %}
+                <span class="user-avatar"><img  src="https://cdn.discordapp.com/avatars/{{ idprofil }}/{{ avatarprofil }}">
+                <h1>{{ nomprofil }}</h1>
+            {% else %}
+                {% if emote != None %}
+                    <span class="user-avatar"><img  src="https://cdn.discordapp.com/emojis/{{ emote }}">
+                {% else %}
+                    <span class="user-avatar"><img  src="{% static 'companion/img/Silouhette2.png' %}">
+                {% endif %}
+                <h1>{{ titre }}</h1>
+            {% endif %}
+
+            {% if vip == True %}
+                <img style="width:auto;padding-right: 0;border-radius: 0;" src="{% static 'companion/img/IMG_0743.png' %}" alt="Badge VIP">
+            {% endif %}
+            {% if testeur == True %}
+                <img style="width:auto" src="{% static 'companion/img/TesteursmotifCrop400.png' %}" alt="Badge Testeur">
+            {% endif %}
+                
+            </span>
+        {% elif ot %}
+            <span class="user-avatar"><img  src="{% static 'companion/img/FULL.png' %}">
+            <h1>Olbor Track</h1></span>
+        {% else %}
+            <span class="user-avatar"><img  src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}">
+            <h1>{{ guildname }}</h1></span>
+        {% endif %}
         
     </header>
+    <header class="mini-header">
+
+        {% if pagestats %}
+            <span class="user-avatar"><img  src="{% static 'companion/img/stats.png' %}">
+            <h2>Statistiques</h2></span>
+        {% elif pagepolls %}
+            <span class="user-avatar"><img  src="{% static 'companion/img/poll.png' %}">
+            <h2>Sondages</h2></span>
+        {% elif pagesv %}
+            <span class="user-avatar"><img  src="{% static 'companion/img/sv.png' %}">
+            <h2>Savez-Vous ?</h2></span>
+        {% elif pageanniv %}
+            <span class="user-avatar"><img  src="{% static 'companion/img/anniv.png' %}">
+            <h2>Anniversaires</h2></span>
+        {% elif pageoutils %}
+            <span class="user-avatar"><img  src="{% static 'companion/img/outils.png' %}">
+            <h2>Outils</h2></span>
+        {% elif pageadmin %}
+            <span class="user-avatar"><img  src="{% static 'companion/img/admin.png' %}">
+            <h2>Paramètres</h2></span>
+        {% elif profil %}
+            <span class="user-avatar"><img  src="{% static 'companion/img/capucheB.png' %}">
+            <h2>Profil</h2></span>
+        {% endif %}
+
+    </header>
+
+    {% if profil and vip %} 
+        <div class="guild-stats">
+            <img src="{% static 'companion/img/IMG_0743.png' %}">
+            <br>Membre Privilège Tier 2
+        </div>
+    {% endif %}
     
     <div class="buttonnav">
         <a onclick="devBarMobile()">
@@ -218,7 +318,7 @@
             </a>
 
             {% if pagestats %}
-                <a href="/companion/{{ guildid }}/stats/" onmouseenter="showBar('Stats')" style="background-color: #696969;" onmouseleave="hideBar('Stats')" onclick="clickServ(this)" id="a-">
+                <a onmouseenter="showBar('Stats')" style="background-color: #696969;" onmouseleave="hideBar('Stats')" onclick="clickServ(this)" id="a-">
                     <span class="little-icon-guild" ><img src="{% static 'companion/img/stats.png' %}"></span>
                     <span id="Stats" class="text-bar">Statistiques</span>
                 </a>
@@ -230,7 +330,7 @@
             {% endif %}
 
             {% if pagepolls %}
-                <a href="/companion/{{ guildid }}/polls/" onmouseenter="showBar('Sondages')" style="background-color: #696969;" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
+                <a onmouseenter="showBar('Sondages')" style="background-color: #696969;" onmouseleave="hideBar('Sondages')" onclick="clickServ(this)">
                     <span class="little-icon-guild" ><img src="{% static 'companion/img/poll.png' %}"></span>
                     <span id="Sondages" class="text-bar">Sondages</span>
                 </a>
@@ -247,7 +347,7 @@
                     <span id="SV" class="text-bar">Savez-Vous ?</span>
                 </a>
             {% else %} 
-                <a onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" onclick="clickServ(this)">
+                <a href="/companion/{{ guildid }}/sv/" onmouseenter="showBar('SV')" onmouseleave="hideBar('SV')" onclick="clickServ(this)">
                     <span class="little-icon-guild" ><img src="{% static 'companion/img/sv.png' %}"></span>
                     <span id="SV" class="text-bar">Savez-Vous ?</span>
                 </a>
@@ -259,9 +359,21 @@
                     <span id="Anniv" class="text-bar">Anniversaires</span>
                 </a>
             {% else %} 
-                <a onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" onclick="clickServ(this)">
+                <a href="/companion/{{ guildid }}/anniv/" onmouseenter="showBar('Anniv')" onmouseleave="hideBar('Anniv')" onclick="clickServ(this)">
                     <span class="little-icon-guild" ><img src="{% static 'companion/img/anniv.png' %}"></span>
                     <span id="Anniv" class="text-bar">Anniversaires</span>
+                </a>
+            {% endif %}
+
+            {% if pagetimeline %}
+                <a onmouseenter="showBar('Chronologie')" style="background-color: #696969;" onmouseleave="hideBar('Chronologie')" onclick="clickServ(this)" id="a-">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/Illustration_sans_titre.png' %}"></span>
+                    <span id="Chronologie" class="text-bar">Chronologie</span>
+                </a>
+            {% else %} 
+                <a href="/companion/{{ guildid }}/timeline/" onmouseenter="showBar('Chronologie')" onmouseleave="hideBar('Chronologie')" onclick="clickServ(this)" id="a-">
+                    <span class="little-icon-guild" ><img src="{% static 'companion/img/Illustration_sans_titre.png' %}"></span>
+                    <span id="Chronologie" class="text-bar">Chronologie</span>
                 </a>
             {% endif %}
 
@@ -271,7 +383,7 @@
                     <span id="Outils" class="text-bar">Outils</span>
                 </a>
             {% else %} 
-                <a onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" onclick="clickServ(this)">
+                <a href="/companion/{{ guildid }}/outils/" onmouseenter="showBar('Outils')" onmouseleave="hideBar('Outils')" onclick="clickServ(this)">
                     <span class="little-icon-guild" ><img src="{% static 'companion/img/outils.png' %}"></span>
                     <span id="Outils" class="text-bar">Outils</span>
                 </a>
@@ -283,7 +395,7 @@
                     <span id="Admin" class="text-bar">Administration</span>
                 </a>
             {% else %} 
-                <a onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" onclick="clickServ(this)">
+                <a href="/companion/{{ guildid }}/admin/" onmouseenter="showBar('Admin')" onmouseleave="hideBar('Admin')" onclick="clickServ(this)">
                     <span class="little-icon-guild" ><img src="{% static 'companion/img/admin.png' %}"></span>
                     <span id="Admin" class="text-bar">Administration</span>
                 </a>
@@ -302,83 +414,6 @@
             </a>
         {% endif %}
 
-    </div>
-
-    <div class="profil-infos">
-        {% if profil %}
-            <div>
-                {% if id == idprofil or guildscom|len != 0 %}
-                    <img class="profil-avatar" src="https://cdn.discordapp.com/avatars/{{ idprofil }}/{{ avatarprofil }}">
-                    <div class="profil-texte">
-                        <div class="texte-gros">
-                            {{ nomprofil }}
-                            {% if vip == True %}
-                                <img class="profil-badges" src="{% static 'companion/img/VipmotifCrop400.png' %}" alt="Badge VIP">
-                            {% endif %}
-                            {% if testeur == True %}
-                                <img class="profil-badges" src="{% static 'companion/img/TesteursmotifCrop400.png' %}" alt="Badge Testeur">
-                            {% endif %}</div>
-                        <div class="texte-titre">
-                            {% if emote != None %}
-                                <img class="profil-emote" src="https://cdn.discordapp.com/emojis/{{ emote }}" alt="Emote de {{ nom }}">
-                            {% endif %}
-                            {{ titre }}</div>
-                    
-                    </div>
-                {% else %}
-                    {% if emote != None %}
-                        <img class="profil-avatar" src="https://cdn.discordapp.com/emojis/{{ emote }}" alt="Emote de {{ nom }}">
-                    {% else %}
-                        <img class="profil-avatar" src="{% static 'companion/img/Silouhette2.png' %}">
-                    {% endif %}
-                    <div class="profil-texte">
-                        <div class="texte-gros">
-                            {{ titre }}
-                            {% if vip == True %}
-                                <img class="profil-badges" src="{% static 'companion/img/VipmotifCrop400.png' %}" alt="Badge VIP">
-                            {% endif %}
-                            {% if testeur == True %}
-                                <img class="profil-badges" src="{% static 'companion/img/TesteursmotifCrop400.png' %}" alt="Badge Testeur">
-                            {% endif %}</div>
-                    </div>
-                {% endif %}
-            </div>
-        {% elif ot %}
-            <div>
-                <img class="profil-avatar" src="{% static 'companion/img/FULL.png' %}">
-                <div class="profil-texte">
-                    <div class="texte-gros">
-                        Olbor Track
-                    </div>
-                    {% if guildid == "ot/jeux" %}
-                        <div class="texte-titre">
-                            Jeux | {{ command|getCommand }} - {{ plus|getPlus }} : {{ option|getOption }}
-                        </div>
-                    {% else %} 
-                        <div class="texte-titre">
-                            Stats mondiales
-                        </div>
-                    {% endif %}
-                    
-                </div>
-            </div>
-        {% else %}
-            <div>
-                {% if mix %}
-                    {% for i in listeMix %}
-                        <img class="profil-avatar" src="https://cdn.discordapp.com/icons/{{ i.ID }}/{{ i.Icon }}">
-                    {% endfor %}
-                {% else %}
-                    <img class="profil-avatar" src="https://cdn.discordapp.com/icons/{{ guildid }}/{{ guildicon }}">
-                {% endif %}
-                <div class="profil-texte">
-                    <div class="texte-gros">{{ guildname }}</div>
-                    {% if pagestats %}
-                        <div class="texte-titre">{{ command|getCommand }} - {{ plus|getPlus }} : {{ option|getOption }}</div>
-                    {% endif %}
-                </div>
-            </div>
-        {% endif %}
     </div>
 
     {% if pagestats %}
@@ -617,32 +652,41 @@
             </ul>
         </nav>
 
-        <script>
-            var command=document.getElementById("nav-{{ command }}")
-            command.children[0].style.backgroundColor="#36F"
-        </script>
-    
-    {% elif pagepolls %}
+    {% elif pageanniv %}
         <nav class="mega-menu">
             <ul class="mega-menu-main">
-                <li id="nav-poll" class="lvl-0">
-                    <a href="/companion/{{ guildid }}/polls/">Sondages</a>
+                <li id="nav-calendrier" class="lvl-0">
+                    <a href="/companion/{{ guildid }}/anniv/">Calendrier</a>
                 </li>
-                <li id="nav-petitions" class="lvl-0">
-                    <a href="/companion/{{ guildid }}/polls/petitions/">Pétitions</a>
+                <li id="nav-alertes" class="lvl-0">
+                    <a href="/companion/{{ guildid }}/anniv/alertes/">Alertes</a>
                 </li>
-                <li id="nav-ga" class="lvl-0">
-                    <a href="/companion/{{ guildid }}/polls/giveaways/">Giveaway</a>
+            </ul>
+        </nav>   
+    
+    {% elif pagesv %}
+        <nav class="mega-menu">
+            <ul class="mega-menu-main">
+                <li id="nav-sv" class="lvl-0">
+                    <a href="/companion/{{ guildid }}/sv/">Savez-Vous ?</a>
+                </li>
+                <li id="nav-svadd" class="lvl-0">
+                    <a href="/companion/{{ guildid }}/sv/add/">Ajouter</a>
+                </li>
+                <li id="nav-svperso" class="lvl-0">
+                    <a href="/companion/{{ guildid }}/sv/perso/">Vos phrases</a>
+                </li>
+                <li id="nav-svmodo" class="lvl-0">
+                    <a href="/companion/{{ guildid }}/sv/modo/">Modération</a>
                 </li>
             </ul>
         </nav>
-        
-        <script>
-            var command=document.getElementById("nav-{{ command }}")
-            command.children[0].style.backgroundColor="#36F"
-        </script>
-
     {% endif %}
+
+    <script>
+        var command=document.getElementById("nav-{{ command }}")
+        command.children[0].style.backgroundColor="#36F"
+    </script>
 
     {% if travel or obj != None %}
         <form action="" method="get" class="form-example">
@@ -720,19 +764,10 @@
 
 
     {% block stats %} {% endblock %}
-
-    <div class="footer-ot" style="margin-bottom: 0;">
+    
+    <div class="footer-ot">
         <span class="footer-links">
             <a href="/companion"><img class="image-small" src="{% static 'companion/img/capucheB.png' %}"></a>
-            <a href="https://twitter.com/OlborTrack"><img class="image-small" src="{% static 'companion/img/twitter.png' %}"></a>
-            <a href="https://instagram.com/OlborTrack"><img class="image-small" src="{% static 'companion/img/insta.png' %}"></a>
-            <a href="https://github.com/OlborEgamorf/OlborTrack-Bot"><img class="image-small" src="{% static 'companion/img/github.png' %}"></a>
-        </span>
-    </div>
-
-    <div class="footer-ot" style="margin-top: 0;width: 250px;">
-        <span class="footer-credits">
-            Olbor Track Companion <br>Par OlborEgamorf
         </span>
     </div>
 

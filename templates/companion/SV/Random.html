@@ -1,0 +1,51 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+{% load static %}
+
+
+<div class="grid-threecenter" style="margin-top: 30px;">
+    <div class="grid-threecenter-div">
+
+        {% if aleatoire == None %} 
+            <div style="padding:10px;margin: 0; "class="guild-stats">Aucune phrase n'a jamais été ajoutée sur ce serveur. Commencez par en ajouter une et revenez ici !</div>
+        {% else %}
+            <div>
+                <table style="margin-top: 30px;border-color: {{ auteur.Color }};">
+                    <tr><th colspan="2">Phrase n°{{ aleatoire.Count }}</th></tr>
+                    <tr><td colspan="2" style="font-size:20px;padding: 10px;">{{ aleatoire.Texte }}</td></tr>
+                    {% if aleatoire.Image != "None" %} 
+                        <tr><td colspan="2"><img class="image-sv" src="{{ aleatoire.Image }}"></td></tr>
+                    {% endif %}
+                    <tr>
+                        <td>Auteur</td>
+                        <td>
+                            {% if auteur.Avatar %}
+                                <a href="/companion/profil/{{ auteur.ID }}">
+                                <img src="https://cdn.discordapp.com/avatars/{{ auteur.ID }}/{{ auteur.Avatar }}.png?size=128"></a>
+                            {% else %}
+                                <a href="/companion/profil/{{ auteur.ID }}">
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            {% endif %}
+                            {{ auteur.Nom }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Source</td>
+                        {% if aleatoire.Source == "None" %}
+                            <td>Non spécifiée</td>
+                        {% else %}
+                            <td>{{ aleatoire.Source }}</td>
+                        {% endif %}
+                    </tr>
+                </table>
+                
+                
+                <input style="margin-top: 30px;" type="button" onClick="window.location.reload();" value="Une autre !">
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock stats %}

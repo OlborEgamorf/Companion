@@ -1,0 +1,297 @@
+{% extends "companion/BASE.html" %}
+{% block stats %}
+{% load TagsCustom %}
+{% load static %}
+
+{% if you.Nombre != 0 %}
+    <div class="grid-threecenter" style="margin-top: 30px;">
+        
+        <table class="grid-threecenter-div">
+            <form method="post" action="/companion/{{ guildid }}/anniv/set"> {% csrf_token %}
+                <tr><th>Votre anniversaire</th></tr>
+                {% if not you %}
+                    <tr><td style="padding:5px">Vous n'avez pas encore déclaré votre anniversaire, vous pouvez le faire ici !<br>Si le module est activé sur votre serveur, un message sera envoyé le jour de votre anniversaire !</td></tr>
+                {% else %} 
+                    <tr><td style="padding:5px">Vous avez affirmé que votre anniversaire était le {{ you.Jour }} {{ you.Mois }}, mais vous pouvez le changer !<br>Si le module est activé sur votre serveur, un message sera envoyé le jour de votre anniversaire !</td></tr>
+                {% endif %}
+                <tr><td><input type="date" name="dateanniv" required><input type="submit" value="Enregistrer" class="input-click"></td></tr>
+            </form>
+        </table>
+        
+    </div>
+{% else %}
+<div class="grid-threecenter" style="margin-top: 30px;">
+    <table class="grid-threecenter-div">
+        <tr><th>Votre anniversaire</th></tr>
+        <tr><td>Vous avez affirmé que votre anniversaire était le {{ you.Jour }} {{ you.Mois }}, et vous ne pouvez plus le changer.</td></tr>
+    </table>
+</div>
+{% endif %}
+
+<div class="grid-twocol">
+    {% if janvier|len != 0 %}
+        <div>
+            <div class="guild-stats">Janvier</div>
+                <div class="grid-twocol">
+                {% for i in janvier %}
+                    <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                        <tr><th colspan="3">{{ i.Jour }} janvier</th></tr>
+                        <tr><td>
+                            {% if i.Avatar %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                            {% else %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            {% endif %}
+                            {{ i.Nom }}</td></tr>
+                    </table>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if février|len != 0 %}
+        <div>
+            <div class="guild-stats">Février</div>
+                <div class="grid-twocol">
+                {% for i in février %}
+                    <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                        <tr><th colspan="3">{{ i.Jour }} février</th></tr>
+                        <tr><td>
+                            {% if i.Avatar %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                            {% else %}
+                                <a href="/companion/profil/{{ i.ID }}">
+                                <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                            {% endif %}
+                            {{ i.Nom }}</td></tr>
+                    </table>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if mars|len != 0 %}
+    <div>
+        <div class="guild-stats">Mars</div>
+            <div class="grid-twocol">
+            {% for i in mars %}
+                <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                    <tr><th colspan="3">{{ i.Jour }} mars</th></tr>
+                    <tr><td>
+                        {% if i.Avatar %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                        {{ i.Nom }}</td></tr>
+                </table>
+            {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+
+    {% if avril|len != 0 %}
+    <div>
+        <div class="guild-stats">Avril</div>
+            <div class="grid-twocol">
+            {% for i in avril %}
+                <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                    <tr><th colspan="3">{{ i.Jour }} avril</th></tr>
+                    <tr><td>
+                        {% if i.Avatar %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                        {{ i.Nom }}</td></tr>
+                </table>
+            {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+
+    {% if mai|len != 0 %}
+    <div>
+        <div class="guild-stats">Mai</div>
+            <div class="grid-twocol">
+            {% for i in mai %}
+                <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                    <tr><th colspan="3">{{ i.Jour }} mai</th></tr>
+                    <tr><td>
+                        {% if i.Avatar %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                        {{ i.Nom }}</td></tr>
+                </table>
+            {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+
+    {% if juin|len != 0 %}
+    <div>
+        <div class="guild-stats">Juin</div>
+            <div class="grid-twocol">
+            {% for i in juin %}
+                <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                    <tr><th colspan="3">{{ i.Jour }} juin</th></tr>
+                    <tr><td>
+                        {% if i.Avatar %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                        {{ i.Nom }}</td></tr>
+                </table>
+            {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+
+    {% if juillet|len != 0 %}
+    <div>
+        <div class="guild-stats">Juillet</div>
+            <div class="grid-twocol">
+            {% for i in juillet %}
+                <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                    <tr><th colspan="3">{{ i.Jour }} juillet</th></tr>
+                    <tr><td>
+                        {% if i.Avatar %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                        {{ i.Nom }}</td></tr>
+                </table>
+            {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+
+    {% if aout|len != 0 %}
+    <div>
+        <div class="guild-stats">Aout</div>
+            <div class="grid-twocol">
+            {% for i in aout %}
+                <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                    <tr><th colspan="3">{{ i.Jour }} aout</th></tr>
+                    <tr><td>
+                        {% if i.Avatar %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                        {{ i.Nom }}</td></tr>
+                </table>
+            {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+
+    {% if septembre|len != 0 %}
+    <div>
+        <div class="guild-stats">Septembre</div>
+            <div class="grid-twocol">
+            {% for i in septembre %}
+                <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                    <tr><th colspan="3">{{ i.Jour }} septembre</th></tr>
+                    <tr><td>
+                        {% if i.Avatar %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                        {{ i.Nom }}</td></tr>
+                </table>
+            {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+
+    {% if octobre|len != 0 %}
+    <div>
+        <div class="guild-stats">Octobre</div>
+            <div class="grid-twocol">
+            {% for i in octobre %}
+                <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                    <tr><th colspan="3">{{ i.Jour }} octobre</th></tr>
+                    <tr><td>
+                        {% if i.Avatar %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                        {{ i.Nom }}</td></tr>
+                </table>
+            {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+
+    {% if novembre|len != 0 %}
+    <div>
+        <div class="guild-stats">Novembre</div>
+            <div class="grid-twocol">
+            {% for i in novembre %}
+                <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                    <tr><th colspan="3">{{ i.Jour }} novembre</th></tr>
+                    <tr><td>
+                        {% if i.Avatar %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                        {{ i.Nom }}</td></tr>
+                </table>
+            {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+
+    {% if décembre|len != 0 %}
+    <div>
+        <div class="guild-stats">Décembre</div>
+            <div class="grid-twocol">
+            {% for i in décembre %}
+                <table style="margin-top: 30px;border-color: {{ i.Color }};">
+                    <tr><th colspan="3">{{ i.Jour }} décembre</th></tr>
+                    <tr><td>
+                        {% if i.Avatar %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/avatars/{{ i.ID }}/{{ i.Avatar }}.png?size=128"></a>
+                        {% else %}
+                            <a href="/companion/profil/{{ i.ID }}">
+                            <img src="https://cdn.discordapp.com/attachments/726034739550486618/930821498208403466/Silouhette2.png"></a>
+                        {% endif %}
+                        {{ i.Nom }}</td></tr>
+                </table>
+            {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock stats %}
